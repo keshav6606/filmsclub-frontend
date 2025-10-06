@@ -26,24 +26,20 @@ export default {
         Anton: ["Anton", ...defaultTheme.fontFamily.sans],
       },
       colors: {
-        primaryTextColor: "#F8FAFC",
-        secondaryTextColor: "#A9B8D0",
-        primaryBtn: "#6E66FF",
-        primaryBtnHover: "#324DBC",
-        primaryBtnGlow: "#8C7FFF",      // Neon glow for hover/focus
-        bgColor: "#1B1730",
-        bgColorSecondary: "#2B2245",
-        btnColor: "#FFAC5F",
-        btnGlow: "#FFB974",
-        otherColor: "#36FFF7",
-        accent: "#FF5CAA",
-        accentGlow: "#FF7BCB",
-        glass: "rgba(255,255,255,0.08)",
+        primaryTextColor: "#F8FAFC",            // Ultra-light text
+        secondaryTextColor: "#A9B8D0",          // Muted blue-gray text
+        primaryBtn: "#6E66FF",                  // Vivid indigo (button primary)
+        primaryBtnHower: "#324DBC",             // Rich blue (button hover)
+        bgColor: "#28243D",                     // Lush indigo/dark violet background
+        bgColorSecondary: "#38304B",            // Slightly lighter indigo for cards
+        btnColor: "#FFAC5F",                    // Modern orange (for ghost/secondary btn)
+        otherColor: "#36FFF7",                  // Aqua accent (active, highlights)
+        accent: "#FF5CAA",                      // Pink accent (alerts, links)
+        glass: "rgba(255,255,255,0.08)",        // For glass effect overlays
       },
       boxShadow: {
-        glass: "0 8px 32px 0 rgba(80,105,255,0.15)",
-        primary: "0 8px 32px 0 rgba(110,102,255,0.35)",
-        neon: "0 0 8px #36FFF7, 0 0 16px #36FFF7, 0 0 32px #36FFF7",
+        glass: "0 4px 24px 0 rgba(80,105,255,0.11)",
+        primary: "0 8px 24px 0 rgba(110,102,255,0.32)",
       },
       aspectRatio: {
         "9/13": "9/13",
@@ -64,22 +60,7 @@ export default {
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(ellipse at center, #36FFF7 0%, #6E66FF 100%)',
-        'gradient-glass': 'linear-gradient(135deg, rgba(255,255,255,0.06), rgba(174,197,255,0.13))',
-        'gradient-animated': 'linear-gradient(270deg, #36FFF7, #6E66FF, #FF5CAA)',
-      },
-      animation: {
-        "gradient-shift": "gradientShift 8s ease infinite",
-      },
-      keyframes: {
-        gradientShift: {
-          "0%, 100%": { "background-position": "0% 50%" },
-          "50%": { "background-position": "100% 50%" },
-        },
-      },
-      transitionProperty: {
-        'height': 'height',
-        'spacing': 'margin, padding',
-        'colors': 'background-color, border-color, color, fill, stroke',
+        'gradient-glass': 'linear-gradient(135deg, rgba(255,255,255,0.06), rgba(174,197,255,0.13))'
       },
     },
   },
