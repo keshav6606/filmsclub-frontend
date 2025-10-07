@@ -24,11 +24,13 @@ const players = ["MX Player (free)", "MX Player (paid)", "VLC Player"];
 const playersIcons = [<FaRegPlayCircle />, <IoMdPlayCircle />, <FcVlc />];
 
 const PlayerModal = ({ isOpen, onClose, onSubmit }) => {
-  const [selectedPlayer, setSelectedPlayer] = useState("");
+  // 1. बदलाव: Initial State को "VLC Player" पर सेट किया गया है।
+  const [selectedPlayer, setSelectedPlayer] = useState("VLC Player"); 
   const iconClasses = "text-xl text-default-500 pointer-events-none flex-shrink-0";
 
   const handlePlayerSubmit = () => {
-    const playerToSubmit = selectedPlayer || "MX Player (free)"; // Default to "MX free" if no player selected
+    // 2. बदलाव: यदि कोई चयन नहीं हुआ है, तो डिफ़ॉल्ट रूप से "VLC Player" सबमिट होगा।
+    const playerToSubmit = selectedPlayer || "VLC Player"; 
     onSubmit(playerToSubmit);
     toast.success(`${playerToSubmit} is Set`);
     onClose();
@@ -36,7 +38,8 @@ const PlayerModal = ({ isOpen, onClose, onSubmit }) => {
 
   const handleClose = () => {
     if (!selectedPlayer || selectedPlayer) {
-      onSubmit("MX Player (free)");
+      // 3. बदलाव: Modal बंद होने पर डिफ़ॉल्ट रूप से "VLC Player" सेट होगा।
+      onSubmit("VLC Player"); 
       toast.success("Default player is Set")
 
     }
@@ -59,6 +62,7 @@ const PlayerModal = ({ isOpen, onClose, onSubmit }) => {
           <Dropdown >
             <DropdownTrigger>
               <Button variant="flat" className="text-white">
+                {/* अब यह शुरू में "VLC Player" दिखाएगा */}
                 {selectedPlayer || "Select a Player"}
               </Button>
             </DropdownTrigger>
