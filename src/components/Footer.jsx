@@ -1,4 +1,4 @@
-import React from "react";
+Import React from "react";
 import { Link, useLocation } from "react-router-dom";
 
 export default function Footer() {
@@ -103,26 +103,6 @@ export default function Footer() {
                 <button className="relative text-sm w-4 h-4 rounded-full border-2 border-secondaryTextColor p-2">
                   <p className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
                     C
-                  </p>
-                </button>
-                <p className="uppercase">{SITENAME}. All Rights Reserved</p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-    </>
-  );
-}                </button>
-                <p className="uppercase">{SITENAME}. All Rights Reserved</p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-    </>
-  );
-}
                   </p>
                 </button>
                 <p className="uppercase">{SITENAME}. All Rights Reserved</p>
