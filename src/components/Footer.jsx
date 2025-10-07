@@ -1,4 +1,4 @@
-import React from "react";
+Import React from "react";
 import { Link, useLocation } from "react-router-dom";
 
 export default function Footer() {
@@ -30,21 +30,23 @@ export default function Footer() {
                   href={TG_URL}
                   target="_blank"
                   rel="noopener noreferrer"
+                  // यहाँ पर बटन के साइज़ और आकार को सेट किया गया है
+                  className="bg-[#50B498] w-auto px-4 py-2 rounded-full flex items-center gap-2 transition-opacity duration-300 hover:opacity-80"
                 >
                   <svg
-                    width="100"
-                    height="100"
+                    width="24" // SVG का साइज़ 24x24 पर सेट किया
+                    height="24"
                     viewBox="0 0 24 24"
                     xmlns="http://www.w3.org/2000/svg"
-                    className="cursor-pointer w-8"
+                    className="cursor-pointer" // पुरानी w-8 क्लास हटा दी गई है
                   >
                     <path
                       d="M12,24c6.629,0 12,-5.371 12,-12c0,-6.629 -5.371,-12 -12,-12c-6.629,0 -12,5.371 -12,12c0,6.629 5.371,12 12,12zM5.491,11.74l11.57,-4.461c0.537,-0.194 1.006,0.131 0.832,0.943l0.001,-0.001l-1.97,9.281c-0.146,0.658 -0.537,0.818 -1.084,0.508l-3,-2.211l-1.447,1.394c-0.16,0.16 -0.295,0.295 -0.605,0.295l0.213,-3.053l5.56,-5.023c0.242,-0.213 -0.054,-0.333 -0.373,-0.121l-6.871,4.326l-2.962,-0.924c-0.643,-0.204 -0.657,-0.643 0.136,-0.953z"
-                      fill="#50B498"
+                      fill="#FFFFFF" // लोगो का रंग सफ़ेद (White) कर दिया
                     />
                   </svg>
-
-                
+                  {/* बटन पर "Telegram" टेक्स्ट जोड़ा गया */}
+                  <span className="text-white text-base font-semibold">Telegram</span>
                 </a>
                 
               </div>
