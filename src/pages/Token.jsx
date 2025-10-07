@@ -1,142 +1,166 @@
-// import React, { useState, useEffect } from "react";
-// import { useParams } from "react-router-dom";
-// import SEO from "../components/SEO";
+import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import SEO from "../components/SEO";
 
-// import { db } from "../firebase";
-// import { doc, setDoc, getDoc } from "firebase/firestore";
-// import { getAuth } from "firebase/auth";
+import { db } from "../firebase";
+import { doc, setDoc, getDoc } from "firebase/firestore";
+import { getAuth, onAuthStateChanged } from "firebase/auth"; // onAuthStateChanged import किया गया
 
-// import { Spinner } from "@nextui-org/spinner";
-// import { v4 as uuidv4 } from "uuid";
-// import Lottie from "lottie-react";
+import { Spinner } from "@nextui-org/spinner";
+import { v4 as uuidv4 } from "uuid";
+import Lottie from "lottie-react";
 
-// import happy from "../assets/lotte/happy.json";
-// import sad from "../assets/lotte/sad.json";
+import happy from "../assets/lotte/happy.json";
+import sad from "../assets/lotte/sad.json";
 
-// export default function Token() {
-//   const [loading, setLoading] = useState(true);
-//   const [tokenCreationStatus, setTokenCreationStatus] = useState(null);
-//   const [countdown, setCountdown] = useState(10);
-//   const SHORTNER_TIME = import.meta.env.VITE_SHORTNER_TIME;
-//   const SITENAME = import.meta.env.VITE_SITENAME;
+export default function Token() {
+   const [loading, setLoading] = useState(true);
+   const [tokenCreationStatus, setTokenCreationStatus] = useState(null);
+   const [countdown, setCountdown] = useState(10);
+   const SHORTNER_TIME_HOURS = parseInt(import.meta.env.VITE_SHORTNER_TIME || '2', 10); // Parse as integer, default 2 hours
+   const SITENAME = import.meta.env.VITE_SITENAME;
 
+   const { tokenID } = useParams();
+   const auth = getAuth();
 
-//   const { tokenID } = useParams();
-//   const auth = getAuth();
-//   const userId = auth.currentUser?.uid;
+   // 1. Token Logic functions
 
-//   // Fetch the user's token from Firestore
-//   const fetchUserToken = async (userId) => {
-//     try {
-//       const userTokenDoc = await getDoc(doc(db, "tokens", userId));
-//       if (userTokenDoc.exists()) {
-//         const { token } = userTokenDoc.data();
-//         return token || false;
-//       } else {
-//         console.log("No token found for user.");
-//         return false;
-//       }
-//     } catch (error) {
-//       console.error("Error verifying token:", error);
-//       return false;
-//     }
-//   };
+   // Fetch the user's token from Firestore
+   const fetchUserToken = async (userId) => {
+     try {
+       const userTokenDoc = await getDoc(doc(db, "tokens", userId));
+       if (userTokenDoc.exists()) {
+         const { token } = userTokenDoc.data();
+         return token || false;
+       }
+       return false;
+     } catch (error) {
+       console.error("Error verifying token:", error);
+       return false;
+     }
+   };
 
-//   // Create and store the token with an expiration timestamp
-//   const createAndStoreToken = async () => {
-//     const existingToken = await fetchUserToken(userId);
-//     if (existingToken === tokenID) {
-//       const expiresAt = Date.now() + SHORTNER_TIME * 60 * 60 * 1000; // 2 hour from now
+   // Create and store the token with an expiration timestamp
+   const createAndStoreToken = async (userId) => {
+     const existingToken = await fetchUserToken(userId);
+     
+     // Check if the existing token matches the token from URL
+     if (existingToken === tokenID) {
+       // Calculate expiration time in milliseconds
+       const expiresAt = Date.now() + SHORTNER_TIME_HOURS * 60 * 60 * 1000; 
 
-//       try {
-//         const generateToken = () => uuidv4();
-//         const newtoken = generateToken();
-//         await setDoc(doc(db, "tokens", userId), { token: newtoken, expiresAt });
-//         setTokenCreationStatus(true);
-//         console.log("Token successfully stored.");
-//       } catch (error) {
-//         console.error("Error storing token:", error);
-//         setTokenCreationStatus(false);
-//       }
-//     } else {
-//       setTokenCreationStatus(false);
-//     }
-//     setLoading(false);
-//   };
+       try {
+         const generateToken = () => uuidv4();
+         const newtoken = generateToken();
+         await setDoc(doc(db, "tokens", userId), { token: newtoken, expiresAt });
+         setTokenCreationStatus(true);
+         console.log("Token successfully stored.");
+       } catch (error) {
+         console.error("Error storing token:", error);
+         setTokenCreationStatus(false);
+       }
+     } else {
+       setTokenCreationStatus(false);
+     }
+     setLoading(false);
+   };
 
-//   useEffect(() => {
-//     if (userId && tokenID) {
-//       createAndStoreToken();
-//     }
-//   }, [userId, tokenID]);
+   // 2. Auth State Listener and Token Creation Trigger
+   useEffect(() => {
+     const unsubscribe = onAuthStateChanged(auth, (user) => {
+       if (user) {
+         // User is signed in, proceed with token logic
+         if (tokenID) {
+           createAndStoreToken(user.uid);
+         } else {
+           // No token in URL but user is logged in
+           setTokenCreationStatus(false); 
+           setLoading(false);
+         }
+       } else {
+         // User is not signed in
+         console.log("User is not logged in.");
+         setTokenCreationStatus(false);
+         setLoading(false);
+       }
+     });
 
-//   useEffect(() => {
-//     // Countdown timer logic
-//     const countdownInterval = setInterval(() => {
-//       setCountdown((prevCountdown) => {
-//         if (prevCountdown <= 1) {
-//           clearInterval(countdownInterval);
-//           window.close();
-//           return 0;
-//         }
-//         return prevCountdown - 1;
-//       });
-//     }, 1000);
+     return () => unsubscribe();
+   }, [tokenID]); // Depend only on tokenID, auth listener handles user state
 
-//     return () => clearInterval(countdownInterval);
-//   }, []);
+   // 3. Countdown and Window Close Logic
+   useEffect(() => {
+     if (tokenCreationStatus !== null) {
+       // Start countdown only after token creation attempt is complete
+       const countdownInterval = setInterval(() => {
+         setCountdown((prevCountdown) => {
+           if (prevCountdown <= 1) {
+             clearInterval(countdownInterval);
+             // Close the window after countdown is done
+             if (window.opener) {
+               window.close();
+             }
+             return 0;
+           }
+           return prevCountdown - 1;
+         });
+       }, 1000);
 
-//   return (
-//     <div className="text-primaryTextColor flex items-center justify-center">
-//       <SEO
-//         title={SITENAME}
-//         description={`Discover a world of entertainment where every show, movie, and exclusive content takes you on a journey beyond the screen. ${SITENAME} offers endless options for every mood, helping you relax, escape, and imagine more. Stream your favorites, dream big, and repeat the experience, only with ${SITENAME}.`}
-//         name={SITENAME}
-//         type="text/html"
-//         keywords="watch movies online, watch hd movies, watch full movies, streaming movies online, free streaming movie, watch movies free, watch hd movies online, watch series online, watch hd series free, free tv series, free movies online, tv online, tv links, tv links movies, free tv shows, watch tv shows online, watch tv shows online free, free hd movies, New Movie Releases, Top Movies of the Year, Watch Movies Online, Streaming Services, Movie Reviews, Upcoming Films, Best Movie Scenes, Classic Movies, HD Movie Streaming, Film Trailers, Action Movies, Drama Films, Comedy Movies, Sci-Fi Films, Horror Movie Picks, Family-Friendly Movies, Award-Winning Films, Movie Recommendations, Cinematic Experiences, Behind-the-Scenes, Director Spotlights, Actor Interviews, Film Festivals, Cult Classics, Top Box Office Hits, Celebrity News, Movie Soundtracks, Oscar-Winning Movies, Movie Trivia, Exclusive Film Content, Best Cinematography, Must-Watch Movies, Film Industry News, Filmmaking Tips, Top Movie Blogs, Latest Movie Gossip, Interactive Movie Quizzes, Red Carpet Moments, IMDb Ratings, Movie Fan Communities, fmovies, fmovies.to, fmovies to, fmovies is, fmovie, free movies, online movie, movie online, free movies online, watch movies online free, free hd movies, watch movies online"
-//         link={`https://${SITENAME}.com`}
-//       />
-//       {loading && (
-//         <Spinner
-//           label="Verifying Token..."
-//           labelColor="warning"
-//           color="warning"
-//           className="h-screen"
-//         />
-//       )}
+       return () => clearInterval(countdownInterval);
+     }
+   }, [tokenCreationStatus]); // Trigger when tokenCreationStatus is set
 
-//       {!loading && tokenCreationStatus === true && (
-//         <div className="flex flex-col justify-center gap-5 items-center mt-20">
-//           {/* Giphy embed for success */}
-//           <Lottie
-//             animationData={happy}
-//             className="size-6/12"
-//             loop={true}
-//             autoplay={true}
-//           />
-//           <div className="flex flex-col gap-1 items-center justify-center">
-//             <h1>
-//               Done! Now enjoy the echo without limit For {SHORTNER_TIME} hr.
-//             </h1>
-//             <h2>Closing in: {countdown} seconds</h2>
-//           </div>
-//           {/* Countdown timer display */}
-//         </div>
-//       )}
-//       {!loading && tokenCreationStatus === false && (
-//         <div className="flex flex-col justify-center gap-5 items-center mt-20">
-//           <Lottie
-//             animationData={sad}
-//             loop={true}
-//             autoplay={true}
-//             className="size-6/12"
-//           />
-//           <div className="flex flex-col gap-1 items-center justify-center">
-//             <h1>Sorry, there was an issue with the token creation.</h1>
-//             <h2>Closing in: {countdown} seconds</h2>{" "}
-//           </div>
-//         </div>
-//       )}
-//     </div>
-//   );
-// }
+   return (
+     <div className="text-primaryTextColor flex items-center justify-center min-h-screen">
+       <SEO
+         title={`Token Verification | ${SITENAME}`}
+         // ... (Rest of SEO props)
+       />
+       
+       {/* Loading State */}
+       {loading && (
+         <Spinner
+           label="Verifying User & Token..."
+           labelColor="warning"
+           color="warning"
+           className="min-h-screen flex items-center justify-center" // Better centering
+         />
+       )}
+
+       {/* Success State */}
+       {!loading && tokenCreationStatus === true && (
+         <div className="flex flex-col justify-center gap-5 items-center p-8 text-center max-w-lg">
+           <Lottie
+             animationData={happy}
+             className="w-full max-w-xs" // Adjusted Lottie size class
+             loop={true}
+             autoplay={true}
+           />
+           <div className="flex flex-col gap-1 items-center justify-center">
+             <h1 className="text-2xl font-bold">
+               Done! Now enjoy the echo without limit for {SHORTNER_TIME_HOURS} hr.
+             </h1>
+             <h2 className="text-lg mt-2">Closing in: <span className="text-otherColor font-bold">{countdown}</span> seconds</h2>
+           </div>
+         </div>
+       )}
+
+       {/* Failure State */}
+       {!loading && tokenCreationStatus === false && (
+         <div className="flex flex-col justify-center gap-5 items-center p-8 text-center max-w-lg">
+           <Lottie
+             animationData={sad}
+             loop={true}
+             autoplay={true}
+             className="w-full max-w-xs" // Adjusted Lottie size class
+           />
+           <div className="flex flex-col gap-1 items-center justify-center">
+             <h1 className="text-2xl font-bold">Sorry, there was an issue with the token.</h1>
+             <p className="text-sm text-secondaryTextColor">Please ensure you are logged in and try again from the source link.</p>
+             <h2 className="text-lg mt-2">Closing in: <span className="text-otherColor font-bold">{countdown}</span> seconds</h2>
+           </div>
+         </div>
+       )}
+     </div>
+   );
+}
