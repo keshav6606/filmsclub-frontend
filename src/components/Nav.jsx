@@ -24,13 +24,9 @@ export default function Nav() {
 
   const [isLoading, setIsLoading] = useState(true); 
   const [navStatus, setNavStatus] = useState("Home");
-    // mobileMenuOpen state is kept for the traditional side menu fallback, 
-    // but its usage for navigation is now replaced by BottomNav.
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false); 
-  const location = useLocation(); 
-
-    // New state for mobile search visibility
+    // State to toggle mobile search visibility (as an overlay or focused view)
     const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+  const location = useLocation(); 
 
   // Update navStatus based on the current path
   useEffect(() => {
@@ -41,7 +37,7 @@ export default function Nav() {
       setNavStatus("Movies");
     } else if (path.startsWith("/ser") || path.startsWith("/Series")) {
       setNavStatus("Series");
-    } else if (path.startsWith("/search")) { // Add search status update
+    } else if (path.startsWith("/search")) { 
         setNavStatus("Search");
     }
   }, [location.pathname]);
@@ -54,12 +50,11 @@ export default function Nav() {
         .then((search_res) => search_res.json())
         .then((search_data) => {
           setSearchResult(search_data.results);
-
           setIsLoading(false); 
         });
     }, [debouncedVal]);
   } catch (error) {
-    <p className="main-search-result-container">{error}</p>;
+    console.error("Search API Error:", error);
   }
 
   // Debouncing Function
@@ -73,6 +68,7 @@ export default function Nav() {
     };
   }, [query, 1000]);
 
+  // Handler to close search results dropdown/mobile search on outside click
   let closeSearchResultsDropDown = useRef(); 
   useEffect(() => {
     let closeSearchResultsDropdownHandler = (event) => {
@@ -80,7 +76,6 @@ export default function Nav() {
         closeSearchResultsDropDown.current &&
         !closeSearchResultsDropDown.current.contains(event.target)
       ) {
-        // Clear query to close the dropdown
         setDebouncedVal("");
         setQuery(""); 
         setMobileSearchOpen(false); // Close mobile search overlay on outside click
@@ -95,42 +90,24 @@ export default function Nav() {
     };
   }, []);
 
-  // for Mobile Menu popup Closing (Kept for the hamburger icon on small screens)
-  const closeMobileMenu = useRef(); 
-  useEffect(() => {
-    let closeMobileMenuHandler = (event) => {
-      if (
-        closeMobileMenu.current &&
-        !closeMobileMenu.current.contains(event.target)
-      ) {
-        setMobileMenuOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", closeMobileMenuHandler);
-    document.addEventListener("scroll", closeMobileMenuHandler);
-    return () => {
-      document.removeEventListener("mousedown", closeMobileMenuHandler);
-      document.removeEventListener("scroll", closeMobileMenuHandler);
-
-    };
-  }, []);
 
   return (
     <>
       
-        {/* 1. TOP BAR CONTAINER (Always at top) */}
-        <div className={`fixed flex items-center justify-between gap-3 z-20 bg-bgColor/60 backdrop-blur-md top-0 left-0 right-0 py-4 px-5 md:px-10  text-white ${mobileSearchOpen ? 'w-full' : ''}`}>
+        {/* 1. TOP BAR CONTAINER (Fixed at top) */}
+        <div className={`fixed flex items-center justify-between gap-3 z-30 bg-bgColor/60 backdrop-blur-md top-0 left-0 right-0 py-4 px-5 md:px-10 text-white ${mobileSearchOpen ? 'w-full' : ''}`}>
             
-            {/* Logo/Sitename (Hidden on small screens when mobile search is open) */}
+            {/* Logo/Sitename (Always visible, unless mobile search is active) */}
           <Link
             to="/"
-            className={`items-center gap-2 uppercase text-otherColor font-extrabold text-2xl ${mobileSearchOpen ? 'hidden md:flex' : 'flex'}`}
+            className={`items-center gap-2 uppercase text-otherColor font-extrabold text-2xl ${mobileSearchOpen ? 'hidden' : 'flex'}`} // Hidden completely when mobile search is open
+            onClick={() => setNavStatus("Home")}
           >
             <p>{SITENAME}</p>
           </Link>
 
           {/* Navigations Large Screen (Hidden on small screens)*/}
-          <nav className="hidden md:block">
+          <nav className={`hidden md:block ${mobileSearchOpen ? 'hidden' : ''}`}>
             <ul className="flex items-center gap-8">
               {[
                 { icon: BiHomeAlt2, name: "Home" },
@@ -148,7 +125,7 @@ export default function Nav() {
                     }
                     onClick={() => setNavStatus(navItem.name)}
                   >
-                    <li className="text-2xl">
+                    <li className="text-2xl list-none">
                       <navItem.icon />
                     </li>
                     <p className="text-sm text-secondaryTextColor">
@@ -160,12 +137,12 @@ export default function Nav() {
             </ul>
           </nav>
           
-          {/* Search Form (Shows on large screen and when mobileSearchOpen is true) */}
+          {/* Search Form (Always visible on large screen. On mobile, toggles full-width on click) */}
           <form
             onSubmit={(e) => {
               e.preventDefault();
             }}
-            className={`relative items-center ${mobileSearchOpen ? 'flex w-full' : 'hidden md:flex md:w-1/2'}`}
+            className={`relative items-center ${mobileSearchOpen ? 'flex w-full' : 'flex md:w-1/2 w-1/3'}`}
             ref={closeSearchResultsDropDown}
           >
             <input
@@ -176,11 +153,10 @@ export default function Nav() {
                 setQuery(e.target.value);
               }}
               placeholder="Search ... "
-                // On mobile search, FiSearch should be on the left
               className="py-3 px-10 outline-0 text-sm bg-btnColor/70 rounded-md w-full sm:text-base"
             />
                 {/* Search Icon: Left on mobile search, Right on desktop */}
-            <FiSearch className={`absolute text-secondaryTextColor ${mobileSearchOpen ? 'left-3' : 'right-5'}`} />
+            <FiSearch className={`absolute text-secondaryTextColor ${mobileSearchOpen ? 'left-3' : 'right-5'} md:right-5`} />
 
             {/* Close Icon for Mobile Search */}
             {mobileSearchOpen && (
@@ -195,8 +171,9 @@ export default function Nav() {
             
             {/* SEARCH RESULTS CONTAINER */}
             {debouncedVal && (
+                // Position adjusted for mobile (left-0) and desktop (-left-10)
               <div 
-                className={`absolute flex flex-col items-center py-8 z-20 bg-btnColor w-full max-h-[70dvh] justify-start overflow-y-scroll top-14 rounded-xl ${mobileSearchOpen ? 'left-0' : '-left-10 right-5 xs:left-0'}`}
+                className={`absolute flex flex-col items-center py-8 z-40 bg-btnColor w-full max-h-[70dvh] justify-start overflow-y-scroll top-14 rounded-xl left-0 md:-left-10 md:w-[120%]`}
                 >
                 {/* Results Found Element */}
                 {searcResult.length > 0 && !isLoading
@@ -206,7 +183,7 @@ export default function Nav() {
                           className="flex items-center w-full gap-4 transition-all duration-300 ease-in-out hover:bg-bgColor hover:text-primaryTextColor py-1 px-2 md:py-2 md:px-5"
                           onClick={() => {
                             setQuery("");
-                            setMobileSearchOpen(false); // Close mobile search after selection
+                            setMobileSearchOpen(false); // Close search after selection
                           }}
                           to={
                             result.media_type === "movie"
@@ -292,14 +269,14 @@ export default function Nav() {
               </div>
             )}
           </form>
-          
-          {/* navigation Small Screen (Original Hamburger menu is now removed or repurposed) */}
-            {/* The old Hamburger menu is replaced by the Bottom Nav for better mobile UX */}
+
         </div>
 
+---
+        
         {/* 2. BOTTOM NAVIGATION BAR - Visible only on Small Screens (md:hidden) */}
         {mobileSearchOpen ? null : ( // Hide bottom nav when mobile search is active
-            <nav className="fixed bottom-0 left-0 right-0 z-20 bg-bgColor/90 backdrop-blur-md py-2 text-white flex items-center justify-around md:hidden border-t border-gray-700">
+            <nav className="fixed bottom-0 left-0 right-0 z-30 bg-bgColor/90 backdrop-blur-md py-2 text-white flex items-center justify-around md:hidden border-t border-gray-700">
                 {[
                     { icon: BiHomeAlt2, name: "Home", path: "/" },
                     { icon: BiSolidMovie, name: "Movies", path: "/Movies" },
@@ -318,12 +295,14 @@ export default function Nav() {
                             }}
                         >
                             <Link
-                                to={navItem.path === '#' ? location.pathname : navItem.path} // Prevent actual navigation if it's Search button
+                                // Use location.pathname for Search to prevent navigation
+                                to={navItem.path === '#' ? location.pathname : navItem.path} 
                                 className={
                                     isActive
                                         ? "flex flex-col items-center transition-all duration-300 ease-in-out text-otherColor scale-110"
                                         : "flex flex-col items-center transition-all duration-300 ease-in-out text-secondaryTextColor hover:text-otherColor"
                                 }
+                                // Disable link pointer events for Search to handle click in the surrounding div
                                 style={{ pointerEvents: navItem.name === "Search" ? 'none' : 'auto', textDecoration: 'none' }}
                             >
                                 <li className="text-3xl list-none">
