@@ -1,4 +1,4 @@
-Import React from "react";
+import React from "react";
 import { Link, useLocation } from "react-router-dom";
 
 export default function Footer() {
@@ -36,8 +36,7 @@ export default function Footer() {
                     height="100"
                     viewBox="0 0 24 24"
                     xmlns="http://www.w3.org/2000/svg"
-                    // केवल यह क्लास w-8 से w-12 में बदली गई है ताकि साइज़ बड़ा हो सके।
-                    className="cursor-pointer w-12" 
+                    className="cursor-pointer w-8"
                   >
                     <path
                       d="M12,24c6.629,0 12,-5.371 12,-12c0,-6.629 -5.371,-12 -12,-12c-6.629,0 -12,5.371 -12,12c0,6.629 5.371,12 12,12zM5.491,11.74l11.57,-4.461c0.537,-0.194 1.006,0.131 0.832,0.943l0.001,-0.001l-1.97,9.281c-0.146,0.658 -0.537,0.818 -1.084,0.508l-3,-2.211l-1.447,1.394c-0.16,0.16 -0.295,0.295 -0.605,0.295l0.213,-3.053l5.56,-5.023c0.242,-0.213 -0.054,-0.333 -0.373,-0.121l-6.871,4.326l-2.962,-0.924c-0.643,-0.204 -0.657,-0.643 0.136,-0.953z"
@@ -106,6 +105,15 @@ export default function Footer() {
                     C
                   </p>
                 </button>
+                <p className="uppercase">{SITENAME}. All Rights Reserved</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+    </>
+  );
+}                </button>
                 <p className="uppercase">{SITENAME}. All Rights Reserved</p>
               </div>
             </div>
