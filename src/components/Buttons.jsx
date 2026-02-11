@@ -11,6 +11,9 @@ const DownloadButton = ({ movieData, btnType }) => {
   const API_URL = import.meta.env.VITE_API_URL;
   const API_KEY = import.meta.env.VITE_API_KEY;
 
+  // 👉 YOUR PLAYER WEBSITE
+  const PLAYER_SITE = "https://cine-play--rs9504858.replit.app";
+
   const [selectedSeason, setSelectedSeason] = useState("");
   const [selectedEpisode, setSelectedEpisode] = useState("");
   const [selectedQuality, setSelectedQuality] = useState("");
@@ -44,31 +47,32 @@ const DownloadButton = ({ movieData, btnType }) => {
   }, [selectedEpisode, episodes]);
 
   const shortenUrl = async (url) => {
-  try {
-    // Flexible structure for various APIs
-    const response = await axios.get(API_URL, {
-    params: {
-      api: API_KEY,   // ✅ Correct key name
-      url: url,       // ✅ Correct param for URL
-      format: "json", // ✅ Optional but good to include for clarity
-    },
-  });
+    try {
+      const response = await axios.get(API_URL, {
+        params: {
+          api: API_KEY,
+          url: url,
+          format: "json",
+        },
+      });
 
-    const data = response.data;
+      const data = response.data;
+      return data?.shortenedUrl || data?.short || data?.url || url;
+    } catch (error) {
+      console.error("Error shortening URL:", error);
+      return url;
+    }
+  };
 
-    // Adjust this based on expected field in your API response
-    return data?.shortenedUrl || data?.short || data?.url || url;
-  } catch (error) {
-    console.error("Error shortening URL:", error);
-    return url;
-  }
-};
-
-
+  // ✅ FIXED URL GENERATOR
   const generateUrl = (id, name) => {
-    const downloadUrl = `${BASE}/dl/${id}/${encodeURIComponent(name)}`;
-    if (btnType === "Download") return downloadUrl;
-    return `intent:${downloadUrl}#Intent;type=video/x-matroska;action=android.intent.action.VIEW;end;`;
+    const videoUrl = `${BASE}/dl/${id}/${encodeURIComponent(name)}`;
+
+    // Download button
+    if (btnType === "Download") return videoUrl;
+
+    // Player button → YOUR PLAYER WEBSITE
+    return `${PLAYER_SITE}/?src=${encodeURIComponent(videoUrl)}`;
   };
 
   const handleButtonClick = async (id, name, quality) => {
@@ -112,6 +116,7 @@ const DownloadButton = ({ movieData, btnType }) => {
             </SelectItem>
           ))}
       </Select>
+
       <Select
         isRequired
         variant="bordered"
@@ -130,6 +135,7 @@ const DownloadButton = ({ movieData, btnType }) => {
             </SelectItem>
           ))}
       </Select>
+
       <Select
         isRequired
         variant="bordered"
@@ -146,6 +152,7 @@ const DownloadButton = ({ movieData, btnType }) => {
           </SelectItem>
         ))}
       </Select>
+
       <Button
         onClick={() => {
           const q = qualities.find((q) => q.quality === selectedQuality);
@@ -177,10 +184,15 @@ const DownloadButton = ({ movieData, btnType }) => {
           )}
         </button>
       </PopoverTrigger>
+
       <PopoverContent className="bg-btnColor">
-        {movieData.media_type === "movie"
-          ? <div className="px-1 py-2 flex gap-1 flex-wrap">{renderMovieButtons()}</div>
-          : renderShowSelectors()}
+        {movieData.media_type === "movie" ? (
+          <div className="px-1 py-2 flex gap-1 flex-wrap">
+            {renderMovieButtons()}
+          </div>
+        ) : (
+          renderShowSelectors()
+        )}
       </PopoverContent>
     </Popover>
   );
