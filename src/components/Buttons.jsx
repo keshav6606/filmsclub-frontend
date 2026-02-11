@@ -12,7 +12,7 @@ const DownloadButton = ({ movieData, btnType }) => {
   const API_KEY = import.meta.env.VITE_API_KEY;
 
   // 👉 YOUR PLAYER WEBSITE
-  const PLAYER_SITE = "https://creativmind2-0.vercel.app";
+  const PLAYER_SITE = "https://sb-35s2wghi320k.vercel.run";
 
   const [selectedSeason, setSelectedSeason] = useState("");
   const [selectedEpisode, setSelectedEpisode] = useState("");
