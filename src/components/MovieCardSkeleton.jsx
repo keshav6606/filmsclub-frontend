@@ -3,7 +3,7 @@ import skeleton from "../assets/images/skeletonLight.png";
 
 const MovieCardSkeleton = () => {
   return (
-    <div className="grid gap-x-2 gap-y-6 grid-cols-2 md:grid-cols-3 bsmmd:grid-cols-4 lg:grid-cols-5 blgxl:grid-cols-6 xl:grid-cols-7 animate-pulse">
+    <div className="grid gap-x-2 gap-y-6 grid-cols-2 md:grid-cols-3 bsmmd:grid-cols-4 lg:grid-cols-5 blgxl:grid-cols-6 xl:grid-cols-7 animate-pulse shimmer-effect p-2 rounded-2xl">
       {[...Array(19)].map((_, index) => (
         <div key={index} className="relative">
           <div className="flex items-center justify-center aspect-[9/13.5] object-cover w-full bg-bgColorSecondary rounded-2xl">
