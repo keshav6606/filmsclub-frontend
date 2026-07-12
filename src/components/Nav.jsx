@@ -100,7 +100,7 @@ export default function Nav() {
             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-accent to-primaryBtn flex items-center justify-center shadow-gold">
               <MdLocalMovies className="text-bgColor text-lg" />
             </div>
-            <span className="gold-text font-extrabold text-xl tracking-tight hidden xs:block">
+            <span className="gold-text font-extrabold text-xl tracking-tight block">
               {SITENAME || "Filmy4uhd"}
             </span>
           </Link>
