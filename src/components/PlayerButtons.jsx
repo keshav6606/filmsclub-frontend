@@ -189,16 +189,19 @@ const MoviePlayerSection = ({ telegram }) => {
 };
 
 // ─── TV Show Player Section ────────────────────────────────────────────────
-const TvPlayerSection = ({ seasons }) => {
-  const [selectedSeason, setSelectedSeason] = useState("");
-  const [selectedEpisode, setSelectedEpisode] = useState("");
+const TvPlayerSection = ({
+  seasons,
+  episodes,
+  seasonNumber,
+  setSeasonNumber,
+  episodeNumber,
+  setEpisodeNumber,
+  isEpisodesLoading,
+}) => {
   const [selectedQuality, setSelectedQuality] = useState("");
   const [loading, setLoading] = useState({});
-  const [seasonOpen, setSeasonOpen] = useState(false);
 
-  const seasonData = seasons?.find((s) => s.season_number === parseInt(selectedSeason));
-  const episodes = seasonData?.episodes || [];
-  const episodeData = episodes.find((e) => e.episode_number === parseInt(selectedEpisode));
+  const episodeData = episodes?.find((e) => e.episode_number === parseInt(episodeNumber));
   const qualities = episodeData?.telegram || [];
 
   const handlePlayer = async (player) => {
@@ -222,10 +225,17 @@ const TvPlayerSection = ({ seasons }) => {
   };
 
   return (
-    <div className="mt-4 space-y-4">
-      {/* Season Selector */}
-      <div>
-        <p className="text-xs text-secondaryTextColor font-semibold uppercase tracking-wider mb-2">Season</p>
+    <div className="mt-4 space-y-6">
+      {/* Step 1: Season Selector */}
+      <div className="border-b border-border/10 pb-4">
+        <div className="flex items-center gap-2 mb-2.5">
+          <div className="w-5 h-5 rounded-full bg-primaryBtn/10 border border-primaryBtn/30 flex items-center justify-center text-xs font-bold text-primaryBtn">
+            1
+          </div>
+          <p className="text-xs text-primaryTextColor font-bold uppercase tracking-wider">
+            Choose Season
+          </p>
+        </div>
         <div className="flex flex-wrap gap-2">
           {seasons
             ?.filter((s) => s.season_number > 0)
@@ -234,99 +244,152 @@ const TvPlayerSection = ({ seasons }) => {
               <QualityPill
                 key={s.season_number}
                 quality={`Season ${s.season_number}`}
-                selected={selectedSeason === String(s.season_number)}
-                onClick={() => { setSelectedSeason(String(s.season_number)); setSelectedEpisode(""); setSelectedQuality(""); }}
+                selected={parseInt(seasonNumber) === s.season_number}
+                onClick={() => {
+                  setSeasonNumber(s.season_number);
+                  setEpisodeNumber("");
+                  setSelectedQuality("");
+                }}
               />
             ))}
         </div>
       </div>
 
-      {/* Episode Selector */}
-      {episodes.length > 0 && (
-        <div>
-          <p className="text-xs text-secondaryTextColor font-semibold uppercase tracking-wider mb-2">Episode</p>
-          <div className="flex flex-wrap gap-2 max-h-28 overflow-y-auto pr-1">
+      {/* Step 2: Episode Selector */}
+      <div className="border-b border-border/10 pb-4">
+        <div className="flex items-center gap-2 mb-2.5">
+          <div className="w-5 h-5 rounded-full bg-primaryBtn/10 border border-primaryBtn/30 flex items-center justify-center text-xs font-bold text-primaryBtn">
+            2
+          </div>
+          <p className="text-xs text-primaryTextColor font-bold uppercase tracking-wider">
+            Choose Episode
+          </p>
+        </div>
+        {isEpisodesLoading ? (
+          <div className="py-2">
+            <div className="loader-episode" />
+          </div>
+        ) : episodes && episodes.length > 0 ? (
+          <div className="flex flex-wrap gap-2 max-h-40 overflow-y-auto pr-1">
             {episodes
               .sort((a, b) => a.episode_number - b.episode_number)
               .map((ep) => (
                 <QualityPill
                   key={ep.episode_number}
-                  quality={`Ep ${ep.episode_number}`}
-                  selected={selectedEpisode === String(ep.episode_number)}
-                  onClick={() => { setSelectedEpisode(String(ep.episode_number)); setSelectedQuality(""); }}
+                  quality={`Ep ${ep.episode_number}: ${ep.title}`}
+                  selected={parseInt(episodeNumber) === ep.episode_number}
+                  onClick={() => {
+                    setEpisodeNumber(ep.episode_number);
+                    setSelectedQuality("");
+                  }}
                 />
               ))}
           </div>
+        ) : (
+          <p className="text-xs text-mutedText italic">Select a season first</p>
+        )}
+      </div>
+
+      {/* Step 3: Quality Selector */}
+      {episodeNumber && (
+        <div className="border-b border-border/10 pb-4">
+          <div className="flex items-center gap-2 mb-2.5">
+            <div className="w-5 h-5 rounded-full bg-primaryBtn/10 border border-primaryBtn/30 flex items-center justify-center text-xs font-bold text-primaryBtn">
+              3
+            </div>
+            <p className="text-xs text-primaryTextColor font-bold uppercase tracking-wider">
+              Choose Quality
+            </p>
+          </div>
+          {qualities.length > 0 ? (
+            <div className="flex flex-wrap gap-2">
+              {qualities.map((q) => (
+                <QualityPill
+                  key={q.quality}
+                  quality={q.quality}
+                  selected={selectedQuality === q.quality}
+                  onClick={() => setSelectedQuality(q.quality)}
+                />
+              ))}
+            </div>
+          ) : (
+            <p className="text-xs text-mutedText italic">No qualities available for this episode</p>
+          )}
+          {selectedQuality && qualities.find((q) => q.quality === selectedQuality) && (
+            <p className="mt-1.5 text-xs text-mutedText">
+              Size: <span className="text-secondaryTextColor font-semibold">
+                {qualities.find((q) => q.quality === selectedQuality).size}
+              </span>
+            </p>
+          )}
         </div>
       )}
 
-      {/* Quality Selector */}
-      {qualities.length > 0 && (
-        <div>
-          <p className="text-xs text-secondaryTextColor font-semibold uppercase tracking-wider mb-2">Quality</p>
-          <div className="flex flex-wrap gap-2">
-            {qualities.map((q) => (
-              <QualityPill
-                key={q.quality}
-                quality={q.quality}
-                selected={selectedQuality === q.quality}
-                onClick={() => setSelectedQuality(q.quality)}
-              />
-            ))}
+      {/* Step 4: Player Buttons */}
+      {selectedQuality && (
+        <div className="space-y-4">
+          <div>
+            <div className="flex items-center gap-2 mb-2.5">
+              <div className="w-5 h-5 rounded-full bg-primaryBtn/10 border border-primaryBtn/30 flex items-center justify-center text-xs font-bold text-primaryBtn">
+                4
+              </div>
+              <p className="text-xs text-primaryTextColor font-bold uppercase tracking-wider">
+                Open in Player
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {PLAYERS.map((player) => (
+                <button
+                  key={player.id}
+                  onClick={() => handlePlayer(player)}
+                  disabled={loading[player.id]}
+                  className="player-btn disabled:opacity-40"
+                  aria-label={`Open in ${player.name}`}
+                >
+                  {loading[player.id] ? <Spinner /> : player.icon}
+                  <span>{player.name}</span>
+                </button>
+              ))}
+            </div>
+            <a
+              href={MPVEX_PLAY_LINK}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 mt-2.5 text-xs text-mutedText hover:text-primaryBtn transition-colors"
+            >
+              <FaAndroid className="text-green-500" />
+              Get mpvEx on Google Play
+            </a>
+          </div>
+
+          {/* Download Button */}
+          <div>
+            <button
+              onClick={handleDownload}
+              disabled={loading.download}
+              className="flex items-center gap-2 btn-gold px-5 py-2.5 text-sm disabled:opacity-40"
+              aria-label="Download episode"
+            >
+              {loading.download ? <Spinner /> : <FaDownload />}
+              Download ({selectedQuality})
+            </button>
           </div>
         </div>
-      )}
-
-      {/* Player Buttons */}
-      {selectedQuality && (
-        <div>
-          <p className="text-xs text-secondaryTextColor font-semibold uppercase tracking-wider mb-2">
-            Open in Player
-          </p>
-          <div className="flex flex-wrap gap-2">
-            {PLAYERS.map((player) => (
-              <button
-                key={player.id}
-                onClick={() => handlePlayer(player)}
-                disabled={loading[player.id]}
-                className="player-btn disabled:opacity-40"
-                aria-label={`Open in ${player.name}`}
-              >
-                {loading[player.id] ? <Spinner /> : player.icon}
-                <span>{player.name}</span>
-              </button>
-            ))}
-          </div>
-          <a
-            href={MPVEX_PLAY_LINK}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 mt-2 text-xs text-mutedText hover:text-primaryBtn transition-colors"
-          >
-            <FaAndroid className="text-green-500" />
-            Get mpvEx on Google Play
-          </a>
-        </div>
-      )}
-
-      {/* Download Button */}
-      {selectedQuality && (
-        <button
-          onClick={handleDownload}
-          disabled={loading.download}
-          className="flex items-center gap-2 btn-gold px-5 py-2.5 text-sm disabled:opacity-40"
-          aria-label="Download episode"
-        >
-          {loading.download ? <Spinner /> : <FaDownload />}
-          Download {selectedQuality && `(${selectedQuality})`}
-        </button>
       )}
     </div>
   );
 };
 
 // ─── Main Export ───────────────────────────────────────────────────────────
-export default function PlayerButtons({ movieData }) {
+export default function PlayerButtons({
+  movieData,
+  episodes,
+  seasonNumber,
+  setSeasonNumber,
+  episodeNumber,
+  setEpisodeNumber,
+  isEpisodesLoading,
+}) {
   if (!movieData) return null;
 
   return (
@@ -336,13 +399,21 @@ export default function PlayerButtons({ movieData }) {
         <h3 className="text-primaryTextColor font-bold text-sm">Watch & Download</h3>
       </div>
       <p className="text-xs text-mutedText mb-2">
-        Select quality, then open in your favourite player or download directly.
+        Select season, episode, and quality, then open in your favourite player or download directly.
       </p>
 
       {movieData.media_type === "movie" ? (
         <MoviePlayerSection telegram={movieData.telegram} />
       ) : (
-        <TvPlayerSection seasons={movieData.seasons} />
+        <TvPlayerSection
+          seasons={movieData.seasons}
+          episodes={episodes}
+          seasonNumber={seasonNumber}
+          setSeasonNumber={setSeasonNumber}
+          episodeNumber={episodeNumber}
+          setEpisodeNumber={setEpisodeNumber}
+          isEpisodesLoading={isEpisodesLoading}
+        />
       )}
     </div>
   );

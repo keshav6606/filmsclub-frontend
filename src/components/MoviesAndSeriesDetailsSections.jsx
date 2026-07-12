@@ -168,82 +168,15 @@ export default function MoviesAndSeriesDetailsSections(props) {
           </div>
 
           {/* ── Player & Download Section ── */}
-          <PlayerButtons movieData={movie} />
-
-          {/* ── Episodes Section (TV only) ── */}
-          {props.detailType === "series" && (
-            <div className="glass-card p-5 mt-4">
-              <div className="flex items-center gap-2 mb-4">
-                <HiOutlineTv className="text-primaryBtn" />
-                <h2 className="text-primaryTextColor font-bold">Episodes</h2>
-              </div>
-
-              {/* Season Selector */}
-              <div className="relative inline-block mb-4">
-                <button
-                  onClick={() => setIsSeasonsOpen((p) => !p)}
-                  className="flex items-center gap-2 bg-bgColorSecondary border border-border text-primaryTextColor text-sm font-semibold px-4 py-2 rounded-lg hover:border-primaryBtn transition-colors"
-                >
-                  <BiPlay className="text-primaryBtn" />
-                  Season {props.seasonNumber}
-                  <IoIosArrowDown className={`text-secondaryTextColor transition-transform ${isSeasonsOpen ? "rotate-180" : ""}`} />
-                </button>
-                <AnimatePresence>
-                  {isSeasonsOpen && (
-                    <motion.div
-                      initial={{ opacity: 0, y: -8, scale: 0.97 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: -8 }}
-                      className="absolute top-full mt-1 left-0 z-30 bg-bgColorTertiary border border-border rounded-xl overflow-hidden shadow-card min-w-[160px] max-h-[240px] overflow-y-auto"
-                    >
-                      {movie.seasons
-                        ?.filter((s) => s.season_number > 0)
-                        .sort((a, b) => a.season_number - b.season_number)
-                        .map((s) => (
-                          <button
-                            key={s.season_number}
-                            onClick={() => { props.setSeasonNumber(s.season_number); setIsSeasonsOpen(false); }}
-                            className={`w-full text-left flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-primaryBtn/10 hover:text-primaryBtn transition-colors ${
-                              props.seasonNumber === s.season_number ? "text-primaryBtn bg-primaryBtn/10" : "text-secondaryTextColor"
-                            }`}
-                          >
-                            <BiPlay className="shrink-0" />
-                            Season {s.season_number}
-                          </button>
-                        ))}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-
-              {/* Episode Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
-                {!props.isEpisodesLoading ? (
-                  props.episodes
-                    ?.sort((a, b) => a.episode_number - b.episode_number)
-                    .map((ep, i) => (
-                      <button
-                        key={i}
-                        onClick={() => { props.setEpisodeNumber(ep.episode_number); setIsWatchEpisodePopupOpen(true); }}
-                        className="flex items-center gap-2 text-sm px-3 py-2.5 bg-bgColorSecondary border border-border rounded-xl hover:border-primaryBtn hover:bg-primaryBtn/5 transition-all duration-200 text-left group"
-                      >
-                        <div className="w-7 h-7 rounded-full bg-primaryBtn/10 border border-primaryBtn/30 flex items-center justify-center shrink-0 group-hover:bg-primaryBtn/20 transition-colors">
-                          <BiPlay className="text-primaryBtn text-sm" />
-                        </div>
-                        <div className="min-w-0">
-                          <span className="text-secondaryTextColor font-semibold text-xs">Ep {ep.episode_number}</span>
-                          <p className="text-primaryTextColor text-xs line-clamp-1">{ep.title}</p>
-                        </div>
-                      </button>
-                    ))
-                ) : (
-                  <div className="col-span-full flex justify-center py-10">
-                    <div className="loader-episode" />
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
+          <PlayerButtons
+            movieData={movie}
+            episodes={props.episodes}
+            seasonNumber={props.seasonNumber}
+            setSeasonNumber={props.setSeasonNumber}
+            episodeNumber={props.episodeNumber}
+            setEpisodeNumber={props.setEpisodeNumber}
+            isEpisodesLoading={props.isEpisodesLoading}
+          />
         </motion.div>
       ) : (
         /* Loading Skeleton */
