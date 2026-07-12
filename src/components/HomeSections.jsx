@@ -1,65 +1,39 @@
-import { React, useState } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 import MovieCard from "./MovieCard";
-
-
-import "react-lazy-load-image-component/src/effects/black-and-white.css";
-import { BiArrowFromLeft } from "react-icons/bi";
 import MovieCardSkeleton from "./MovieCardSkeleton";
+import { HiArrowRight } from "react-icons/hi2";
 
-export default function HomeSection(props) {
-  // States
-  const [showPlayBtn, setShowPlayBtn] = useState(false);
-  const [openId, setOpenId] = useState();
-
-  // PLAY Button Show/hide Function
-  const showPlay = (i) => {
-    setOpenId(i);
-    setShowPlayBtn(true);
-  };
-  const hidePlay = (i) => {
-    setOpenId(i);
-    setShowPlayBtn(false);
-  };
-
+export default function HomeSection({ movieData, isMovieDataLoading, sectionTitle, sectionSeeMoreButtonLink }) {
   return (
-    <>
-      {/* Title */}
-      <div className="mt-[2.5rem] flex items-center flex-wrap gap-5 text-primaryTextColor pb-[1.5rem] md:mt-[5rem]">
-        <div className="pl-[1rem] border-l-2 border-primaryBtn">
-          <p className="text-[0.8rem] uppercase font-bold sm:text-[1rem]">
-            {props.sectionTitle}
-          </p>
-        </div>
-
-        {/* See All Button */}
+    <section className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 mt-12 md:mt-16">
+      {/* Section Header */}
+      <div className="flex items-center justify-between mb-5">
+        <h2 className="section-title text-lg">{sectionTitle}</h2>
         <Link
-          to={props.sectionSeeMoreButtonLink}
-          className="flex gap-3 items-center py-[0.5rem] px-[1rem] text-[0.7rem] rounded-sm transition-all duration-300 ease-in-out text-primaryBtn hover:text-primaryBtnHower"
-          style={{ textDecoration: "none" }}
+          to={sectionSeeMoreButtonLink}
+          className="flex items-center gap-1.5 text-xs font-semibold text-primaryBtn hover:text-accent transition-colors group"
+          aria-label={`See all ${sectionTitle}`}
         >
-          <p>See more</p>
-          <BiArrowFromLeft style={{ fontSize: "1rem" }} />
+          See all
+          <HiArrowRight className="text-sm group-hover:translate-x-1 transition-transform" />
         </Link>
       </div>
 
-      {/* Home Sections */}
-      <div className="">
-        {!props.isMovieDataLoading ? (
-          <div className="relative ">
-            <div className="grid  gap-x-2 gap-y-6 grid-cols-2 md:grid-cols-3 bsmmd:grid-cols-4  lg:grid-cols-5 blgxl:grid-cols-6 xl:grid-cols-7">
-              {props.movieData.map((movie, index) => {
-                return <MovieCard key={index} movie={movie} />;
-              })}
-            </div>
-          </div>
-        ) : (
-          <>
-            <MovieCardSkeleton />
-          </>
-        )}
-      </div>
-    </>
+      {/* Cards Grid */}
+      {!isMovieDataLoading ? (
+        <div className="grid grid-cols-2 xs:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 blgxl:grid-cols-6 xl:grid-cols-7 gap-3 md:gap-4">
+          {movieData?.map((movie, i) => (
+            <MovieCard key={i} movie={movie} />
+          ))}
+        </div>
+      ) : (
+        <div className="grid grid-cols-2 xs:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 blgxl:grid-cols-6 xl:grid-cols-7 gap-3 md:gap-4">
+          {Array.from({ length: 14 }).map((_, i) => (
+            <MovieCardSkeleton key={i} />
+          ))}
+        </div>
+      )}
+    </section>
   );
 }
-

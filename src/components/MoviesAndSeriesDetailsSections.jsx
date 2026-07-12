@@ -1,247 +1,266 @@
 import React, { useState } from "react";
-import Watch from "./Watch";
-import "react-lazy-load-image-component/src/effects/black-and-white.css";
 import { motion, AnimatePresence } from "framer-motion";
 import { LazyLoadImage } from "react-lazy-load-image-component";
-// Import Swiper React components
-// Import Swiper styles
+import "react-lazy-load-image-component/src/effects/opacity.css";
 import "swiper/css";
-import "swiper/css/navigation";
-import "swiper/css/pagination";
-import "swiper/css/scrollbar";
 
-import { BiListUl, BiPlay, BiTime } from "react-icons/bi";
+import { BiPlay, BiTime } from "react-icons/bi";
 import { IoIosArrowDown } from "react-icons/io";
 import { FiCalendar } from "react-icons/fi";
-import { BsListStars } from "react-icons/bs";
+import { BsListStars, BsPlayFill } from "react-icons/bs";
 import { PiStarFill } from "react-icons/pi";
 import { LuLanguages } from "react-icons/lu";
-import TelegramButton from "./TelegramButtons";
-import DownloadButton from "./Buttons";
 import { MdOutlineHighQuality } from "react-icons/md";
+import { HiOutlineFilm, HiOutlineTv } from "react-icons/hi2";
+import { TbBrandTelegram } from "react-icons/tb";
+
+import PlayerButtons from "./PlayerButtons";
+import TelegramButton from "./TelegramButtons";
+import Watch from "./Watch";
+
+const langMap = {
+  hi: "Hindi", en: "English", ta: "Tamil", te: "Telugu",
+  kn: "Kannada", ml: "Malayalam", mr: "Marathi", bn: "Bengali",
+};
 
 export default function MoviesAndSeriesDetailsSections(props) {
   const [isWatchMoviePopupOpen, setIsWatchMoviePopupOpen] = useState(false);
   const [isWatchEpisodePopupOpen, setIsWatchEpisodePopupOpen] = useState(false);
-  const [isSeasonsOpen, setIsSeasonspOpen] = useState(false);
+  const [isSeasonsOpen, setIsSeasonsOpen] = useState(false);
+
+  const movie = props.movieData;
+  const loading = props.isMovieDataLoading;
+
+  const formatLangs = (arr) =>
+    arr?.map((l) => langMap[l] || l.charAt(0).toUpperCase() + l.slice(1)).join(" · ") || "";
 
   return (
-    <div className="relative mt-20 bg-btnColor/40 p-3 md:p-10 rounded-3xl ">
-      {!props.isMovieDataLoading ? (
-        <>
-          <div className="grid lg:grid-cols-2 content-center items-center gap-5 ">
-            <div
-              onClick={() => {
-                props.detailType === "movie"
-                  ? setIsWatchMoviePopupOpen(true)
-                  : null;
-              }}
-              className="aspect-video w-full relative flex items-center shrink-0 bg-btnColor  rounded-3xl cursor-pointer transition-all duration-300 ease-in-out hover:scale-105 "
-            >
-              <div className="absolute z-10 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-otherColor  bg-otherColor/50 cursor-pointer rounded-full text-4xl sm:text-5xl">
-                {props.detailType === "movie" ? <BiPlay /> : null}
+    <div className="relative mt-20 mb-10 max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10">
+      {!loading ? (
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+        >
+          {/* ── Main Detail Card ── */}
+          <div className="glass-card overflow-hidden">
+            <div className="grid lg:grid-cols-[1fr_1fr] gap-0">
+              {/* Left — Backdrop / Poster with play overlay */}
+              <div
+                className="relative aspect-video lg:aspect-auto lg:min-h-[420px] cursor-pointer group overflow-hidden"
+                onClick={() => props.detailType === "movie" && setIsWatchMoviePopupOpen(true)}
+                role="button"
+                aria-label={`Play ${movie.title}`}
+                tabIndex={0}
+                onKeyDown={(e) => e.key === "Enter" && props.detailType === "movie" && setIsWatchMoviePopupOpen(true)}
+              >
+                <LazyLoadImage
+                  src={movie.backdrop || movie.poster}
+                  alt={movie.title}
+                  effect="opacity"
+                  className="w-full h-full object-cover"
+                  wrapperClassName="w-full h-full block"
+                />
+                {/* Gradient overlay */}
+                <div className="absolute inset-0 bg-gradient-to-r from-bgColorSecondary/80 to-transparent lg:block hidden" />
+                <div className="absolute inset-0 bg-gradient-to-t from-bgColorSecondary/60 to-transparent" />
+
+                {/* Play Button */}
+                {props.detailType === "movie" && (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="w-16 h-16 rounded-full border-2 border-primaryBtn bg-primaryBtn/20 backdrop-blur-sm flex items-center justify-center text-primaryBtn shadow-gold opacity-0 group-hover:opacity-100 transition-all duration-300 group-hover:scale-110">
+                      <BsPlayFill className="text-3xl ml-1" />
+                    </div>
+                  </div>
+                )}
               </div>
 
-              <LazyLoadImage
-                src={props.movieData.backdrop}
-                effect="black-and-white"
-                alt={props.movieData.title}
-                className=" aspect-video w-full rounded-3xl shrink-0 bg-btnColor"
-              />
-            </div>
-            <div className="p-5">
-              {props.movieData.genres && (
-                <div className="text-otherColor flex gap-2 flex-wrap text-sm xl:text-md">
-                  {props.movieData.genres.map((genre, index) => {
-                    return <p key={index}>{genre}</p>;
-                  })}
-                </div>
-              )}
-              <h1 className="text-primaryTextColor  font-extrabold line-clamp-1 text-2xl xl:text-3xl">
-                {props.movieData.title}
-              </h1>
+              {/* Right — Info Panel */}
+              <div className="p-6 lg:p-8 flex flex-col justify-between">
+                {/* Genres */}
+                {movie.genres?.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mb-3">
+                    {movie.genres.map((g, i) => (
+                      <span key={i} className="genre-pill">{g}</span>
+                    ))}
+                  </div>
+                )}
 
-              {props.movieData.media_type == "tv" ? (
-                <p className="bg-otherColor/40 text-otherColor px-5 rounded-full w-fit line-clamp-1 text-sm xl:text-md">
-                  {props.movieData.status}
+                {/* Title */}
+                <h1 className="text-2xl sm:text-3xl font-extrabold text-primaryTextColor leading-tight mb-2">
+                  {movie.title}
+                </h1>
+
+                {/* Status (for TV) */}
+                {movie.media_type === "tv" && movie.status && (
+                  <span className="inline-block bg-primaryBtn/10 text-primaryBtn border border-primaryBtn/30 text-xs font-semibold px-3 py-1 rounded-full mb-3 w-fit">
+                    {movie.status}
+                  </span>
+                )}
+
+                {/* Description */}
+                <p className="text-secondaryTextColor text-sm leading-relaxed line-clamp-3 mb-4">
+                  {movie.description}
                 </p>
-              ) : null}
-              <p className="text-secondaryTextColor  line-clamp-2 mt-2 text-xs xl:text-sm">
-                {props.movieData.description}
-              </p>
-              <div className="flex gap-2 text-primaryTextColor flex-wrap mt-2">
-                <div className="flex flex-wrap items-center gap-2">
-                  {/* Media Type Icon and Info */}
-                  <div className="flex items-center gap-2">
-                    {props.movieData.media_type === "movie" ? (
-                      <BiTime className="text-secondaryTextColor text-xl xl:text-2xl" />
-                    ) : (
-                      <BsListStars className="text-secondaryTextColor text-xl xl:text-2xl" />
-                    )}
-                    {props.movieData.media_type === "movie" ? (
-                      <p className="text-xs xl:text-sm">
-                        {props.movieData.runtime} min
-                      </p>
-                    ) : (
-                      <>
-                        <p className="text-xs xl:text-sm">
-                          {props.movieData.total_seasons} Seasons
-                        </p>
-                        <span className="text-xs xl:text-sm mx-2">|</span>
-                        <p className="text-xs xl:text-sm">
-                          {props.movieData.total_episodes} Eps
-                        </p>
-                      </>
-                    )}
+
+                {/* Metadata Grid */}
+                <div className="grid grid-cols-2 gap-x-4 gap-y-2 mb-5">
+                  {/* Runtime / Seasons */}
+                  <div className="flex items-center gap-2 text-sm">
+                    {movie.media_type === "movie"
+                      ? <BiTime className="text-primaryBtn text-base shrink-0" />
+                      : <BsListStars className="text-primaryBtn text-base shrink-0" />}
+                    <span className="text-secondaryTextColor">
+                      {movie.media_type === "movie"
+                        ? `${movie.runtime || "?"} min`
+                        : `${movie.total_seasons || "?"} Seasons · ${movie.total_episodes || "?"} Eps`}
+                    </span>
                   </div>
 
-                  {/* Release Year */}
-                  {props.movieData.media_type === "movie" &&
-                    props.movieData.release_year && (
-                      <div className="flex items-center gap-2">
-                        <FiCalendar className="text-secondaryTextColor text-lg xl:text-xl" />
-                        <p className="text-xs xl:text-sm">
-                          {props.movieData.release_year}
-                        </p>
-                      </div>
-                    )}
-
-                  {/* Languages */}
-                  {props.movieData.languages && (
-                    <div className="flex items-center gap-2">
-                      <LuLanguages className="text-lg xl:text-xl" />
-                      <p className="text-xs xl:text-sm">
-                        {props.movieData.languages
-                          .map(
-                            (lang) =>
-                              lang.charAt(0).toUpperCase() + lang.slice(1)
-                          )
-                          .join("-")}
-                      </p>
+                  {/* Year */}
+                  {movie.release_year && (
+                    <div className="flex items-center gap-2 text-sm">
+                      <FiCalendar className="text-primaryBtn text-base shrink-0" />
+                      <span className="text-secondaryTextColor">{movie.release_year}</span>
                     </div>
                   )}
+
+                  {/* Language */}
+                  {movie.languages?.length > 0 && (
+                    <div className="flex items-center gap-2 text-sm">
+                      <LuLanguages className="text-primaryBtn text-base shrink-0" />
+                      <span className="text-secondaryTextColor">{formatLangs(movie.languages)}</span>
+                    </div>
+                  )}
+
                   {/* Quality */}
-                  {props.movieData.rip && (
-                    <div className="flex items-center gap-2">
-                      <MdOutlineHighQuality className="text-lg xl:text-xl" />
-                      <p className="text-xs xl:text-sm">
-                        {props.movieData.rip}
-                      </p>
+                  {movie.rip && (
+                    <div className="flex items-center gap-2 text-sm">
+                      <MdOutlineHighQuality className="text-primaryBtn text-base shrink-0" />
+                      <span className="text-secondaryTextColor">{movie.rip}</span>
                     </div>
                   )}
 
                   {/* Rating */}
-                  {props.movieData.rating && (
-                    <div className="flex items-center gap-2">
-                      <PiStarFill className="text-yellow-300 text-lg xl:text-xl" />
-                      <p className="text-xs xl:text-sm">
-                        {props.movieData.rating.toFixed(1)}
-                      </p>
+                  {movie.rating && (
+                    <div className="flex items-center gap-2 text-sm">
+                      <PiStarFill className="text-goldLight text-base shrink-0" />
+                      <span className="text-goldLight font-bold">{movie.rating.toFixed(1)}</span>
+                      <span className="text-mutedText text-xs">/ 10</span>
                     </div>
                   )}
-                </div>
-              </div>
-              <div className="flex items-center flex-wrap gap-2 text-primaryTextColor mt-3">
 
-                <TelegramButton movieData={props.movieData} />
-                <DownloadButton
-                  movieData={props.movieData}
-                  btnType="Download"
-                />
-              </div>
-              <div className="mt-3 flex">
-                <DownloadButton
-                  movieData={props.movieData}
-                  btnType="MX Player"
-                />
+                  {/* Media Type */}
+                  <div className="flex items-center gap-2 text-sm">
+                    {movie.media_type === "movie"
+                      ? <HiOutlineFilm className="text-primaryBtn text-base shrink-0" />
+                      : <HiOutlineTv className="text-primaryBtn text-base shrink-0" />}
+                    <span className="text-secondaryTextColor capitalize">{movie.media_type}</span>
+                  </div>
+                </div>
+
+                {/* Telegram Button */}
+                <div className="flex flex-wrap gap-2">
+                  <TelegramButton movieData={movie} />
+                </div>
               </div>
             </div>
           </div>
-          {/* Epsiodes */}
+
+          {/* ── Player & Download Section ── */}
+          <PlayerButtons movieData={movie} />
+
+          {/* ── Episodes Section (TV only) ── */}
           {props.detailType === "series" && (
-            <div className="text-primaryTextColor flex flex-col gap-2 content-center items-start lg:mt-4 ">
-              <div className=" col-span-1 flex items-center">
-                <div className="relative bg-btnColor/70 px-5 py-2 rounded-md">
-                  <button
-                    onClick={() => setIsSeasonspOpen((prev) => !prev)}
-                    className="relative uppercase text-xs sm:text-md flex items-center gap-3"
-                  >
-                    <BiListUl className="text-2xl text-secondaryTextColor" />
-                    Season {props.seasonNumber}
-                    <IoIosArrowDown className="text-2xl text-secondaryTextColor" />
-                  </button>
-                  <AnimatePresence>
-                    {isSeasonsOpen && (
-                      <motion.div
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 10 }} // Smooth exit animation
-                        transition={{
-                          type: "tween",
-                          duration: 0.3,
-                        }}
-                        className="absolute top-11  border-2 border-secondaryTextColor/10 left-0 right-0 z-10 max-h-[30dvh] overflow-y-scroll py-4 text-secondaryTextColor text-md rounded-lg bg-btnColor"
-                      >
-                        {props.movieData.seasons
-                          .sort((a, b) => a.season_number - b.season_number)
-                          .map((season, index) => {
-                            return (
-                              season.season_number !== 0 && (
-                                <div
-                                  key={index} // Unique key for seasons
-                                  onClick={() => {
-                                    props.setSeasonNumber(season.season_number);
-                                    setIsSeasonspOpen(false);
-                                  }}
-                                  className="py-1 px-3 flex items-center gap-2 transition-all duration-300 ease-in-out cursor-pointer hover:bg-otherColor/20 hover:text-primaryTextColor"
-                                >
-                                  <BiListUl />
-                                  <span>Season {season.season_number}</span>
-                                </div>
-                              )
-                            );
-                          })}
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
+            <div className="glass-card p-5 mt-4">
+              <div className="flex items-center gap-2 mb-4">
+                <HiOutlineTv className="text-primaryBtn" />
+                <h2 className="text-primaryTextColor font-bold">Episodes</h2>
               </div>
 
-              <div className="relative grid content-center items-center w-full  p-5 gap-1 bg-btnColor/70 rounded-xl overflow-y-scroll grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {/* Season Selector */}
+              <div className="relative inline-block mb-4">
+                <button
+                  onClick={() => setIsSeasonsOpen((p) => !p)}
+                  className="flex items-center gap-2 bg-bgColorSecondary border border-border text-primaryTextColor text-sm font-semibold px-4 py-2 rounded-lg hover:border-primaryBtn transition-colors"
+                >
+                  <BiPlay className="text-primaryBtn" />
+                  Season {props.seasonNumber}
+                  <IoIosArrowDown className={`text-secondaryTextColor transition-transform ${isSeasonsOpen ? "rotate-180" : ""}`} />
+                </button>
+                <AnimatePresence>
+                  {isSeasonsOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -8, scale: 0.97 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: -8 }}
+                      className="absolute top-full mt-1 left-0 z-30 bg-bgColorTertiary border border-border rounded-xl overflow-hidden shadow-card min-w-[160px] max-h-[240px] overflow-y-auto"
+                    >
+                      {movie.seasons
+                        ?.filter((s) => s.season_number > 0)
+                        .sort((a, b) => a.season_number - b.season_number)
+                        .map((s) => (
+                          <button
+                            key={s.season_number}
+                            onClick={() => { props.setSeasonNumber(s.season_number); setIsSeasonsOpen(false); }}
+                            className={`w-full text-left flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-primaryBtn/10 hover:text-primaryBtn transition-colors ${
+                              props.seasonNumber === s.season_number ? "text-primaryBtn bg-primaryBtn/10" : "text-secondaryTextColor"
+                            }`}
+                          >
+                            <BiPlay className="shrink-0" />
+                            Season {s.season_number}
+                          </button>
+                        ))}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              {/* Episode Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
                 {!props.isEpisodesLoading ? (
-                  props.episodes &&
                   props.episodes
-                    .sort((a, b) => a.episode_number - b.episode_number)
-                    .map((eps, index) => (
-                      <div
-                        key={index} // Unique key for episodes
-                        onClick={() => {
-                          props.setEpisodeNumber(eps.episode_number);
-                          setIsWatchEpisodePopupOpen(true);
-                        }}
-                        className="flex items-center gap-2 text-sm px-3 py-1 bg-btnColor rounded-full transition-all duration-300 ease-in-out hover:bg-otherColor/20 cursor-pointer sm:text-md"
+                    ?.sort((a, b) => a.episode_number - b.episode_number)
+                    .map((ep, i) => (
+                      <button
+                        key={i}
+                        onClick={() => { props.setEpisodeNumber(ep.episode_number); setIsWatchEpisodePopupOpen(true); }}
+                        className="flex items-center gap-2 text-sm px-3 py-2.5 bg-bgColorSecondary border border-border rounded-xl hover:border-primaryBtn hover:bg-primaryBtn/5 transition-all duration-200 text-left group"
                       >
-                        <BiPlay className="text-secondaryTextColor shrink-0" />
-                        <span className="shrink-0">
-                          Eps {eps.episode_number}:
-                        </span>
-                        <span className="line-clamp-1 text-sm text-secondaryTextColor">
-                          {eps.title}
-                        </span>
-                      </div>
+                        <div className="w-7 h-7 rounded-full bg-primaryBtn/10 border border-primaryBtn/30 flex items-center justify-center shrink-0 group-hover:bg-primaryBtn/20 transition-colors">
+                          <BiPlay className="text-primaryBtn text-sm" />
+                        </div>
+                        <div className="min-w-0">
+                          <span className="text-secondaryTextColor font-semibold text-xs">Ep {ep.episode_number}</span>
+                          <p className="text-primaryTextColor text-xs line-clamp-1">{ep.title}</p>
+                        </div>
+                      </button>
                     ))
                 ) : (
-                  <div className="grid p-10">
-                    <div className="loader-episode"></div>
+                  <div className="col-span-full flex justify-center py-10">
+                    <div className="loader-episode" />
                   </div>
                 )}
               </div>
             </div>
           )}
-        </>
+        </motion.div>
       ) : (
-        <div className="min-h-[50dvh] flex justify-center content-center items-center ">
-          <div className="loader"></div>
+        /* Loading Skeleton */
+        <div className="glass-card overflow-hidden">
+          <div className="grid lg:grid-cols-2">
+            <div className="aspect-video shimmer-effect" />
+            <div className="p-8 space-y-4">
+              <div className="h-4 w-1/3 shimmer-effect rounded" />
+              <div className="h-8 w-4/5 shimmer-effect rounded" />
+              <div className="h-3 w-full shimmer-effect rounded" />
+              <div className="h-3 w-4/5 shimmer-effect rounded" />
+              <div className="h-3 w-2/3 shimmer-effect rounded" />
+              <div className="grid grid-cols-2 gap-3 mt-6">
+                {[1,2,3,4].map((i) => <div key={i} className="h-3 shimmer-effect rounded" />)}
+              </div>
+            </div>
+          </div>
         </div>
       )}
 
@@ -249,7 +268,7 @@ export default function MoviesAndSeriesDetailsSections(props) {
       {props.detailType === "movie" && (
         <Watch
           isWatchMoviePopupOpen={isWatchMoviePopupOpen}
-          id={props.movieData}
+          id={movie}
           setIsWatchMoviePopupOpen={setIsWatchMoviePopupOpen}
           popUpType="movie"
         />
@@ -259,7 +278,7 @@ export default function MoviesAndSeriesDetailsSections(props) {
       {props.detailType === "series" && (
         <Watch
           isWatchEpisodePopupOpen={isWatchEpisodePopupOpen}
-          id={props.movieData}
+          id={movie}
           setIsWatchEpisodePopupOpen={setIsWatchEpisodePopupOpen}
           popUpType="episode"
           seasonNumber={props.seasonNumber}

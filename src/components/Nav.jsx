@@ -1,322 +1,314 @@
-// import Cookies from "universal-cookie";
-import React, { useEffect, useState, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Link, useLocation } from "react-router-dom";
-import { LazyLoadImage } from "react-lazy-load-image-component";
-import "react-lazy-load-image-component/src/effects/black-and-white.css";
-
-import { FiSearch } from "react-icons/fi";
-import { VscClose } from "react-icons/vsc";
-import { BiHomeAlt2, BiSolidMovie, BiStar } from "react-icons/bi";
-
-import { BsTv } from "react-icons/bs";
+import { BiSearch, BiX } from "react-icons/bi";
+import { HiOutlineHome, HiOutlineFilm, HiOutlineTv } from "react-icons/hi2";
+import { RiSearchLine } from "react-icons/ri";
+import { MdLocalMovies } from "react-icons/md";
 import posterPlaceholder from "../assets/images/poster-placeholder.png";
-// import UserInfoBtn from "./Logout";
+
+const BASE = import.meta.env.VITE_BASE_URL;
+const SITENAME = import.meta.env.VITE_SITENAME;
 
 export default function Nav() {
-  const BASE = import.meta.env.VITE_BASE_URL; // Base Url for backend
-  const SITENAME = import.meta.env.VITE_SITENAME;
+  const location = useLocation();
+  const navigate = useNavigate();
 
-  // Query State
-  const [query, setQuery] = React.useState("");
-  const [debouncedVal, setDebouncedVal] = React.useState("");
-  const [searcResult, setSearchResult] = useState([]);
+  const [navStatus, setNavStatus] = useState("Home");
+  const [query, setQuery] = useState("");
+  const [debouncedVal, setDebouncedVal] = useState("");
+  const [searchResult, setSearchResult] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
 
-  const [isLoading, setIsLoading] = useState(true); 
-  const [navStatus, setNavStatus] = useState("Home");
-    // State to toggle mobile search visibility (as an overlay or focused view)
-    const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
-  const location = useLocation(); 
+  // Scroll detection for nav shadow
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 10);
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
-  // Update navStatus based on the current path
-  useEffect(() => {
-    const path = location.pathname;
-    if (path === "/") {
-      setNavStatus("Home");
-    } else if (path.startsWith("/mov") || path.startsWith("/Movies")) {
-      setNavStatus("Movies");
-    } else if (path.startsWith("/ser") || path.startsWith("/Series")) {
-      setNavStatus("Series");
-    } else if (path.startsWith("/search")) { 
-        setNavStatus("Search");
+  // Update navStatus based on the current path
+  useEffect(() => {
+    const path = location.pathname;
+    if (path === "/") setNavStatus("Home");
+    else if (path.startsWith("/mov") || path.startsWith("/Movies")) setNavStatus("Movies");
+    else if (path.startsWith("/ser") || path.startsWith("/Series")) setNavStatus("Series");
+    else if (path.startsWith("/search")) setNavStatus("Search");
+  }, [location.pathname]);
+
+  // Query Data Fetcher
+  useEffect(() => {
+    if (!debouncedVal) {
+      setSearchResult([]);
+      return;
     }
-  }, [location.pathname]);
+    setIsLoading(true);
+    fetch(`${BASE}/api/search/?query=${debouncedVal}&page=1`)
+      .then((res) => res.json())
+      .then((data) => {
+        setSearchResult(data.results || []);
+        setIsLoading(false);
+      })
+      .catch(() => setIsLoading(false));
+  }, [debouncedVal]);
 
-  // Query Data Fetcher
-  try {
-    useEffect(() => {
-      setIsLoading(true); 
-      fetch(`${BASE}/api/search/?query=${debouncedVal}&page=1`)
-        .then((search_res) => search_res.json())
-        .then((search_data) => {
-          setSearchResult(search_data.results);
-          setIsLoading(false); 
-        });
-    }, [debouncedVal]);
-  } catch (error) {
-    console.error("Search API Error:", error);
-  }
+  // Debounce
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedVal(query), 500);
+    return () => clearTimeout(timer);
+  }, [query]);
 
-  // Debouncing Function
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedVal(query);
-    }, 500);
+  // Close on outside click
+  const closeRef = useRef();
+  useEffect(() => {
+    const handler = (e) => {
+      if (closeRef.current && !closeRef.current.contains(e.target)) {
+        setDebouncedVal("");
+        setQuery("");
+        setMobileSearchOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
 
-    return () => {
-      clearTimeout(timer);
-    };
-  }, [query, 1000]);
+  const navLinks = [
+    { name: "Home", icon: <HiOutlineHome />, path: "/" },
+    { name: "Movies", icon: <HiOutlineFilm />, path: "/movies" },
+    { name: "Series", icon: <HiOutlineTv />, path: "/series" },
+  ];
 
-  // Handler to close search results dropdown/mobile search on outside click
-  let closeSearchResultsDropDown = useRef(); 
-  useEffect(() => {
-    let closeSearchResultsDropdownHandler = (event) => {
-      if (
-        closeSearchResultsDropDown.current &&
-        !closeSearchResultsDropDown.current.contains(event.target)
-      ) {
-        setDebouncedVal("");
-        setQuery(""); 
-        setMobileSearchOpen(false); // Close mobile search overlay on outside click
-      }
-    };
-    document.addEventListener("mousedown", closeSearchResultsDropdownHandler);
-    return () => {
-      document.removeEventListener(
-        "mousedown",
-        closeSearchResultsDropdownHandler
-      );
-    };
-  }, []);
+  return (
+    <>
+      {/* ── Desktop / Tablet Header ────────────────────────────────────────── */}
+      <header
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+          scrolled
+            ? "bg-bgColorTertiary/95 backdrop-blur-xl border-b border-border shadow-nav"
+            : "bg-transparent"
+        }`}
+      >
+        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 h-16 flex items-center justify-between gap-4">
+          {/* Logo */}
+          <Link
+            to="/"
+            className="flex items-center gap-2 shrink-0 group"
+            aria-label={`${SITENAME} Home`}
+          >
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-accent to-primaryBtn flex items-center justify-center shadow-gold">
+              <MdLocalMovies className="text-bgColor text-lg" />
+            </div>
+            <span className="gold-text font-extrabold text-xl tracking-tight hidden xs:block">
+              {SITENAME || "Filmy4uhd"}
+            </span>
+          </Link>
 
+          {/* Desktop Nav Links */}
+          <nav className="hidden md:flex items-center gap-1" aria-label="Main navigation">
+            {navLinks.map((link) => (
+              <Link
+                key={link.name}
+                to={link.path}
+                className={`relative flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
+                  navStatus === link.name
+                    ? "text-accent bg-accent/10"
+                    : "text-secondaryTextColor hover:text-primaryTextColor hover:bg-white/5"
+                }`}
+              >
+                <span className="text-base">{link.icon}</span>
+                {link.name}
+                {navStatus === link.name && (
+                  <motion.div
+                    layoutId="nav-indicator"
+                    className="absolute bottom-0 left-3 right-3 h-0.5 bg-gradient-to-r from-primaryBtn to-accent rounded-full"
+                    transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                  />
+                )}
+              </Link>
+            ))}
+          </nav>
 
-  return (
-    <>
-      
-        {/* 1. TOP BAR CONTAINER (Fixed at top) */}
-        <div className={`fixed flex items-center justify-between gap-3 z-30 bg-bgColor/60 backdrop-blur-md top-0 left-0 right-0 py-4 px-5 md:px-10 text-white ${mobileSearchOpen ? 'w-full' : ''}`}>
-            
-            {/* Logo/Sitename (Always visible, unless mobile search is active) */}
-          <Link
-            to="/"
-            className={`items-center gap-2 uppercase text-otherColor font-extrabold text-2xl ${mobileSearchOpen ? 'hidden' : 'flex'}`} // Hidden completely when mobile search is open
-            onClick={() => setNavStatus("Home")}
-          >
-            <p>{SITENAME}</p>
-          </Link>
-
-          {/* Navigations Large Screen (Hidden on small screens)*/}
-          <nav className={`hidden md:block ${mobileSearchOpen ? 'hidden' : ''}`}>
-            <ul className="flex items-center gap-8">
-              {[
-                { icon: BiHomeAlt2, name: "Home" },
-                { icon: BiSolidMovie, name: "Movies" },
-                { icon: BsTv, name: "Series" },
-              ].map((navItem, index) => {
-                return (
-                  <Link
-                    key={index}
-                    to={navItem.name === "Home" ? "/" : navItem.name}
-                    className={
-                      navStatus === navItem.name
-                        ? "flex flex-col items-center transition-all duration-300 ease-in-out text-otherColor scale-105"
-                        : "flex flex-col items-center transition-all duration-300 ease-in-out hover:text-otherColor hover:scale-105"
-                    }
-                    onClick={() => setNavStatus(navItem.name)}
-                  >
-                    <li className="text-2xl list-none">
-                      <navItem.icon />
-                    </li>
-                    <p className="text-sm text-secondaryTextColor">
-                      {navItem.name}
-                    </p>
-                  </Link>
-                );
-              })}
-            </ul>
-          </nav>
-          
-          {/* Search Form (Always visible on large screen. On mobile, toggles full-width on click) */}
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-            }}
-            className={`relative items-center ${mobileSearchOpen ? 'flex w-full' : 'flex md:w-1/2 w-1/3'}`}
-            ref={closeSearchResultsDropDown}
-          >
-            <input
-              type="text"
-              name="search"
-              value={query}
-              onChange={(e) => {
-                setQuery(e.target.value);
-              }}
-              placeholder="Search ... "
-              className="py-3 px-10 outline-0 text-sm bg-btnColor/70 rounded-md w-full sm:text-base"
-            />
-                {/* Search Icon: Left on mobile search, Right on desktop */}
-            <FiSearch className={`absolute text-secondaryTextColor ${mobileSearchOpen ? 'left-3' : 'right-5'} md:right-5`} />
-
-            {/* Close Icon for Mobile Search */}
-            {mobileSearchOpen && (
-                <VscClose
-                    className="absolute right-3 text-secondaryTextColor cursor-pointer text-xl"
-                    onClick={() => {
-                        setMobileSearchOpen(false);
-                        setQuery("");
-                    }}
+          {/* Search Bar */}
+          <div className="flex-1 max-w-sm hidden sm:block" ref={closeRef}>
+            <div className="relative">
+              <div className="flex items-center gap-2 bg-bgColorSecondary border border-border rounded-full px-4 py-2 transition-all duration-200 focus-within:border-primaryBtn focus-within:shadow-gold">
+                {isLoading ? (
+                  <div className="loader-search shrink-0" />
+                ) : (
+                  <RiSearchLine className="text-secondaryTextColor shrink-0 text-base" />
+                )}
+                <input
+                  type="text"
+                  id="desktop-search"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="Search movies, series…"
+                  className="bg-transparent text-primaryTextColor placeholder-mutedText text-sm w-full outline-none"
+                  aria-label="Search"
+                  autoComplete="off"
                 />
-            )}
-            
-            {/* SEARCH RESULTS CONTAINER */}
-            {debouncedVal && (
-                // Position adjusted for mobile (left-0) and desktop (-left-10)
-              <div 
-                className={`absolute flex flex-col items-center py-8 z-40 bg-btnColor w-full max-h-[70dvh] justify-start overflow-y-scroll top-14 rounded-xl left-0 md:-left-10 md:w-[120%]`}
-                >
-                {/* Results Found Element */}
-                {searcResult.length > 0 && !isLoading
-                  ? searcResult.map((result) => {
-                      return (
-                        <Link
-                          className="flex items-center w-full gap-4 transition-all duration-300 ease-in-out hover:bg-bgColor hover:text-primaryTextColor py-1 px-2 md:py-2 md:px-5"
-                          onClick={() => {
-                            setQuery("");
-                            setMobileSearchOpen(false); // Close search after selection
-                          }}
-                          to={
-                            result.media_type === "movie"
-                              ? `/mov/${result.tmdb_id}`
-                              : `/ser/${result.tmdb_id}`
-                          }
-                          style={{ textDecoration: "none" }}
-                          key={result.tmdb_id}
-                        >
-                          <div className="flex items-center w-[3.5rem] sm:w-[4rem] aspect-[9/13.5] object-cover bg-bgColor shrink-0 rounded-lg">
-                            {result.poster ? (
-                              <LazyLoadImage
-                                alt={result.title}
-                                src={result.poster}
-                                effect="black-and-white"
-                                className="object-cover shrink-0 bg-bgColor rounded-lg"
-                              />
-                            ) : (
-                              <LazyLoadImage
-                                alt={result.title}
-                                src={posterPlaceholder}
-                                className="object-cover shrink-0 bg-bgColor rounded-lg"
-                              />
-                            )}
-                          </div>
+                {query && (
+                  <button onClick={() => { setQuery(""); setDebouncedVal(""); }}>
+                    <BiX className="text-secondaryTextColor hover:text-primaryTextColor text-lg" />
+                  </button>
+                )}
+              </div>
 
-                          <div className="">
-                            <p className=" line-clamp-1 text-sm lg:text-base">
-                              {result.title}
-                            </p>
-                            <p className="line-clamp-1 w-10/12 text-secondaryTextColor text-xs lg:text-sm">
-                              {result.description}
-                            </p>
-                            {/* Year/Rating/Type */}
-                            <div className="flex items-center gap-2 mt-2 text-secondaryTextColor text-[0.7rem]">
-                              <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-bgColor text-otherColor ">
-                                <BiStar className="mb-0.25 " />
-                                {result.rating && (
-                                  <p className="">{result.rating.toFixed(1)}</p>
-                                )}
-                              </div>
-                              {result.release_year && (
-                                <p className="">{result.release_year}</p>
-                              )}
-                              {result.media_type == "tv" ? (
-                                <p className="uppercase ">tv</p>
-                              ) : (
-                                <p className="uppercase ">mov</p>
-                              )}
-                            </div>
-                          </div>
-                        </Link>
-                      );
-                    })
-                  : // No results found
-                    !isLoading && (
-                      <p className="p-5 text-sm sm:text-base">
-                        No results found for "{debouncedVal}".
-                      </p>
-                    )}
-
-                {/* Loading Indicator Element */}
-                {isLoading && (
-                  <div className="p-5 flex justify-center content-center items-center ">
-                    <div className="loader-search"></div>
-                  </div>
-                )}
-
-                {/* View more results button */}
-                {searcResult.length > 5 && !isLoading && (
-                  <Link
-                    className="bg-otherColor py-2 px-6 rounded-md min-w-[70%] text-sm mt-4  text-center"
-                    to={`/search/${debouncedVal}`}
-                    style={{ textDecoration: "none", color: "black" }}
-                    onClick={() => {
-                        setQuery("");
-                        setMobileSearchOpen(false);
-                    }}
-                  >
-                    <p>See More Results</p>
-                  </Link>
-                )}
-              </div>
-            )}
-          </form>
-
-        </div>
-
----
-        
-        {/* 2. BOTTOM NAVIGATION BAR - Visible only on Small Screens (md:hidden) */}
-        {mobileSearchOpen ? null : ( // Hide bottom nav when mobile search is active
-            <nav className="fixed bottom-0 left-0 right-0 z-30 bg-bgColor/90 backdrop-blur-md py-2 text-white flex items-center justify-around md:hidden border-t border-gray-700">
-                {[
-                    { icon: BiHomeAlt2, name: "Home", path: "/" },
-                    { icon: BiSolidMovie, name: "Movies", path: "/Movies" },
-                    { icon: BsTv, name: "Series", path: "/Series" },
-                    { icon: FiSearch, name: "Search", path: "#" }, 
-                ].map((navItem, index) => {
-                    const isActive = navStatus === navItem.name;
-                    return (
-                        <div
-                            key={index}
-                            onClick={() => {
-                                setNavStatus(navItem.name);
-                                if (navItem.name === "Search") {
-                                    setMobileSearchOpen(true); // Open search input on click
-                                }
-                            }}
-                        >
-                            <Link
-                                // Use location.pathname for Search to prevent navigation
-                                to={navItem.path === '#' ? location.pathname : navItem.path} 
-                                className={
-                                    isActive
-                                        ? "flex flex-col items-center transition-all duration-300 ease-in-out text-otherColor scale-110"
-                                        : "flex flex-col items-center transition-all duration-300 ease-in-out text-secondaryTextColor hover:text-otherColor"
-                                }
-                                // Disable link pointer events for Search to handle click in the surrounding div
-                                style={{ pointerEvents: navItem.name === "Search" ? 'none' : 'auto', textDecoration: 'none' }}
-                            >
-                                <li className="text-3xl list-none">
-                                    <navItem.icon />
-                                </li>
-                                <p className="text-xs">
-                                    {navItem.name}
-                                </p>
-                            </Link>
+              {/* Search Dropdown */}
+              <AnimatePresence>
+                {searchResult.length > 0 && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -8, scale: 0.97 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -8, scale: 0.97 }}
+                    transition={{ duration: 0.18 }}
+                    className="absolute top-full mt-2 left-0 right-0 glass-card overflow-hidden z-50 max-h-[60dvh] overflow-y-auto shadow-card"
+                  >
+                    {searchResult.slice(0, 8).map((movie) => (
+                      <Link
+                        key={movie.tmdb_id}
+                        to={movie.media_type === "movie" ? `/mov/${movie.tmdb_id}` : `/ser/${movie.tmdb_id}`}
+                        onClick={() => { setQuery(""); setDebouncedVal(""); }}
+                        className="flex items-center gap-3 px-4 py-3 hover:bg-white/5 transition-colors duration-150"
+                      >
+                        <img
+                          src={movie.poster || posterPlaceholder}
+                          alt={movie.title}
+                          className="w-10 h-14 object-cover rounded-md shrink-0 bg-bgColorSecondary"
+                          onError={(e) => { e.target.src = posterPlaceholder; }}
+                        />
+                        <div className="min-w-0">
+                          <p className="text-primaryTextColor text-sm font-semibold line-clamp-1">{movie.title}</p>
+                          <div className="flex items-center gap-2 mt-0.5">
+                            <span className="text-xs text-secondaryTextColor">{movie.release_year}</span>
+                            <span className="quality-badge">{movie.rip || "HD"}</span>
+                          </div>
                         </div>
-                    )})}
-            </nav>
-        )}
-        
-    </>
-  );
+                      </Link>
+                    ))}
+                    {searchResult.length > 0 && (
+                      <button
+                        onClick={() => { navigate(`/search/${query}`); setQuery(""); setDebouncedVal(""); }}
+                        className="w-full text-center py-3 text-xs font-semibold text-primaryBtn hover:bg-primaryBtn/10 transition-colors border-t border-border"
+                      >
+                        See all results for "{query}"
+                      </button>
+                    )}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          </div>
+
+          {/* Mobile Search Toggle */}
+          <button
+            className="sm:hidden text-secondaryTextColor hover:text-primaryTextColor p-2 rounded-lg hover:bg-white/5 transition-colors"
+            onClick={() => setMobileSearchOpen((p) => !p)}
+            aria-label="Toggle search"
+          >
+            {mobileSearchOpen ? <BiX className="text-2xl" /> : <BiSearch className="text-xl" />}
+          </button>
+        </div>
+
+        {/* Mobile Search Overlay */}
+        <AnimatePresence>
+          {mobileSearchOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              className="sm:hidden bg-bgColorTertiary/95 backdrop-blur-xl border-t border-border overflow-hidden"
+              ref={closeRef}
+            >
+              <div className="p-3">
+                <div className="flex items-center gap-2 bg-bgColorSecondary border border-border rounded-full px-4 py-2 focus-within:border-primaryBtn">
+                  {isLoading ? <div className="loader-search shrink-0" /> : <RiSearchLine className="text-secondaryTextColor shrink-0" />}
+                  <input
+                    autoFocus
+                    type="text"
+                    id="mobile-search"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    placeholder="Search…"
+                    className="bg-transparent text-primaryTextColor placeholder-mutedText text-sm w-full outline-none"
+                    aria-label="Mobile search"
+                  />
+                  {query && (
+                    <button onClick={() => { setQuery(""); setDebouncedVal(""); }}>
+                      <BiX className="text-secondaryTextColor text-lg" />
+                    </button>
+                  )}
+                </div>
+                {/* Mobile Search Results */}
+                <AnimatePresence>
+                  {searchResult.length > 0 && (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="mt-2 rounded-xl overflow-hidden max-h-[50dvh] overflow-y-auto"
+                    >
+                      {searchResult.slice(0, 6).map((movie) => (
+                        <Link
+                          key={movie.tmdb_id}
+                          to={movie.media_type === "movie" ? `/mov/${movie.tmdb_id}` : `/ser/${movie.tmdb_id}`}
+                          onClick={() => { setQuery(""); setDebouncedVal(""); setMobileSearchOpen(false); }}
+                          className="flex items-center gap-3 px-3 py-2.5 bg-bgColorSecondary border-b border-border last:border-0 hover:bg-white/5 transition-colors"
+                        >
+                          <img
+                            src={movie.poster || posterPlaceholder}
+                            alt={movie.title}
+                            className="w-9 h-12 object-cover rounded-md shrink-0 bg-bgColorSecondary"
+                            onError={(e) => { e.target.src = posterPlaceholder; }}
+                          />
+                          <div>
+                            <p className="text-primaryTextColor text-sm font-semibold line-clamp-1">{movie.title}</p>
+                            <p className="text-secondaryTextColor text-xs">{movie.release_year} • {movie.rip || "HD"}</p>
+                          </div>
+                        </Link>
+                      ))}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </header>
+
+      {/* ── Mobile Bottom Navigation ──────────────────────────────────────── */}
+      <nav
+        className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-bgColorTertiary/95 backdrop-blur-xl border-t border-border flex items-center justify-around h-16 safe-area-pb"
+        aria-label="Mobile bottom navigation"
+      >
+        {navLinks.map((link) => (
+          <Link
+            key={link.name}
+            to={link.path}
+            className={`flex flex-col items-center gap-0.5 px-4 py-2 transition-all duration-200 ${
+              navStatus === link.name ? "text-accent" : "text-secondaryTextColor"
+            }`}
+            aria-label={link.name}
+          >
+            <span className={`text-2xl transition-transform duration-200 ${navStatus === link.name ? "scale-110" : ""}`}>
+              {link.icon}
+            </span>
+            <span className="text-[0.6rem] font-semibold">{link.name}</span>
+          </Link>
+        ))}
+        <button
+          onClick={() => setMobileSearchOpen((p) => !p)}
+          className={`flex flex-col items-center gap-0.5 px-4 py-2 transition-all duration-200 ${
+            mobileSearchOpen ? "text-accent" : "text-secondaryTextColor"
+          }`}
+          aria-label="Search"
+        >
+          <BiSearch className="text-2xl" />
+          <span className="text-[0.6rem] font-semibold">Search</span>
+        </button>
+      </nav>
+    </>
+  );
 }

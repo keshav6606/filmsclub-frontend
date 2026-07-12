@@ -9,7 +9,6 @@ export default {
     "./node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    // --- Screen Sizes: Keeping your original values ---
     screens: {
       xs: "400px",
       sm: "480px",
@@ -25,52 +24,62 @@ export default {
     extend: {
       fontFamily: {
         Anton: ["Anton", ...defaultTheme.fontFamily.sans],
-        // Suggestion: Anton for headings, Inter or Roboto for body text (if imported)
-        // sans: ["Inter", ...defaultTheme.fontFamily.sans],
+        jakarta: ["'Plus Jakarta Sans'", ...defaultTheme.fontFamily.sans],
       },
       colors: {
-        // --- Custom Modern Dark Theme (Deep Navy Blue & Cyan Accent) ---
+        // ── Dark Gold/Amber Cinema Theme ──────────────────────────────────────
         
-        // Main Colors
-        primaryTeal: "#00BCD4",       // Vibrant Cyan/Teal (Primary Call-to-Action)
-        darkTeal: "#0097A7",          // Darker Teal for Hover
+        // Backgrounds — ultra deep black
+        bgColor: "#07080B",              // Main background — near pitch black
+        bgColorSecondary: "#0F1117",     // Cards, panels — dark charcoal
+        bgColorTertiary: "#13151D",      // Nav, footer, modals
+        bgGlass: "rgba(15,17,23,0.85)", // Glass overlay
         
-        // Background Colors
-        bgColor: "#101625",                // Main Background: Deep Navy Blue (Sleek Look)
-        bgColorSecondary: "#1F2937",       // Secondary Sections/Cards: Dark Slate Blue
+        // Gold / Amber Accent
+        primaryBtn: "#D4A017",           // Rich gold CTA button
+        primaryBtnHover: "#B8860B",      // Darker gold on hover
+        primaryBtnGlow: "rgba(212,160,23,0.5)", // Gold glow
+        otherColor: "#D4A017",           // General gold accent
+        accent: "#F0B429",               // Bright amber accent
+        accentSoft: "#E6A817",           // Soft amber
+        goldLight: "#FFD166",            // Light gold for highlights
+        goldDark: "#B8860B",             // Dark gold for shadows
         
-        // Text Colors
-        primaryTextColor: "#FFFFFF",       // White text (High contrast)
-        secondaryTextColor: "#9CA3AF",     // Muted/Greyish text
+        // Text
+        primaryTextColor: "#F5F5F5",     // Warm white
+        secondaryTextColor: "#8899AA",   // Muted blue-grey
+        mutedText: "#5A6A7A",            // Very muted text
         
-        // Button & Accent Colors
-        primaryBtn: "#00BCD4",             // Button Background: Vibrant Teal
-        primaryBtnHover: "#0097A7",        // Button Hover: Dark Teal
-        primaryBtnGlow: "rgba(0, 188, 212, 0.6)", // Teal Glow
+        // UI Elements
+        btnColor: "#0F1117",             // Button bg (dark)
+        border: "rgba(212,160,23,0.25)", // Gold tinted border
+        borderStrong: "rgba(212,160,23,0.5)", // Strong gold border
+        glass: "rgba(255,255,255,0.04)", // Glass card bg
         
-        // Other Theme Keys
-        btnColor: "#101625",               // Button Text Color (Dark Blue/Black for contrast on Teal button)
-        btnGlow: "rgba(0, 188, 212, 0.8)",  // Stronger Teal Glow
-        otherColor: "#00BCD4",             // General Teal Accent
-        accent: "#00BCD4",                 // General Teal Accent
-        accentGlow: "rgba(0, 188, 212, 0.7)", 
-        glass: "rgba(255, 255, 255, 0.08)", // Light Glass effect
+        // Semantic
+        ripBadge: "#1A2033",             // Badge backgrounds
+        skeleton: "#141820",             // Skeleton loading
       },
-      // --- Box Shadow: ORIGINAL Values Restored ---
       boxShadow: {
-        // Keeping your original neon which is similar to the new primaryTeal
-        glass: "0 8px 32px 0 rgba(80,105,255,0.15)",
-        primary: "0 8px 32px 0 rgba(110,102,255,0.35)",
-        neon: "0 0 8px #36FFF7, 0 0 16px #36FFF7, 0 0 32px #36FFF7", 
+        gold: "0 0 20px rgba(212,160,23,0.35)",
+        goldStrong: "0 0 40px rgba(212,160,23,0.55)",
+        card: "0 8px 40px rgba(0,0,0,0.6)",
+        cardHover: "0 12px 60px rgba(0,0,0,0.8), 0 0 24px rgba(212,160,23,0.25)",
+        glass: "0 8px 32px 0 rgba(0,0,0,0.5)",
+        insetGold: "inset 0 1px 0 rgba(212,160,23,0.2)",
+        nav: "0 4px 30px rgba(0,0,0,0.6)",
       },
-      // --- End of Box Shadow ---
       aspectRatio: {
         "9/13": "9/13",
+        "2/3": "2/3",
+        "16/9": "16/9",
       },
       fontSize: {
+        xs: "0.72rem",
         sm: "0.82rem",
         base: "1rem",
         md: "1.07rem",
+        lg: "1.18rem",
         xl: "1.25rem",
         "2xl": "1.48rem",
         "3xl": "2rem",
@@ -78,28 +87,58 @@ export default {
         "5xl": "3.4rem",
         "6xl": "4.2rem",
         "7xl": "6.3rem",
-        "8xl": "8.5rem",
-        "9xl": "12rem",
       },
       backgroundImage: {
-        // ग्रेडिएंट्स को Deep Blue और Cyan के अनुरूप बदला गया
-        'gradient-radial': 'radial-gradient(ellipse at center, #00BCD4 0%, #101625 100%)',
-        'gradient-glass': 'linear-gradient(135deg, rgba(255,255,255,0.12), rgba(0,0,0,0.25))',
-        'gradient-animated': 'linear-gradient(270deg, #00BCD4, #0097A7, #101625)',
+        "gradient-gold": "linear-gradient(135deg, #D4A017 0%, #F0B429 50%, #B8860B 100%)",
+        "gradient-gold-radial": "radial-gradient(ellipse at top, rgba(212,160,23,0.15) 0%, transparent 60%)",
+        "gradient-dark": "linear-gradient(180deg, transparent 0%, #07080B 100%)",
+        "gradient-card": "linear-gradient(180deg, transparent 40%, rgba(7,8,11,0.95) 100%)",
+        "gradient-hero": "linear-gradient(to right, rgba(7,8,11,0.9) 0%, rgba(7,8,11,0.6) 50%, transparent 100%)",
+        "gradient-glass": "linear-gradient(135deg, rgba(255,255,255,0.06), rgba(0,0,0,0.2))",
+        "gradient-animated": "linear-gradient(270deg, #D4A017, #F0B429, #B8860B, #07080B)",
       },
       animation: {
         "gradient-shift": "gradientShift 8s ease infinite",
+        "fade-in": "fadeIn 0.5s ease-out",
+        "slide-up": "slideUp 0.4s ease-out",
+        "pulse-gold": "pulseGold 2s infinite ease-in-out",
+        "shimmer": "shimmer 2s infinite",
+        "scale-in": "scaleIn 0.3s ease-out",
       },
       keyframes: {
         gradientShift: {
           "0%, 100%": { "background-position": "0% 50%" },
           "50%": { "background-position": "100% 50%" },
         },
+        fadeIn: {
+          "0%": { opacity: "0" },
+          "100%": { opacity: "1" },
+        },
+        slideUp: {
+          "0%": { opacity: "0", transform: "translateY(20px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
+        },
+        pulseGold: {
+          "0%, 100%": { opacity: "0.7", transform: "scale(0.97)" },
+          "50%": { opacity: "1", transform: "scale(1.03)" },
+        },
+        shimmer: {
+          "0%": { transform: "translateX(-100%)" },
+          "100%": { transform: "translateX(100%)" },
+        },
+        scaleIn: {
+          "0%": { opacity: "0", transform: "scale(0.92)" },
+          "100%": { opacity: "1", transform: "scale(1)" },
+        },
       },
       transitionProperty: {
-        'height': 'height',
-        'spacing': 'margin, padding',
-        'colors': 'background-color, border-color, color, fill, stroke',
+        height: "height",
+        spacing: "margin, padding",
+        colors: "background-color, border-color, color, fill, stroke",
+      },
+      backdropBlur: {
+        xs: "2px",
+        "4xl": "64px",
       },
     },
   },

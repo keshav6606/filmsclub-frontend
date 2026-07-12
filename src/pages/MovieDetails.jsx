@@ -57,18 +57,47 @@ export default function MovieDetails() {
       });
   }, [movieID, BASE]);
 
+  // Dynamic SEO variables
+  const movieTitle = movieDetail.title ? `Watch ${movieDetail.title} (${movieDetail.release_year || ""}) Online Free in HD - ${SITENAME}` : `${SITENAME} - Watch Movies Online`;
+  const movieDesc = movieDetail.description ? `Stream ${movieDetail.title} (${movieDetail.release_year || ""}) online for free on ${SITENAME}. Genres: ${movieDetail.genres?.join(", ") || ""}. Runtime: ${movieDetail.runtime || ""} min. Quality: ${movieDetail.rip || "HD"}. ${movieDetail.description.slice(0, 120)}...` : `Stream movies and series for free on ${SITENAME}.`;
+  const movieKeywords = movieDetail.title ? `${movieDetail.title}, watch ${movieDetail.title} online, stream ${movieDetail.title} free, ${movieDetail.genres?.join(", ") || ""}, watch movies online, free hd movies` : `watch movies online, free hd movies`;
+  const movieImage = movieDetail.backdrop || movieDetail.poster || "";
+
+  const movieSchema = movieDetail.title ? {
+    "@context": "https://schema.org",
+    "@type": "Movie",
+    "name": movieDetail.title,
+    "image": movieImage,
+    "description": movieDetail.description,
+    "dateCreated": movieDetail.release_year ? `${movieDetail.release_year}-01-01` : undefined,
+    "aggregateRating": movieDetail.rating ? {
+      "@type": "AggregateRating",
+      "ratingValue": movieDetail.rating.toFixed(1),
+      "bestRating": "10",
+      "worstRating": "1",
+      "ratingCount": "100"
+    } : undefined
+  } : undefined;
+
   return (
-    <div>
+    <div className="pb-16 md:pb-0">
       {/* SEO SECTION */}
       <ToastContainer style={{ fontSize: "0.8rem" }} />
 
       <SEO
-        title={SITENAME}
-        description={`Discover a world of entertainment where every show, movie, and exclusive content takes you on a journey beyond the screen. ${SITENAME} offers endless options for every mood, helping you relax, escape, and imagine more. Stream your favorites, dream big, and repeat the experience, only with ${SITENAME}.`}
+        title={movieTitle}
+        description={movieDesc}
         name={SITENAME}
-        type="text/html"
-        keywords="watch movies online, watch hd movies, watch full movies, streaming movies online, free streaming movie, watch movies free, watch hd movies online, watch series online, watch hd series free, free tv series, free movies online, tv online, tv links, tv links movies, free tv shows, watch tv shows online, watch tv shows online free, free hd movies, New Movie Releases, Top Movies of the Year, Watch Movies Online, Streaming Services, Movie Reviews, Upcoming Films, Best Movie Scenes, Classic Movies, HD Movie Streaming, Film Trailers, Action Movies, Drama Films, Comedy Movies, Sci-Fi Films, Horror Movie Picks, Family-Friendly Movies, Award-Winning Films, Movie Recommendations, Cinematic Experiences, Behind-the-Scenes, Director Spotlights, Actor Interviews, Film Festivals, Cult Classics, Top Box Office Hits, Celebrity News, Movie Soundtracks, Oscar-Winning Movies, Movie Trivia, Exclusive Film Content, Best Cinematography, Must-Watch Movies, Film Industry News, Filmmaking Tips, Top Movie Blogs, Latest Movie Gossip, Interactive Movie Quizzes, Red Carpet Moments, IMDb Ratings, Movie Fan Communities, fmovies, fmovies.to, fmovies to, fmovies is, fmovie, free movies, online movie, movie online, free movies online, watch movies online free, free hd movies, watch movies online"
-        link={`https://${SITENAME}.com`}
+        type="video.other"
+        keywords={movieKeywords}
+        link={`https://${SITENAME}.com/mov/${movieID}`}
+        image={movieImage}
+        schema={movieSchema}
+        breadcrumbs={[
+          { name: "Home", url: `https://${SITENAME}.com` },
+          { name: "Movies", url: `https://${SITENAME}.com/movies` },
+          { name: movieDetail.title || "Movie", url: `https://${SITENAME}.com/mov/${movieID}` },
+        ]}
       />
       {/* Call MoviesAndSeriesDetailsSections Component */}
       <MoviesAndSeriesDetailsSections

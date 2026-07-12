@@ -1,0 +1,115 @@
+import fs from 'fs';
+import path from 'path';
+import axios from 'axios';
+
+// Simple .env file parser
+function loadEnv() {
+  const envPath = path.resolve(process.cwd(), '.env');
+  if (!fs.existsSync(envPath)) return {};
+  const envContent = fs.readFileSync(envPath, 'utf8');
+  const env = {};
+  envContent.split('\n').forEach(line => {
+    const match = line.match(/^\s*([\w.-]+)\s*=\s*(.*)?\s*$/);
+    if (match) {
+      let value = match[2] ? match[2].trim() : '';
+      if (value.startsWith('"') && value.endsWith('"')) value = value.slice(1, -1);
+      if (value.startsWith("'") && value.endsWith("'")) value = value.slice(1, -1);
+      env[match[1]] = value;
+    }
+  });
+  return env;
+}
+
+const env = loadEnv();
+const BASE_URL = env.VITE_BASE_URL || 'https://old-emelia-filetolink7-3cbdcb5a.koyeb.app';
+const SITENAME = env.VITE_SITENAME || 'Filmy4uhd';
+const CANONICAL_HOST = `https://${SITENAME.toLowerCase()}.com`;
+
+async function generateSitemap() {
+  console.log('Generating sitemap...');
+  console.log(`API BASE: ${BASE_URL}`);
+  console.log(`SITENAME: ${SITENAME}`);
+  console.log(`CANONICAL HOST: ${CANONICAL_HOST}`);
+
+  const urls = [
+    { loc: `${CANONICAL_HOST}/`, changefreq: 'daily', priority: '1.0' },
+    { loc: `${CANONICAL_HOST}/Movies`, changefreq: 'weekly', priority: '0.8' },
+    { loc: `${CANONICAL_HOST}/Series`, changefreq: 'weekly', priority: '0.8' }
+  ];
+
+  // Fetch Movies
+  try {
+    let page = 1;
+    let hasMore = true;
+    while (hasMore && page <= 5) { // Fetch up to 100 movies
+      const res = await axios.get(`${BASE_URL}/api/movies`, {
+        params: { sort_by: 'updated_on:desc', page, page_size: 20 }
+      });
+      const movies = res.data.movies || [];
+      if (movies.length === 0) {
+        hasMore = false;
+      } else {
+        movies.forEach(movie => {
+          if (movie.tmdb_id) {
+            urls.push({
+              loc: `${CANONICAL_HOST}/mov/${movie.tmdb_id}`,
+              changefreq: 'weekly',
+              priority: '0.6'
+            });
+          }
+        });
+        page++;
+      }
+    }
+  } catch (error) {
+    console.error('Error fetching movies for sitemap:', error.message);
+  }
+
+  // Fetch TV Shows
+  try {
+    let page = 1;
+    let hasMore = true;
+    while (hasMore && page <= 5) { // Fetch up to 100 shows
+      const res = await axios.get(`${BASE_URL}/api/tvshows`, {
+        params: { sort_by: 'updated_on:desc', page, page_size: 20 }
+      });
+      const shows = res.data.tv_shows || [];
+      if (shows.length === 0) {
+        hasMore = false;
+      } else {
+        shows.forEach(show => {
+          if (show.tmdb_id) {
+            urls.push({
+              loc: `${CANONICAL_HOST}/ser/${show.tmdb_id}`,
+              changefreq: 'weekly',
+              priority: '0.6'
+            });
+          }
+        });
+        page++;
+      }
+    }
+  } catch (error) {
+    console.error('Error fetching tv shows for sitemap:', error.message);
+  }
+
+  // Build XML
+  let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
+  xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
+  
+  urls.forEach(url => {
+    xml += `  <url>\n`;
+    xml += `    <loc>${url.loc}</loc>\n`;
+    xml += `    <changefreq>${url.changefreq}</changefreq>\n`;
+    xml += `    <priority>${url.priority}</priority>\n`;
+    xml += `  </url>\n`;
+  });
+  
+  xml += `</urlset>\n`;
+
+  const outputPath = path.resolve(process.cwd(), 'public', 'sitemap.xml');
+  fs.writeFileSync(outputPath, xml, 'utf8');
+  console.log(`Sitemap generated successfully at ${outputPath} with ${urls.length} URLs!`);
+}
+
+generateSitemap();

@@ -2,124 +2,97 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { LazyLoadImage } from "react-lazy-load-image-component";
-import "react-lazy-load-image-component/src/effects/black-and-white.css";
+import "react-lazy-load-image-component/src/effects/opacity.css";
 import { PiStarFill } from "react-icons/pi";
-
 import { BsPlayFill } from "react-icons/bs";
+import { HiOutlineFilm, HiOutlineTv } from "react-icons/hi2";
 import posterPlaceholder from "../assets/images/poster-placeholder.png";
 
+const langShort = { hi: "HI", en: "EN", ta: "TA", te: "TE", kn: "KN", ml: "ML", mr: "MR", bn: "BN" };
+
 const MovieCard = ({ movie }) => {
-  const [showPlayBtn, setShowPlayBtn] = useState(false);
-  const [openId, setOpenId] = useState();
+  const [hovered, setHovered] = useState(false);
 
-  const showPlay = () => {
-    setOpenId(movie.tmdb_id);
-    setShowPlayBtn(true);
-  };
-
-  const hidePlay = () => {
-    setOpenId(movie.tmdb_id);
-    setShowPlayBtn(false);
-  };
+  const to = movie.media_type === "movie" ? `/mov/${movie.tmdb_id}` : `/ser/${movie.tmdb_id}`;
+  const langLabel = movie.languages?.map((l) => (langShort[l] || l.toUpperCase())).join("·") || "";
 
   return (
-    <div className="relative">
-      <Link
-        to={
-          movie.media_type === "movie"
-            ? `/mov/${movie.tmdb_id}`
-            : `/ser/${movie.tmdb_id}`
-        }
-        className="rounded-t-2xl"
+    <Link to={to} aria-label={`View ${movie.title}`}>
+      <div
+        className="movie-card"
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
       >
-        <div className="flex items-center justify-center aspect-[9/13.5] w-full object-cover rounded-2xl ">
+        {/* Poster Image */}
+        <div className="aspect-[2/3] w-full bg-bgColorSecondary overflow-hidden">
           <LazyLoadImage
-            src={movie.poster ? movie.poster : posterPlaceholder}
-            width="100%"
-            effect="black-and-white"
+            src={movie.poster || posterPlaceholder}
             alt={movie.title}
-            className="aspect-[9/13.5] w-full object-cover rounded-2xl "
-            onMouseEnter={showPlay}
-            onMouseLeave={hidePlay}
+            effect="opacity"
+            className="w-full h-full object-cover"
+            wrapperClassName="w-full h-full block"
+            onError={(e) => { e.target.src = posterPlaceholder; }}
           />
         </div>
-      </Link>
 
-      <div className="text-primaryTextColor mt-2">
-        <p className="line-clamp-1 text-md md:text-base ">{movie.title}</p>
-        <div className="flex items-center justify-between text-secondaryTextColor mt-1 uppercase text-[0.6rem] sm:text-xs md:text-sm">
-          {movie.release_year && <p>{movie.release_year}</p>}
-          <div className="uppercase bg-bgColorSecondary text-primaryTextColor py-1 px-3 rounded-full text-[0.5rem] sm:text-[0.6rem]">
-            <p>{movie.media_type}</p>
+        {/* Hover Overlay */}
+        <div className="card-overlay" aria-hidden="true" />
+
+        {/* Play Button on hover */}
+        <AnimatePresence>
+          {hovered && (
+            <motion.div
+              className="card-play z-20"
+              initial={{ opacity: 0, scale: 0.6 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.6 }}
+              transition={{ type: "spring", stiffness: 300, damping: 22 }}
+            >
+              <div className="w-12 h-12 rounded-full border-2 border-primaryBtn bg-primaryBtn/20 backdrop-blur-sm flex items-center justify-center text-primaryBtn shadow-gold">
+                <BsPlayFill className="text-xl ml-0.5" />
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* ── Top Badges ── */}
+        {/* Rating — top left */}
+        <div className="absolute top-2 left-2 flex items-center gap-1 bg-bgColor/80 backdrop-blur-sm text-goldLight border border-goldLight/20 rounded-md px-2 py-0.5 text-[0.6rem] font-bold z-10">
+          <PiStarFill className="text-[0.55rem]" />
+          {movie.rating ? movie.rating.toFixed(1) : "N/A"}
+        </div>
+
+        {/* Quality — top right */}
+        {movie.rip && (
+          <div className="absolute top-2 right-2 z-10">
+            <span className="quality-badge">{movie.rip}</span>
+          </div>
+        )}
+
+        {/* Language — bottom right above info */}
+        {langLabel && (
+          <div className="absolute bottom-14 right-2 z-10 text-[0.55rem] font-bold bg-bgColor/80 backdrop-blur-sm text-secondaryTextColor border border-border px-2 py-0.5 rounded-md">
+            {langLabel}
+          </div>
+        )}
+
+        {/* Media type — bottom left above info */}
+        <div className="absolute bottom-14 left-2 z-10">
+          <div className="flex items-center gap-1 text-[0.6rem] font-semibold bg-bgColor/80 backdrop-blur-sm text-secondaryTextColor border border-border px-2 py-0.5 rounded-md">
+            {movie.media_type === "movie" ? <HiOutlineFilm /> : <HiOutlineTv />}
+            {movie.media_type === "movie" ? "Movie" : "Series"}
           </div>
         </div>
-      </div>
 
-      {movie.rating ? (
-        <div className="flex items-center gap-1 absolute top-5 left-3 bg-bgColorSecondary text-yellow-300 py-1 px-3 rounded-full font-extrabold text-[0.6rem] sm:text-xs">
-          <PiStarFill />
-          <p>{movie.rating.toFixed(1)}</p>
-        </div>
-      ) : (
-        <div className="flex items-center gap-1 absolute top-5 left-3 bg-primaryBtn text-bgColor py-1 px-3 rounded-full text-xs font-extrabold">
-          <PiStarFill />
-          <p>0.0</p>
-        </div>
-      )}
-
-
-      {movie.languages ? (
-        <div className="flex items-center gap-1 absolute bottom-16 right-3 bg-primaryBtn text-bgColor py-1 px-3 rounded-full font-extrabold text-[0.6rem] sm:text-xs">
-          <p>
-            {movie.languages
-              .map((lang) => lang.charAt(0).toUpperCase() + lang.slice(1)) // Capitalize each language code
-              .join("-")}{" "}
+        {/* ── Card Info ── */}
+        <div className="p-2.5 pt-2 bg-bgColorSecondary">
+          <p className="text-primaryTextColor font-semibold text-sm line-clamp-1 leading-snug">
+            {movie.title}
           </p>
+          <p className="text-mutedText text-xs mt-0.5">{movie.release_year || ""}</p>
         </div>
-      ) : (
-        <div className="flex items-center gap-1 absolute bottom-16 right-3 bg-primaryBtn text-bgColor py-1 px-3 rounded-full text-xs font-extrabold">
-          <p>Hi</p>
-        </div>
-      )}
-
-      {movie.rip ? (
-        <div className="flex bg-bgColorSecondary rounded-full items-center gap-1 absolute bottom-16 left-3 text-primaryTextColor py-1 px-3 font-medium text-[0.6rem] sm:text-xs">
-          <p>{movie.rip}</p>
-        </div>
-      ) : (
-        <div className="flex bg-bgColorSecondary rounded-full items-center gap-1 absolute bottom-16 left-3 text-primaryTextColor py-1 px-3 font-medium text-[0.6rem] sm:text-xs">
-          <p>Blu-Ray</p>
-        </div>
-      )}
-
-      <AnimatePresence>
-        {openId === movie.tmdb_id && showPlayBtn && (
-          <Link
-            to={
-              movie.media_type === "movie"
-                ? `/mov/${movie.tmdb_id}`
-                : `/ser/${movie.tmdb_id}`
-            }
-            onMouseEnter={showPlay}
-            onMouseLeave={hidePlay}
-            className="hidden absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-primaryBtn sm:block"
-          >
-            <motion.div
-              initial={{ opacity: 0, y: 40 }}
-              animate={{ opacity: 1, y: -20 }}
-              exit={{ opacity: 0, y: -40 }}
-              transition={{
-                type: "tween",
-                duration: 0.3,
-              }}
-              className="text-3xl p-1 rounded-full border-4 border-primaryBtn"
-            >
-              <BsPlayFill />
-            </motion.div>
-          </Link>
-        )}
-      </AnimatePresence>
-    </div>
+      </div>
+    </Link>
   );
 };
 

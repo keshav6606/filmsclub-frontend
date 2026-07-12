@@ -91,18 +91,43 @@ export default function MovieDetails() {
       });
   }, [seasonNumber, seriesID, BASE]);
 
+  // Dynamic SEO variables
+  const tvTitle = seriesDetail.title ? `Watch ${seriesDetail.title} (All Seasons) Online Free - ${SITENAME}` : `${SITENAME} - Watch TV Series Online`;
+  const tvDesc = seriesDetail.description ? `Stream ${seriesDetail.title} all seasons and episodes for free on ${SITENAME}. Status: ${seriesDetail.status || "Ongoing"}. Genres: ${seriesDetail.genres?.join(", ") || ""}. Seasons: ${seriesDetail.total_seasons || ""}. Episodes: ${seriesDetail.total_episodes || ""}. ${seriesDetail.description.slice(0, 120)}...` : `Stream movies and series for free on ${SITENAME}.`;
+  const tvKeywords = seriesDetail.title ? `${seriesDetail.title}, watch ${seriesDetail.title} online, stream ${seriesDetail.title} free, ${seriesDetail.genres?.join(", ") || ""}, watch tv series online, free tv shows` : `watch tv series online, free tv shows`;
+  const tvImage = seriesDetail.backdrop || seriesDetail.poster || "";
+
+  const tvSchema = seriesDetail.title ? {
+    "@context": "https://schema.org",
+    "@type": "TVSeries",
+    "name": seriesDetail.title,
+    "image": tvImage,
+    "description": seriesDetail.description,
+    "numberOfSeasons": seriesDetail.total_seasons,
+    "numberOfEpisodes": seriesDetail.total_episodes,
+    "aggregateRating": seriesDetail.rating ? {
+      "@type": "AggregateRating",
+      "ratingValue": seriesDetail.rating.toFixed(1),
+      "bestRating": "10",
+      "worstRating": "1",
+      "ratingCount": "100"
+    } : undefined
+  } : undefined;
+
   return (
     <div>
       <ToastContainer style={{ fontSize: "0.8rem" }} />
 
       {/* SEO SECTION */}
       <SEO
-        title={SITENAME}
-        description={`Discover a world of entertainment where every show, movie, and exclusive content takes you on a journey beyond the screen. ${SITENAME} offers endless options for every mood, helping you relax, escape, and imagine more. Stream your favorites, dream big, and repeat the experience, only with ${SITENAME}.`}
+        title={tvTitle}
+        description={tvDesc}
         name={SITENAME}
-        type="text/html"
-        keywords="watch movies online, watch hd movies, watch full movies, streaming movies online, free streaming movie, watch movies free, watch hd movies online, watch series online, watch hd series free, free tv series, free movies online, tv online, tv links, tv links movies, free tv shows, watch tv shows online, watch tv shows online free, free hd movies, New Movie Releases, Top Movies of the Year, Watch Movies Online, Streaming Services, Movie Reviews, Upcoming Films, Best Movie Scenes, Classic Movies, HD Movie Streaming, Film Trailers, Action Movies, Drama Films, Comedy Movies, Sci-Fi Films, Horror Movie Picks, Family-Friendly Movies, Award-Winning Films, Movie Recommendations, Cinematic Experiences, Behind-the-Scenes, Director Spotlights, Actor Interviews, Film Festivals, Cult Classics, Top Box Office Hits, Celebrity News, Movie Soundtracks, Oscar-Winning Movies, Movie Trivia, Exclusive Film Content, Best Cinematography, Must-Watch Movies, Film Industry News, Filmmaking Tips, Top Movie Blogs, Latest Movie Gossip, Interactive Movie Quizzes, Red Carpet Moments, IMDb Ratings, Movie Fan Communities, fmovies, fmovies.to, fmovies to, fmovies is, fmovie, free movies, online movie, movie online, free movies online, watch movies online free, free hd movies, watch movies online"
-        link={`https://${SITENAME}.com`}
+        type="video.other"
+        keywords={tvKeywords}
+        link={`https://${SITENAME}.com/ser/${seriesID}`}
+        image={tvImage}
+        schema={tvSchema}
       />
       {/* Call MoviesAndSeriesDetailsSections Component */}
       <MoviesAndSeriesDetailsSections
