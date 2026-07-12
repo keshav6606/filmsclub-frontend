@@ -19,6 +19,7 @@ const SimilarMov = lazy(() => import("./pages/SimilarMov"));
 const SimilarSeries = lazy(() => import("./pages/SimilarSeries"));
 const SearResults = lazy(() => import("./pages/SearchResults"));
 const NotFoundPage = lazy(() => import("./pages/NotFound"));
+const Disclaimer = lazy(() => import("./pages/Disclaimer"));
 
 
 function App() {
@@ -67,6 +68,10 @@ function App() {
             <Route
               path="/search/:searchResult"
               element={<SearResults />}
+            />
+            <Route
+              path="/disclaimer"
+              element={<Disclaimer />}
             />
           </Routes>
         </Suspense>

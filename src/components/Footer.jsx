@@ -13,6 +13,7 @@ export default function Footer() {
     { name: "Home", path: "/", icon: <HiOutlineHome /> },
     { name: "Movies", path: "/movies", icon: <HiOutlineFilm /> },
     { name: "Series", path: "/series", icon: <HiOutlineTv /> },
+    { name: "Disclaimer & DMCA", path: "/disclaimer", icon: <MdLocalMovies /> },
   ];
 
   return (
@@ -90,7 +91,7 @@ export default function Footer() {
         {/* Bottom Bar */}
         <div className="border-t border-border mt-10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-mutedText text-xs">
-            © {new Date().getFullYear()} <span className="text-secondaryTextColor font-semibold">{SITENAME}</span>. All Rights Reserved.
+            © {new Date().getFullYear()} <span className="text-secondaryTextColor font-semibold">{SITENAME}</span>. All Rights Reserved. · <Link to="/disclaimer" className="hover:text-primaryBtn transition-colors">DMCA Disclaimer</Link>
           </p>
           <p className="text-mutedText text-xs italic">
             Built for cinema lovers 🎬
