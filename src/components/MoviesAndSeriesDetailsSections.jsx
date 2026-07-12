@@ -17,6 +17,7 @@ import { TbBrandTelegram } from "react-icons/tb";
 import PlayerButtons from "./PlayerButtons";
 import TelegramButton from "./TelegramButtons";
 import Watch from "./Watch";
+import AdBanner from "./AdBanner";
 
 const langMap = {
   hi: "Hindi", en: "English", ta: "Tamil", te: "Telugu",
@@ -167,6 +168,9 @@ export default function MoviesAndSeriesDetailsSections(props) {
             </div>
           </div>
 
+          {/* Ad Banner Above Player */}
+          <AdBanner slot="5754054742" />
+
           {/* ── Player & Download Section ── */}
           <PlayerButtons
             movieData={movie}
@@ -177,6 +181,9 @@ export default function MoviesAndSeriesDetailsSections(props) {
             setEpisodeNumber={props.setEpisodeNumber}
             isEpisodesLoading={props.isEpisodesLoading}
           />
+
+          {/* Ad Banner Below Player */}
+          <AdBanner slot="7317709042" style={{ display: "inline-block", width: "728px", height: "90px" }} />
         </motion.div>
       ) : (
         /* Loading Skeleton */

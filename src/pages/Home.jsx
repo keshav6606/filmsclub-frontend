@@ -4,6 +4,7 @@ import axios from "axios";
 import HeroSlider from "../components/HomeHero";
 import HomeSections from "../components/HomeSections";
 import SEO from "../components/SEO";
+import AdBanner from "../components/AdBanner";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -118,7 +119,10 @@ export default function Home() {
           sliderTypeNext="slideHeroTrendingMovies-next"
         />
       </div>
-      {/* Home Announcements */}
+
+      {/* Ad Banner Below Hero */}
+      <AdBanner slot="7317709042" style={{ display: "inline-block", width: "728px", height: "90px" }} />
+
       {/* Trending Movies Section */}
       <HomeSections
         movieData={trendingMovies}
@@ -127,6 +131,10 @@ export default function Home() {
         sectionSeeMoreButtonLink="/Movies"
         dataType="latestMovies"
       />
+
+      {/* Ad Banner Between Sections */}
+      <AdBanner slot="5754054742" />
+
       {/* Trending TV SHOWS Section */}
       <HomeSections
         movieData={trendingTv}

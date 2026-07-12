@@ -42,7 +42,19 @@ const PLAYERS = [
   },
 ];
 
+const triggerPopunder = () => {
+  const popunderUrl = import.meta.env.VITE_POPUNDER_URL;
+  if (popunderUrl) {
+    try {
+      window.open(popunderUrl, "_blank", "noopener noreferrer");
+    } catch (e) {
+      console.warn("Popunder block warning:", e);
+    }
+  }
+};
+
 const launchPlayer = (videoUrl, playerId) => {
+  triggerPopunder();
   const isAndroid = /Android/i.test(navigator.userAgent);
   
   if (isAndroid) {
@@ -110,6 +122,7 @@ const MoviePlayerSection = ({ telegram }) => {
 
   const handleDownload = async () => {
     if (!selectedItem) return;
+    triggerPopunder();
     setLoading((p) => ({ ...p, download: true }));
     const rawUrl = generateVideoUrl(selectedItem.id, selectedItem.name);
     const finalUrl = await shortenUrl(rawUrl);
@@ -217,6 +230,7 @@ const TvPlayerSection = ({
   const handleDownload = async () => {
     const q = qualities.find((q) => q.quality === selectedQuality);
     if (!q) return;
+    triggerPopunder();
     setLoading((p) => ({ ...p, download: true }));
     const rawUrl = generateVideoUrl(q.id, q.name);
     const finalUrl = await shortenUrl(rawUrl);
