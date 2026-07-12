@@ -27,26 +27,42 @@ const PLAYERS = [
     name: "mpvEx Player",
     icon: <MdSmartDisplay className="text-lg" />,
     color: "#7C3AED",
-    buildUrl: (src) =>
-      `intent:${src}#Intent;package=com.nextplayer.pro;scheme=https;end`,
-    storeUrl: MPVEX_PLAY_LINK,
   },
   {
     id: "mx",
     name: "MX Player",
     icon: <MdOndemandVideo className="text-lg" />,
     color: "#F59E0B",
-    buildUrl: (src) =>
-      `intent:${src}#Intent;package=com.mxtech.videoplayer.ad;scheme=https;end`,
   },
   {
     id: "vlc",
     name: "VLC Player",
     icon: <SiVlcmediaplayer className="text-lg" />,
     color: "#EF6C00",
-    buildUrl: (src) => `vlc://${src.replace(/^https?:\/\//, "")}`,
   },
 ];
+
+const launchPlayer = (videoUrl, playerId) => {
+  const isAndroid = /Android/i.test(navigator.userAgent);
+  
+  if (isAndroid) {
+    let packageName = "";
+    if (playerId === "mpvex") packageName = "com.nextplayer.pro";
+    else if (playerId === "mx") packageName = "com.mxtech.videoplayer.ad";
+    else if (playerId === "vlc") packageName = "org.videolan.vlc";
+    
+    const urlWithoutScheme = videoUrl.replace(/^https?:\/\//, "");
+    const intentUrl = `intent://${urlWithoutScheme}#Intent;scheme=https;package=${packageName};S.browser_fallback_url=${encodeURIComponent(MPVEX_PLAY_LINK)};end`;
+    window.location.href = intentUrl;
+  } else {
+    // Non-Android fallback
+    if (playerId === "vlc") {
+      window.location.href = `vlc://${videoUrl.replace(/^https?:\/\//, "")}`;
+    } else {
+      window.open(MPVEX_PLAY_LINK, "_blank", "noopener noreferrer");
+    }
+  }
+};
 
 const shortenUrl = async (url) => {
   if (!API_URL || !API_KEY) return url;
@@ -89,8 +105,7 @@ const MoviePlayerSection = ({ telegram }) => {
     const rawUrl = generateVideoUrl(selectedItem.id, selectedItem.name);
     const finalUrl = await shortenUrl(rawUrl);
     setLoading((p) => ({ ...p, [player.id]: false }));
-    const intentUrl = player.buildUrl(finalUrl);
-    window.location.href = intentUrl;
+    launchPlayer(finalUrl, player.id);
   };
 
   const handleDownload = async () => {
@@ -193,7 +208,7 @@ const TvPlayerSection = ({ seasons }) => {
     const rawUrl = generateVideoUrl(q.id, q.name);
     const finalUrl = await shortenUrl(rawUrl);
     setLoading((p) => ({ ...p, [player.id]: false }));
-    window.location.href = player.buildUrl(finalUrl);
+    launchPlayer(finalUrl, player.id);
   };
 
   const handleDownload = async () => {
@@ -315,7 +330,7 @@ export default function PlayerButtons({ movieData }) {
   if (!movieData) return null;
 
   return (
-    <div className="glass-card p-5 mt-4">
+    <div id="player-section" className="glass-card p-5 mt-4">
       <div className="flex items-center gap-2 mb-1">
         <FaPlay className="text-primaryBtn text-sm" />
         <h3 className="text-primaryTextColor font-bold text-sm">Watch & Download</h3>
