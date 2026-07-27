@@ -1,95 +1,112 @@
 import React, { useEffect } from "react";
 import SEO from "../components/SEO";
+import { MdOutlineGavel, MdOutlineMail, MdOutlineReportProblem } from "react-icons/md";
 import { Link } from "react-router-dom";
-import { HiOutlineShieldExclamation, HiOutlineDocumentCheck, HiOutlineEnvelope } from "react-icons/hi2";
 
 export default function Disclaimer() {
   const SITENAME = import.meta.env.VITE_SITENAME || "Filmy4uhd";
-  const CANONICAL = `https://${SITENAME.toLowerCase()}.com/disclaimer`;
+  const DOMAIN = `${SITENAME.toLowerCase()}.com`;
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-12 pt-24 text-primaryTextColor">
+    <div className="relative mt-20 mb-10 max-w-[1000px] mx-auto px-4 sm:px-6 pb-16 md:pb-0">
       <SEO
-        title={`Disclaimer - ${SITENAME}`}
-        description={`General Legal Disclaimer and Non-Hosting Statement for ${SITENAME}. All media links direct to public third-party services.`}
-        link={CANONICAL}
+        title={`Disclaimer & DMCA Policy - ${SITENAME}`}
+        description={`Disclaimer and DMCA Copyright policy for ${SITENAME}. We do not host any files on our servers. All links point to external third-party content.`}
         name={SITENAME}
         type="website"
+        link={`https://${DOMAIN}/disclaimer`}
       />
 
-      {/* Header */}
-      <div className="text-center mb-12">
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-goldLight/10 border border-goldLight/20 text-goldLight font-semibold text-xs mb-4">
-          <HiOutlineShieldExclamation className="text-base" />
-          Legal & Non-Hosting Disclaimer
-        </div>
-        <h1 className="text-3xl sm:text-4xl font-extrabold gold-text mb-4">Disclaimer</h1>
-        <p className="text-secondaryTextColor text-sm sm:text-base max-w-2xl mx-auto leading-relaxed">
-          Please read this legal disclaimer carefully before accessing or browsing <span className="text-primaryTextColor font-semibold">{SITENAME}</span>.
-        </p>
-        <p className="text-mutedText text-xs mt-2">Last Updated: July 2026</p>
-      </div>
-
-      {/* Main Container */}
-      <div className="space-y-8 glass-card p-6 sm:p-10 rounded-2xl border border-border">
-        
-        {/* Section 1: Non-Hosting Statement */}
-        <section className="space-y-3">
-          <h2 className="text-lg font-bold text-primaryBtn flex items-center gap-2">
-            <HiOutlineDocumentCheck className="text-2xl" />
-            1. Zero Server Hosting Statement
-          </h2>
-          <p className="text-secondaryTextColor text-sm leading-relaxed">
-            <strong className="text-primaryTextColor">{SITENAME}</strong> operates strictly as an educational movie directory and search index. We do NOT host, upload, store, or stream any copyrighted video files, media content, or digital assets on our servers. 
-          </p>
-          <p className="text-secondaryTextColor text-sm leading-relaxed">
-            All download and streaming links available on this website point to media files hosted on independent third-party external networks, cloud storage providers, and community channels. {SITENAME} has no editorial control over third-party servers.
-          </p>
-        </section>
-
-        <hr className="border-border/50" />
-
-        {/* Section 2: External Links & Third Party Liability */}
-        <section className="space-y-3">
-          <h2 className="text-lg font-bold text-primaryBtn">2. External Links & Third-Party Content</h2>
-          <p className="text-secondaryTextColor text-sm leading-relaxed">
-            Our platform contains links to external websites that are not operated by us. If you click on a third-party link, you will be directed to that third party's site. We strongly advise you to review the Privacy Policy and Terms of Service of every site you visit.
-          </p>
-          <p className="text-secondaryTextColor text-sm leading-relaxed">
-            {SITENAME} assumes no responsibility for the content, privacy policies, legality, or practices of any third-party websites or services.
-          </p>
-        </section>
-
-        <hr className="border-border/50" />
-
-        {/* Section 3: Copyright & DMCA Takedown */}
-        <section className="space-y-3">
-          <h2 className="text-lg font-bold text-accent">3. Copyright Takedowns & DMCA Compliance</h2>
-          <p className="text-secondaryTextColor text-sm leading-relaxed">
-            We respect intellectual property rights and comply with the Digital Millennium Copyright Act (DMCA). If you believe your copyrighted work is indexed on our site without authorization, please refer to our dedicated{" "}
-            <Link to="/dmca" className="text-primaryBtn font-semibold hover:underline">DMCA Policy Page</Link> for detailed takedown procedures.
-          </p>
-        </section>
-
-        <hr className="border-border/50" />
-
-        {/* Section 4: Related Links & Contact */}
-        <section className="bg-bgColorSecondary p-6 rounded-xl border border-border flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div className="glass-card p-6 sm:p-10 space-y-6 border border-border">
+        {/* Header */}
+        <div className="border-b border-border pb-5 flex items-center gap-3">
+          <div className="w-12 h-12 rounded-xl bg-primaryBtn/10 flex items-center justify-center text-primaryBtn shrink-0">
+            <MdOutlineGavel className="text-3xl" />
+          </div>
           <div>
-            <h3 className="text-base font-bold text-primaryTextColor">Need Further Clarification?</h3>
-            <p className="text-secondaryTextColor text-xs mt-1">Review our Privacy Policy, Terms of Service, or Contact support team.</p>
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-primaryTextColor">
+              Disclaimer & DMCA Policy
+            </h1>
+            <p className="text-xs text-mutedText mt-1">Digital Millennium Copyright Act Compliance Statement</p>
           </div>
-          <div className="flex items-center gap-3 shrink-0">
-            <Link to="/privacy-policy" className="btn-outline-gold px-4 py-2 text-xs">Privacy</Link>
-            <Link to="/terms" className="btn-outline-gold px-4 py-2 text-xs">Terms</Link>
-            <Link to="/contact" className="btn-gold px-4 py-2 text-xs">Contact</Link>
-          </div>
-        </section>
+        </div>
 
+        {/* Content */}
+        <div className="space-y-6 text-secondaryTextColor text-sm leading-relaxed">
+          <p>
+            Welcome to <strong>{SITENAME}</strong> (<span className="text-primaryBtn font-medium">https://{DOMAIN}</span>). We respect the intellectual property rights of creators, filmmakers, and rights owners. Please read this Disclaimer carefully before accessing our directory.
+          </p>
+
+          {/* Section 1 */}
+          <div className="glass-card p-5 border border-border bg-bgColorSecondary/50">
+            <h2 className="text-base font-bold text-primaryTextColor mb-2 flex items-center gap-2">
+              <MdOutlineReportProblem className="text-goldLight" />
+              1. Non-Hosting & Indexing Declaration
+            </h2>
+            <p className="text-xs sm:text-sm text-secondaryTextColor leading-relaxed">
+              <strong>{SITENAME}</strong> does not host, upload, store, or transmit any video files, MP4s, torrent files, or media files on its server hardware. All title names, posters, and metadata displayed on this platform are indexed via public APIs. External streaming and download links redirect users to third-party file hosts and cloud media channels (such as Telegram) over which we exercise zero administrative control.
+            </p>
+          </div>
+
+          {/* Section 2 */}
+          <h2 className="text-lg font-bold text-primaryTextColor mt-6">
+            2. Copyright Infringement & Takedown Protocol
+          </h2>
+          <p>
+            In accordance with Title 17, United States Code, Section 512(c)(2) (DMCA), if you believe that your copyrighted work has been linked on {SITENAME} without authorization, you may submit a formal takedown request to our designated email address.
+          </p>
+          <p className="font-semibold text-primaryTextColor mt-2">
+            To ensure swift action, your DMCA notice must include:
+          </p>
+          <ul className="list-disc pl-6 space-y-2 text-xs sm:text-sm">
+            <li>Identification of the copyrighted work claimed to have been infringed.</li>
+            <li>Exact URLs on {SITENAME} where the link or material is located.</li>
+            <li>Your contact details (Full legal name, email address, physical address, and phone number).</li>
+            <li>A statement of good-faith belief that use of the material is unauthorized.</li>
+            <li>A statement under penalty of perjury that the information in the notification is accurate and that you are authorized to act on behalf of the owner.</li>
+            <li>An electronic or physical signature of the copyright owner or authorized representative.</li>
+          </ul>
+
+          {/* Section 3 */}
+          <h2 className="text-lg font-bold text-primaryTextColor mt-6">
+            3. Processing SLA & Removal Timeline
+          </h2>
+          <p>
+            Upon receipt of a valid, fully detailed DMCA notification, our support team will inspect and remove the reported links within <strong>24 to 48 hours</strong>.
+          </p>
+
+          {/* Email Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
+            <div className="bg-bgColorSecondary border border-border p-5 rounded-xl">
+              <span className="text-xs text-mutedText font-semibold uppercase tracking-wider block mb-1">
+                DMCA Legal Email
+              </span>
+              <span className="text-base text-red-400 font-bold block">
+                dmca@{DOMAIN}
+              </span>
+            </div>
+
+            <div className="bg-bgColorSecondary border border-border p-5 rounded-xl">
+              <span className="text-xs text-mutedText font-semibold uppercase tracking-wider block mb-1">
+                General Support
+              </span>
+              <span className="text-base text-primaryBtn font-bold block">
+                support@{DOMAIN}
+              </span>
+            </div>
+          </div>
+
+          <div className="pt-4 border-t border-border flex items-center justify-between text-xs text-mutedText">
+            <span>Need further assistance?</span>
+            <Link to="/contact" className="text-primaryBtn font-semibold hover:underline">
+              Contact Support Form &rarr;
+            </Link>
+          </div>
+        </div>
       </div>
     </div>
   );

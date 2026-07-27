@@ -21,7 +21,7 @@ function loadEnv() {
 }
 
 const env = loadEnv();
-const BASE_URL = env.VITE_BASE_URL || 'https://screeching-cherye-filmy4uhd-b60bef55.koyeb.app';
+const BASE_URL = env.VITE_BASE_URL || 'https://old-emelia-filetolink7-3cbdcb5a.koyeb.app';
 const SITENAME = env.VITE_SITENAME || 'Filmy4uhd';
 const CANONICAL_HOST = `https://${SITENAME.toLowerCase()}.com`;
 
@@ -34,13 +34,7 @@ async function generateSitemap() {
   const urls = [
     { loc: `${CANONICAL_HOST}/`, changefreq: 'daily', priority: '1.0' },
     { loc: `${CANONICAL_HOST}/Movies`, changefreq: 'weekly', priority: '0.8' },
-    { loc: `${CANONICAL_HOST}/Series`, changefreq: 'weekly', priority: '0.8' },
-    { loc: `${CANONICAL_HOST}/about`, changefreq: 'monthly', priority: '0.7' },
-    { loc: `${CANONICAL_HOST}/contact`, changefreq: 'monthly', priority: '0.7' },
-    { loc: `${CANONICAL_HOST}/privacy-policy`, changefreq: 'monthly', priority: '0.7' },
-    { loc: `${CANONICAL_HOST}/terms`, changefreq: 'monthly', priority: '0.7' },
-    { loc: `${CANONICAL_HOST}/dmca`, changefreq: 'monthly', priority: '0.7' },
-    { loc: `${CANONICAL_HOST}/disclaimer`, changefreq: 'monthly', priority: '0.7' }
+    { loc: `${CANONICAL_HOST}/Series`, changefreq: 'weekly', priority: '0.8' }
   ];
 
   // Fetch Movies

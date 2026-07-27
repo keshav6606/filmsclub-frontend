@@ -1,143 +1,132 @@
 import React, { useEffect } from "react";
 import SEO from "../components/SEO";
-import { HiOutlineShieldCheck, HiOutlineLockClosed, HiOutlineDocumentText, HiOutlineEye } from "react-icons/hi2";
+import { MdOutlinePrivacyTip } from "react-icons/md";
 
 export default function PrivacyPolicy() {
   const SITENAME = import.meta.env.VITE_SITENAME || "Filmy4uhd";
-  const CANONICAL = `https://${SITENAME.toLowerCase()}.com/privacy-policy`;
+  const DOMAIN = `${SITENAME.toLowerCase()}.com`;
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-12 pt-24 text-primaryTextColor">
+    <div className="relative mt-20 mb-10 max-w-[1000px] mx-auto px-4 sm:px-6 pb-16 md:pb-0">
       <SEO
         title={`Privacy Policy - ${SITENAME}`}
-        description={`Read the official Privacy Policy for ${SITENAME}. Learn how we protect user privacy, handle cookies, Google AdSense ads, data protection, and GDPR/CCPA rights.`}
-        link={CANONICAL}
+        description={`Privacy Policy for ${SITENAME}. Learn how we protect user data, handle cookies, and uphold privacy standards.`}
         name={SITENAME}
         type="website"
+        link={`https://${DOMAIN}/privacy-policy`}
       />
 
-      {/* Header */}
-      <div className="text-center mb-12">
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent/10 border border-accent/20 text-accent font-semibold text-xs mb-4">
-          <HiOutlineShieldCheck className="text-base" />
-          Google AdSense & GDPR Compliant
+      <div className="glass-card p-6 sm:p-10 space-y-6">
+        {/* Title */}
+        <div className="border-b border-border pb-4 flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-primaryBtn/10 flex items-center justify-center text-primaryBtn shrink-0">
+            <MdOutlinePrivacyTip className="text-2xl" />
+          </div>
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-primaryTextColor">
+              Privacy Policy
+            </h1>
+            <p className="text-xs text-mutedText mt-1">Effective Date: July 2026</p>
+          </div>
         </div>
-        <h1 className="text-3xl sm:text-4xl font-extrabold gold-text mb-4">Privacy Policy</h1>
-        <p className="text-secondaryTextColor text-sm sm:text-base max-w-2xl mx-auto">
-          At <span className="text-primaryTextColor font-semibold">{SITENAME}</span>, accessible from{" "}
-          <a href={CANONICAL} className="text-primaryBtn hover:underline">{CANONICAL}</a>, one of our main priorities is the privacy of our visitors.
-        </p>
-        <p className="text-mutedText text-xs mt-2">Last Updated: July 2026</p>
-      </div>
 
-      {/* Main Content Sections */}
-      <div className="space-y-8 glass-card p-6 sm:p-10 rounded-2xl border border-border">
-        
-        {/* Information We Collect */}
-        <section className="space-y-3">
-          <div className="flex items-center gap-3 text-lg font-bold text-primaryBtn">
-            <HiOutlineEye className="text-2xl shrink-0" />
-            <h2>1. Information We Collect</h2>
+        {/* Content */}
+        <div className="space-y-6 text-secondaryTextColor text-sm leading-relaxed">
+          <p>
+            At <strong>{SITENAME}</strong> (accessible from <span className="text-primaryBtn font-medium">https://{DOMAIN}</span>), one of our main priorities is the privacy of our visitors. This Privacy Policy document contains types of information that is collected and recorded by {SITENAME} and how we use it.
+          </p>
+          <p>
+            If you have additional questions or require more information about our Privacy Policy, do not hesitate to contact us.
+          </p>
+
+          {/* Section 1 */}
+          <h2 className="text-lg font-bold text-primaryTextColor mt-6">
+            1. Consent & Scope
+          </h2>
+          <p>
+            By using our website, you hereby consent to our Privacy Policy and agree to its terms. This Privacy Policy applies only to our online activities and is valid for visitors to our website with regards to the information that they shared and/or collect in {SITENAME}.
+          </p>
+
+          {/* Section 2 */}
+          <h2 className="text-lg font-bold text-primaryTextColor mt-6">
+            2. Log Files & Analytics
+          </h2>
+          <p>
+            {SITENAME} follows a standard procedure of using log files. These files log visitors when they visit websites. All hosting companies do this as part of hosting services' analytics. The information collected by log files includes:
+          </p>
+          <ul className="list-disc pl-6 space-y-1.5 mt-2">
+            <li>Internet Protocol (IP) addresses</li>
+            <li>Browser type and Version</li>
+            <li>Internet Service Provider (ISP)</li>
+            <li>Date and time stamp</li>
+            <li>Referring / exit pages</li>
+            <li>Number of clicks</li>
+          </ul>
+          <p className="mt-2">
+            These logs are not linked to any information that is personally identifiable. The purpose of the information is for analyzing trends, administering the site, tracking users' movement on the website, and gathering demographic information.
+          </p>
+
+          {/* Section 3 - Google AdSense & Cookies */}
+          <h2 className="text-lg font-bold text-primaryTextColor mt-6">
+            3. Cookies, DoubleClick DART Cookies & Google AdSense
+          </h2>
+          <p>
+            Like any other website, {SITENAME} uses "cookies". These cookies are used to store information including visitors' preferences, and the pages on the website that the visitor accessed or visited. The information is used to optimize the users' experience by customizing our web page content based on visitors' browser type and/or other information.
+          </p>
+          <p className="mt-2">
+            Google is one of a third-party vendor on our site. It also uses cookies, known as DART cookies, to serve ads to our site visitors based upon their visit to www.website.com and other sites on the internet. However, visitors may choose to decline the use of DART cookies by visiting the Google ad and content network Privacy Policy at the following URL:
+          </p>
+          <div className="bg-bgColorSecondary p-3 rounded-lg border border-border mt-2 font-mono text-xs text-primaryBtn overflow-x-auto">
+            https://policies.google.com/technologies/ads
           </div>
-          <p className="text-secondaryTextColor text-sm leading-relaxed">
-            If you contact us directly via email or our contact form, we may receive additional information about you such as your name, email address, phone number, the contents of the message and/or attachments you may send us, and any other information you choose to provide.
+
+          {/* Section 4 - Third Party Advertisers */}
+          <h2 className="text-lg font-bold text-primaryTextColor mt-6">
+            4. Third-Party Advertising Partners
+          </h2>
+          <p>
+            Third-party ad servers or ad networks use technologies like cookies, JavaScript, or Web Beacons that are used in their respective advertisements and links that appear on {SITENAME}, which are sent directly to users' browsers. They automatically receive your IP address when this occurs. These technologies are used to measure the effectiveness of their advertising campaigns and/or to personalize the advertising content that you see on websites that you visit.
           </p>
-          <p className="text-secondaryTextColor text-sm leading-relaxed">
-            Like many other websites, {SITENAME} uses standard log files. The information inside the log files includes internet protocol (IP) addresses, browser type, Internet Service Provider (ISP), date/time stamp, referring/exit pages, and possibly the number of clicks. These are not linked to any personally identifiable information.
+          <p className="mt-2 font-medium text-primaryTextColor">
+            Note that {SITENAME} has no access to or control over these cookies that are used by third-party advertisers.
           </p>
-        </section>
 
-        <hr className="border-border/50" />
-
-        {/* Cookies and Web Beacons */}
-        <section className="space-y-3">
-          <div className="flex items-center gap-3 text-lg font-bold text-primaryBtn">
-            <HiOutlineLockClosed className="text-2xl shrink-0" />
-            <h2>2. Cookies and Web Beacons</h2>
-          </div>
-          <p className="text-secondaryTextColor text-sm leading-relaxed">
-            Like any other website, {SITENAME} uses 'cookies'. These cookies are used to store information including visitors' preferences, and the pages on the website that the visitor accessed or visited. The information is used to optimize the users' experience by customizing our web page content based on visitors' browser type and/or other information.
-          </p>
-        </section>
-
-        <hr className="border-border/50" />
-
-        {/* Google DoubleClick DART Cookie & AdSense */}
-        <section className="space-y-3">
-          <div className="flex items-center gap-3 text-lg font-bold text-accent">
-            <HiOutlineDocumentText className="text-2xl shrink-0" />
-            <h2>3. Google DoubleClick DART Cookie & Third-Party Vendors</h2>
-          </div>
-          <p className="text-secondaryTextColor text-sm leading-relaxed">
-            Google is one of a third-party vendor on our site. It also uses cookies, known as DART cookies, to serve ads to our site visitors based upon their visit to www.website.com and other sites on the internet. However, visitors may choose to decline the use of DART cookies by visiting the Google ad and content network Privacy Policy at the following URL:{" "}
-            <a
-              href="https://policies.google.com/technologies/ads"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-primaryBtn hover:underline"
-            >
-              https://policies.google.com/technologies/ads
-            </a>
-          </p>
-          <p className="text-secondaryTextColor text-sm leading-relaxed">
-            Some of advertisers on our site may use cookies and web beacons. Our advertising partners include Google AdSense and third-party ad networks. Each of our advertising partners has their own Privacy Policy for their policies on user data.
-          </p>
-        </section>
-
-        <hr className="border-border/50" />
-
-        {/* Third Party Privacy Policies */}
-        <section className="space-y-3">
-          <h2 className="text-lg font-bold text-primaryBtn">4. Third-Party Privacy Policies</h2>
-          <p className="text-secondaryTextColor text-sm leading-relaxed">
-            {SITENAME}'s Privacy Policy does not apply to other advertisers or websites. Thus, we are advising you to consult the respective Privacy Policies of these third-party ad servers for more detailed information. It may include their practices and instructions about how to opt-out of certain options.
-          </p>
-          <p className="text-secondaryTextColor text-sm leading-relaxed">
-            You can choose to disable cookies through your individual browser options. To know more detailed information about cookie management with specific web browsers, it can be found at the browsers' respective websites.
-          </p>
-        </section>
-
-        <hr className="border-border/50" />
-
-        {/* GDPR Privacy Rights */}
-        <section className="space-y-3">
-          <h2 className="text-lg font-bold text-primaryBtn">5. GDPR Data Protection Rights (European Users)</h2>
-          <p className="text-secondaryTextColor text-sm leading-relaxed">
+          {/* Section 5 - CCPA & GDPR Rights */}
+          <h2 className="text-lg font-bold text-primaryTextColor mt-6">
+            5. CCPA & GDPR Data Protection Rights
+          </h2>
+          <p>
             We would like to make sure you are fully aware of all of your data protection rights. Every user is entitled to the following:
           </p>
-          <ul className="list-disc list-inside text-secondaryTextColor text-sm space-y-1.5 pl-2">
-            <li><strong className="text-primaryTextColor">The right to access:</strong> You have the right to request copies of your personal data.</li>
-            <li><strong className="text-primaryTextColor">The right to rectification:</strong> You have the right to request correction of inaccurate information.</li>
-            <li><strong className="text-primaryTextColor">The right to erasure:</strong> You have the right to request erasure of your personal data under certain conditions.</li>
-            <li><strong className="text-primaryTextColor">The right to restrict processing:</strong> You have the right to request restrictions on data processing.</li>
+          <ul className="list-disc pl-6 space-y-1.5 mt-2">
+            <li><strong>The right to access:</strong> You have the right to request copies of your personal data.</li>
+            <li><strong>The right to rectification:</strong> You have the right to request that we correct any information you believe is inaccurate.</li>
+            <li><strong>The right to erasure:</strong> You have the right to request that we erase your personal data, under certain conditions.</li>
+            <li><strong>The right to restrict processing:</strong> You have the right to request that we restrict the processing of your personal data.</li>
           </ul>
-        </section>
 
-        <hr className="border-border/50" />
-
-        {/* CCPA Privacy Rights */}
-        <section className="space-y-3">
-          <h2 className="text-lg font-bold text-primaryBtn">6. CCPA Privacy Rights (Do Not Sell My Personal Information)</h2>
-          <p className="text-secondaryTextColor text-sm leading-relaxed">
-            Under the CCPA, among other rights, California consumers have the right to request that a business disclose the categories and specific pieces of personal data collected, or request deletion of personal data. {SITENAME} does not sell personal information to third parties.
+          {/* Section 6 - Children's Privacy */}
+          <h2 className="text-lg font-bold text-primaryTextColor mt-6">
+            6. Children's Information
+          </h2>
+          <p>
+            Another part of our priority is adding protection for children while using the internet. We encourage parents and guardians to observe, participate in, and/or monitor and guide their online activity.
           </p>
-        </section>
-
-        <hr className="border-border/50" />
-
-        {/* Contact Information */}
-        <section className="space-y-3 bg-bgColorSecondary/60 p-5 rounded-xl border border-border">
-          <h2 className="text-base font-bold text-primaryTextColor">Questions or Privacy Concerns?</h2>
-          <p className="text-secondaryTextColor text-sm">
-            If you have additional questions or require more information about our Privacy Policy, do not hesitate to contact us through our{" "}
-            <a href="/contact" className="text-primaryBtn font-semibold hover:underline">Contact Us Page</a> or via email at{" "}
-            <span className="text-accent font-semibold">privacy@{SITENAME.toLowerCase()}.com</span>.
+          <p className="mt-2">
+            {SITENAME} does not knowingly collect any Personal Identifiable Information from children under the age of 13. If you think that your child provided this kind of information on our website, we strongly encourage you to contact us immediately and we will do our best efforts to promptly remove such information from our records.
           </p>
-        </section>
+
+          {/* Contact box */}
+          <div className="bg-bgColorSecondary border border-border p-5 rounded-xl mt-8">
+            <h3 className="text-sm font-bold text-primaryTextColor uppercase tracking-wider mb-1">Privacy Contact</h3>
+            <p className="text-xs text-secondaryTextColor">If you have any questions or concerns regarding our privacy practices, please contact us at:</p>
+            <span className="text-sm font-bold text-primaryBtn block mt-2">privacy@{DOMAIN}</span>
+          </div>
+        </div>
       </div>
     </div>
   );

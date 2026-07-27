@@ -16,36 +16,6 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://filmy4uhd.com/about</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://filmy4uhd.com/contact</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://filmy4uhd.com/privacy-policy</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://filmy4uhd.com/terms</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://filmy4uhd.com/dmca</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://filmy4uhd.com/disclaimer</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
     <loc>https://filmy4uhd.com/mov/1731480</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
