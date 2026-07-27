@@ -90,46 +90,39 @@ export default function Nav() {
       <header
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           scrolled
-            ? "bg-bgColorTertiary/95 backdrop-blur-xl border-b border-border shadow-nav"
-            : "bg-transparent"
+            ? "bg-[#06080D]/90 backdrop-blur-2xl border-b border-white/10 shadow-[0_10px_30px_rgba(0,0,0,0.8)]"
+            : "bg-gradient-to-b from-[#06080D]/90 to-transparent backdrop-blur-md"
         }`}
       >
         <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 h-16 flex items-center justify-between gap-4">
           {/* Logo */}
           <Link
             to="/"
-            className="flex items-center gap-2 shrink-0 group"
+            className="flex items-center gap-2.5 shrink-0 group"
             aria-label={`${SITENAME} Home`}
           >
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-accent to-primaryBtn flex items-center justify-center shadow-gold">
-              <MdLocalMovies className="text-bgColor text-lg" />
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-400 via-amber-500 to-amber-600 flex items-center justify-center shadow-[0_0_15px_rgba(245,158,11,0.5)] group-hover:scale-105 transition-transform">
+              <MdLocalMovies className="text-slate-950 text-xl" />
             </div>
-            <span className="gold-text font-extrabold text-xl tracking-tight block">
+            <span className="gold-text font-black text-2xl tracking-tight block drop-shadow-md">
               {SITENAME || "Filmy4uhd"}
             </span>
           </Link>
 
           {/* Desktop Nav Links */}
-          <nav className="hidden md:flex items-center gap-1" aria-label="Main navigation">
+          <nav className="hidden md:flex items-center gap-1.5 bg-slate-900/60 p-1.5 rounded-full border border-white/10 backdrop-blur-md" aria-label="Main navigation">
             {navLinks.map((link) => (
               <Link
                 key={link.name}
                 to={link.path}
-                className={`relative flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
+                className={`relative flex items-center gap-2 px-4 py-1.5 rounded-full text-xs sm:text-sm font-bold transition-all duration-200 ${
                   navStatus === link.name
-                    ? "text-accent bg-accent/10"
-                    : "text-secondaryTextColor hover:text-primaryTextColor hover:bg-white/5"
+                    ? "text-amber-400 bg-amber-500/15 border border-amber-500/30 shadow-md"
+                    : "text-slate-300 hover:text-white hover:bg-white/5"
                 }`}
               >
-                <span className="text-base">{link.icon}</span>
+                <span className="text-base text-amber-400">{link.icon}</span>
                 {link.name}
-                {navStatus === link.name && (
-                  <motion.div
-                    layoutId="nav-indicator"
-                    className="absolute bottom-0 left-3 right-3 h-0.5 bg-gradient-to-r from-primaryBtn to-accent rounded-full"
-                    transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                  />
-                )}
               </Link>
             ))}
           </nav>
@@ -137,25 +130,25 @@ export default function Nav() {
           {/* Search Bar */}
           <div className="flex-1 max-w-sm hidden sm:block" ref={closeRef}>
             <div className="relative">
-              <div className="flex items-center gap-2 bg-bgColorSecondary border border-border rounded-full px-4 py-2 transition-all duration-200 focus-within:border-primaryBtn focus-within:shadow-gold">
+              <div className="flex items-center gap-2.5 bg-slate-900/80 border border-white/10 rounded-full px-4 py-2 transition-all duration-200 focus-within:border-amber-400 focus-within:shadow-[0_0_20px_rgba(245,158,11,0.3)] backdrop-blur-md">
                 {isLoading ? (
                   <div className="loader-search shrink-0" />
                 ) : (
-                  <RiSearchLine className="text-secondaryTextColor shrink-0 text-base" />
+                  <RiSearchLine className="text-amber-400 shrink-0 text-lg" />
                 )}
                 <input
                   type="text"
                   id="desktop-search"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Search movies, series…"
-                  className="bg-transparent text-primaryTextColor placeholder-mutedText text-sm w-full outline-none"
+                  placeholder="Search 4K movies, series…"
+                  className="bg-transparent text-slate-100 placeholder-slate-400 text-xs sm:text-sm w-full outline-none font-medium"
                   aria-label="Search"
                   autoComplete="off"
                 />
                 {query && (
                   <button onClick={() => { setQuery(""); setDebouncedVal(""); }}>
-                    <BiX className="text-secondaryTextColor hover:text-primaryTextColor text-lg" />
+                    <BiX className="text-slate-400 hover:text-white text-lg" />
                   </button>
                 )}
               </div>
@@ -167,26 +160,26 @@ export default function Nav() {
                     initial={{ opacity: 0, y: -8, scale: 0.97 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: -8, scale: 0.97 }}
-                    transition={{ duration: 0.18 }}
-                    className="absolute top-full mt-2 left-0 right-0 glass-card overflow-hidden z-50 max-h-[60dvh] overflow-y-auto shadow-card"
+                    transition={{ duration: 0.2 }}
+                    className="absolute top-full mt-2 left-0 right-0 glass-card border border-white/15 overflow-hidden z-50 max-h-[60dvh] overflow-y-auto shadow-[0_20px_50px_rgba(0,0,0,0.9)]"
                   >
                     {searchResult.slice(0, 8).map((movie) => (
                       <Link
                         key={movie.tmdb_id}
                         to={movie.media_type === "movie" ? `/mov/${movie.tmdb_id}` : `/ser/${movie.tmdb_id}`}
                         onClick={() => { setQuery(""); setDebouncedVal(""); }}
-                        className="flex items-center gap-3 px-4 py-3 hover:bg-white/5 transition-colors duration-150"
+                        className="flex items-center gap-3 px-4 py-3 hover:bg-amber-500/10 transition-colors duration-150 border-b border-white/5 last:border-0"
                       >
                         <img
                           src={movie.poster || posterPlaceholder}
                           alt={movie.title}
-                          className="w-10 h-14 object-cover rounded-md shrink-0 bg-bgColorSecondary"
+                          className="w-10 h-14 object-cover rounded-lg shrink-0 bg-slate-900 border border-white/10 shadow-md"
                           onError={(e) => { e.target.src = posterPlaceholder; }}
                         />
                         <div className="min-w-0">
-                          <p className="text-primaryTextColor text-sm font-semibold line-clamp-1">{movie.title}</p>
-                          <div className="flex items-center gap-2 mt-0.5">
-                            <span className="text-xs text-secondaryTextColor">{movie.release_year}</span>
+                          <p className="text-slate-100 text-sm font-bold line-clamp-1 hover:text-amber-400">{movie.title}</p>
+                          <div className="flex items-center gap-2 mt-1">
+                            <span className="text-xs text-slate-400 font-semibold">{movie.release_year}</span>
                             <span className="quality-badge">{movie.rip || "HD"}</span>
                           </div>
                         </div>
@@ -195,9 +188,9 @@ export default function Nav() {
                     {searchResult.length > 0 && (
                       <button
                         onClick={() => { navigate(`/search/${query}`); setQuery(""); setDebouncedVal(""); }}
-                        className="w-full text-center py-3 text-xs font-semibold text-primaryBtn hover:bg-primaryBtn/10 transition-colors border-t border-border"
+                        className="w-full text-center py-3 text-xs font-bold text-amber-400 hover:bg-amber-500/20 transition-colors border-t border-white/10"
                       >
-                        See all results for "{query}"
+                        See all results for "{query}" &rarr;
                       </button>
                     )}
                   </motion.div>
@@ -208,7 +201,7 @@ export default function Nav() {
 
           {/* Mobile Search Toggle */}
           <button
-            className="sm:hidden text-secondaryTextColor hover:text-primaryTextColor p-2 rounded-lg hover:bg-white/5 transition-colors"
+            className="sm:hidden text-amber-400 p-2.5 rounded-xl bg-slate-900/80 border border-white/10 hover:bg-white/5 transition-colors"
             onClick={() => setMobileSearchOpen((p) => !p)}
             aria-label="Toggle search"
           >
@@ -223,25 +216,25 @@ export default function Nav() {
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
-              className="sm:hidden bg-bgColorTertiary/95 backdrop-blur-xl border-t border-border overflow-hidden"
+              className="sm:hidden bg-[#06080D]/95 backdrop-blur-2xl border-t border-white/10 overflow-hidden"
               ref={closeRef}
             >
-              <div className="p-3">
-                <div className="flex items-center gap-2 bg-bgColorSecondary border border-border rounded-full px-4 py-2 focus-within:border-primaryBtn">
-                  {isLoading ? <div className="loader-search shrink-0" /> : <RiSearchLine className="text-secondaryTextColor shrink-0" />}
+              <div className="p-4">
+                <div className="flex items-center gap-2 bg-slate-900 border border-amber-400/40 rounded-full px-4 py-2.5 focus-within:shadow-[0_0_15px_rgba(245,158,11,0.3)]">
+                  {isLoading ? <div className="loader-search shrink-0" /> : <RiSearchLine className="text-amber-400 shrink-0 text-base" />}
                   <input
                     autoFocus
                     type="text"
                     id="mobile-search"
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
-                    placeholder="Search…"
-                    className="bg-transparent text-primaryTextColor placeholder-mutedText text-sm w-full outline-none"
+                    placeholder="Search movies, series…"
+                    className="bg-transparent text-slate-100 placeholder-slate-400 text-sm w-full outline-none"
                     aria-label="Mobile search"
                   />
                   {query && (
                     <button onClick={() => { setQuery(""); setDebouncedVal(""); }}>
-                      <BiX className="text-secondaryTextColor text-lg" />
+                      <BiX className="text-slate-400 text-lg" />
                     </button>
                   )}
                 </div>
@@ -252,24 +245,24 @@ export default function Nav() {
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
-                      className="mt-2 rounded-xl overflow-hidden max-h-[50dvh] overflow-y-auto"
+                      className="mt-3 rounded-xl overflow-hidden max-h-[50dvh] overflow-y-auto glass-card border border-white/10"
                     >
                       {searchResult.slice(0, 6).map((movie) => (
                         <Link
                           key={movie.tmdb_id}
                           to={movie.media_type === "movie" ? `/mov/${movie.tmdb_id}` : `/ser/${movie.tmdb_id}`}
                           onClick={() => { setQuery(""); setDebouncedVal(""); setMobileSearchOpen(false); }}
-                          className="flex items-center gap-3 px-3 py-2.5 bg-bgColorSecondary border-b border-border last:border-0 hover:bg-white/5 transition-colors"
+                          className="flex items-center gap-3 px-3 py-2.5 border-b border-white/5 last:border-0 hover:bg-amber-500/10 transition-colors"
                         >
                           <img
                             src={movie.poster || posterPlaceholder}
                             alt={movie.title}
-                            className="w-9 h-12 object-cover rounded-md shrink-0 bg-bgColorSecondary"
+                            className="w-10 h-14 object-cover rounded-lg shrink-0 bg-slate-900"
                             onError={(e) => { e.target.src = posterPlaceholder; }}
                           />
                           <div>
-                            <p className="text-primaryTextColor text-sm font-semibold line-clamp-1">{movie.title}</p>
-                            <p className="text-secondaryTextColor text-xs">{movie.release_year} • {movie.rip || "HD"}</p>
+                            <p className="text-slate-100 text-sm font-bold line-clamp-1">{movie.title}</p>
+                            <p className="text-slate-400 text-xs mt-0.5">{movie.release_year} • {movie.rip || "HD"}</p>
                           </div>
                         </Link>
                       ))}
@@ -284,33 +277,33 @@ export default function Nav() {
 
       {/* ── Mobile Bottom Navigation ──────────────────────────────────────── */}
       <nav
-        className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-bgColorTertiary/95 backdrop-blur-xl border-t border-border flex items-center justify-around h-16 safe-area-pb"
+        className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#06080D]/95 backdrop-blur-2xl border-t border-white/10 flex items-center justify-around h-16 safe-area-pb shadow-[0_-10px_30px_rgba(0,0,0,0.8)]"
         aria-label="Mobile bottom navigation"
       >
         {navLinks.map((link) => (
           <Link
             key={link.name}
             to={link.path}
-            className={`flex flex-col items-center gap-0.5 px-4 py-2 transition-all duration-200 ${
-              navStatus === link.name ? "text-accent" : "text-secondaryTextColor"
+            className={`flex flex-col items-center gap-0.5 px-3 py-1 transition-all duration-200 ${
+              navStatus === link.name ? "text-amber-400" : "text-slate-400"
             }`}
             aria-label={link.name}
           >
-            <span className={`text-2xl transition-transform duration-200 ${navStatus === link.name ? "scale-110" : ""}`}>
+            <span className={`text-xl transition-transform duration-200 ${navStatus === link.name ? "scale-110 text-amber-400" : ""}`}>
               {link.icon}
             </span>
-            <span className="text-[0.6rem] font-semibold">{link.name}</span>
+            <span className="text-[0.62rem] font-bold tracking-tight">{link.name}</span>
           </Link>
         ))}
         <button
           onClick={() => setMobileSearchOpen((p) => !p)}
-          className={`flex flex-col items-center gap-0.5 px-4 py-2 transition-all duration-200 ${
-            mobileSearchOpen ? "text-accent" : "text-secondaryTextColor"
+          className={`flex flex-col items-center gap-0.5 px-3 py-1 transition-all duration-200 ${
+            mobileSearchOpen ? "text-amber-400" : "text-slate-400"
           }`}
           aria-label="Search"
         >
-          <BiSearch className="text-2xl" />
-          <span className="text-[0.6rem] font-semibold">Search</span>
+          <BiSearch className="text-xl" />
+          <span className="text-[0.62rem] font-bold tracking-tight">Search</span>
         </button>
       </nav>
     </>

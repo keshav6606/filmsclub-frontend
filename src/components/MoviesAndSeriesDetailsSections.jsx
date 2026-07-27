@@ -42,13 +42,14 @@ export default function MoviesAndSeriesDetailsSections(props) {
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease: "easeOut" }}
+          className="space-y-8"
         >
           {/* ── Main Detail Card ── */}
-          <div className="glass-card overflow-hidden">
-            <div className="grid lg:grid-cols-[1fr_1fr] gap-0">
+          <div className="glass-card border border-white/10 overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.8)]">
+            <div className="grid lg:grid-cols-[1fr_1.1fr] gap-0">
               {/* Left — Backdrop / Poster with play overlay */}
               <div
-                className="relative aspect-video lg:aspect-auto lg:min-h-[420px] cursor-pointer group overflow-hidden"
+                className="relative aspect-video lg:aspect-auto lg:min-h-[460px] cursor-pointer group overflow-hidden bg-slate-950"
                 onClick={() => props.detailType === "movie" && setIsWatchMoviePopupOpen(true)}
                 role="button"
                 aria-label={`Play ${movie.title}`}
@@ -59,109 +60,111 @@ export default function MoviesAndSeriesDetailsSections(props) {
                   src={movie.backdrop || movie.poster}
                   alt={movie.title}
                   effect="opacity"
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                   wrapperClassName="w-full h-full block"
                 />
                 {/* Gradient overlay */}
-                <div className="absolute inset-0 bg-gradient-to-r from-bgColorSecondary/80 to-transparent lg:block hidden" />
-                <div className="absolute inset-0 bg-gradient-to-t from-bgColorSecondary/60 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-r from-[#06080D] via-[#06080D]/40 to-transparent lg:block hidden" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#06080D] via-transparent to-transparent" />
 
                 {/* Play Button */}
                 {props.detailType === "movie" && (
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-16 h-16 rounded-full border-2 border-primaryBtn bg-primaryBtn/20 backdrop-blur-sm flex items-center justify-center text-primaryBtn shadow-gold opacity-0 group-hover:opacity-100 transition-all duration-300 group-hover:scale-110">
-                      <BsPlayFill className="text-3xl ml-1" />
+                    <div className="w-20 h-20 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-slate-950 shadow-[0_0_35px_rgba(245,158,11,0.8)] group-hover:scale-115 transition-transform border-2 border-white/30">
+                      <BsPlayFill className="text-4xl ml-1" />
                     </div>
                   </div>
                 )}
               </div>
 
               {/* Right — Info Panel */}
-              <div className="p-6 lg:p-8 flex flex-col justify-between">
-                {/* Genres */}
-                {movie.genres?.length > 0 && (
-                  <div className="flex flex-wrap gap-2 mb-3">
-                    {movie.genres.map((g, i) => (
-                      <span key={i} className="genre-pill">{g}</span>
-                    ))}
-                  </div>
-                )}
+              <div className="p-6 lg:p-10 flex flex-col justify-between space-y-4">
+                <div>
+                  {/* Genres */}
+                  {movie.genres?.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mb-3">
+                      {movie.genres.map((g, i) => (
+                        <span key={i} className="genre-pill">{g}</span>
+                      ))}
+                    </div>
+                  )}
 
-                {/* Title */}
-                <h1 className="text-2xl sm:text-3xl font-extrabold text-primaryTextColor leading-tight mb-2">
-                  {movie.title}
-                </h1>
+                  {/* Title */}
+                  <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-white leading-tight mb-3">
+                    <span className="gold-text">{movie.title}</span>
+                  </h1>
 
-                {/* Status (for TV) */}
-                {movie.media_type === "tv" && movie.status && (
-                  <span className="inline-block bg-primaryBtn/10 text-primaryBtn border border-primaryBtn/30 text-xs font-semibold px-3 py-1 rounded-full mb-3 w-fit">
-                    {movie.status}
-                  </span>
-                )}
-
-                {/* Description */}
-                <p className="text-secondaryTextColor text-sm leading-relaxed line-clamp-3 mb-4">
-                  {movie.description}
-                </p>
-
-                {/* Metadata Grid */}
-                <div className="grid grid-cols-2 gap-x-4 gap-y-2 mb-5">
-                  {/* Runtime / Seasons */}
-                  <div className="flex items-center gap-2 text-sm">
-                    {movie.media_type === "movie"
-                      ? <BiTime className="text-primaryBtn text-base shrink-0" />
-                      : <BsListStars className="text-primaryBtn text-base shrink-0" />}
-                    <span className="text-secondaryTextColor">
-                      {movie.media_type === "movie"
-                        ? `${movie.runtime || "?"} min`
-                        : `${movie.total_seasons || "?"} Seasons · ${movie.total_episodes || "?"} Eps`}
+                  {/* Status (for TV) */}
+                  {movie.media_type === "tv" && movie.status && (
+                    <span className="inline-block bg-cyan-500/15 text-cyan-300 border border-cyan-500/40 text-xs font-bold px-3.5 py-1 rounded-full mb-3 w-fit shadow-md">
+                      STATUS: {movie.status.toUpperCase()}
                     </span>
-                  </div>
-
-                  {/* Year */}
-                  {movie.release_year && (
-                    <div className="flex items-center gap-2 text-sm">
-                      <FiCalendar className="text-primaryBtn text-base shrink-0" />
-                      <span className="text-secondaryTextColor">{movie.release_year}</span>
-                    </div>
                   )}
 
-                  {/* Language */}
-                  {movie.languages?.length > 0 && (
-                    <div className="flex items-center gap-2 text-sm">
-                      <LuLanguages className="text-primaryBtn text-base shrink-0" />
-                      <span className="text-secondaryTextColor">{formatLangs(movie.languages)}</span>
-                    </div>
-                  )}
+                  {/* Description */}
+                  <p className="text-slate-300 text-sm leading-relaxed line-clamp-4 mb-5 font-normal">
+                    {movie.description}
+                  </p>
 
-                  {/* Quality */}
-                  {movie.rip && (
-                    <div className="flex items-center gap-2 text-sm">
-                      <MdOutlineHighQuality className="text-primaryBtn text-base shrink-0" />
-                      <span className="text-secondaryTextColor">{movie.rip}</span>
+                  {/* Metadata Grid */}
+                  <div className="grid grid-cols-2 gap-x-6 gap-y-3 p-4 rounded-xl bg-slate-900/60 border border-white/5 backdrop-blur-md mb-6">
+                    {/* Runtime / Seasons */}
+                    <div className="flex items-center gap-2.5 text-xs sm:text-sm">
+                      {movie.media_type === "movie"
+                        ? <BiTime className="text-amber-400 text-lg shrink-0" />
+                        : <BsListStars className="text-amber-400 text-lg shrink-0" />}
+                      <span className="text-slate-300 font-semibold">
+                        {movie.media_type === "movie"
+                          ? `${movie.runtime || "?"} min`
+                          : `${movie.total_seasons || "?"} Seasons · ${movie.total_episodes || "?"} Episodes`}
+                      </span>
                     </div>
-                  )}
 
-                  {/* Rating */}
-                  {movie.rating && (
-                    <div className="flex items-center gap-2 text-sm">
-                      <PiStarFill className="text-goldLight text-base shrink-0" />
-                      <span className="text-goldLight font-bold">{movie.rating.toFixed(1)}</span>
-                      <span className="text-mutedText text-xs">/ 10</span>
+                    {/* Year */}
+                    {movie.release_year && (
+                      <div className="flex items-center gap-2.5 text-xs sm:text-sm">
+                        <FiCalendar className="text-amber-400 text-lg shrink-0" />
+                        <span className="text-slate-300 font-semibold">{movie.release_year}</span>
+                      </div>
+                    )}
+
+                    {/* Language */}
+                    {movie.languages?.length > 0 && (
+                      <div className="flex items-center gap-2.5 text-xs sm:text-sm">
+                        <LuLanguages className="text-cyan-400 text-lg shrink-0" />
+                        <span className="text-slate-300 font-semibold">{formatLangs(movie.languages)}</span>
+                      </div>
+                    )}
+
+                    {/* Quality */}
+                    {movie.rip && (
+                      <div className="flex items-center gap-2.5 text-xs sm:text-sm">
+                        <MdOutlineHighQuality className="text-amber-400 text-lg shrink-0" />
+                        <span className="text-slate-300 font-semibold">{movie.rip}</span>
+                      </div>
+                    )}
+
+                    {/* Rating */}
+                    {movie.rating && (
+                      <div className="flex items-center gap-2.5 text-xs sm:text-sm">
+                        <PiStarFill className="text-amber-400 text-lg shrink-0" />
+                        <span className="text-amber-400 font-black">{movie.rating.toFixed(1)}</span>
+                        <span className="text-slate-500 text-xs font-semibold">/ 10 IMDb</span>
+                      </div>
+                    )}
+
+                    {/* Media Type */}
+                    <div className="flex items-center gap-2.5 text-xs sm:text-sm">
+                      {movie.media_type === "movie"
+                        ? <HiOutlineFilm className="text-amber-400 text-lg shrink-0" />
+                        : <HiOutlineTv className="text-cyan-400 text-lg shrink-0" />}
+                      <span className="text-slate-300 font-semibold capitalize">{movie.media_type}</span>
                     </div>
-                  )}
-
-                  {/* Media Type */}
-                  <div className="flex items-center gap-2 text-sm">
-                    {movie.media_type === "movie"
-                      ? <HiOutlineFilm className="text-primaryBtn text-base shrink-0" />
-                      : <HiOutlineTv className="text-primaryBtn text-base shrink-0" />}
-                    <span className="text-secondaryTextColor capitalize">{movie.media_type}</span>
                   </div>
                 </div>
 
                 {/* Telegram Button */}
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-3">
                   <TelegramButton movieData={movie} />
                 </div>
               </div>
