@@ -1,3 +1,4 @@
+import React from "react";
 import {
   AiOutlineFastBackward,
   AiFillFastForward,
@@ -28,54 +29,55 @@ const getPagesCut = ({ pagesCount, pagesCutCount, currentPage }) => {
 };
 
 const PaginationItem = ({ page, currentPage, onPageChange, isDisabled }) => {
-  return !isDisabled ? (
+  if (isDisabled) return null;
+
+  const isSelected = page === Number(currentPage);
+
+  return (
     <button
-      className={
-        page === Number(currentPage)
-          ? " border-none flex-grow max-w-fit text-md px-4 py-[0.2rem] bg-otherColor text-bgColor list-none rounded-full transition-all duration-300 ease-in-out hover:bg-secondaryTextColor hover:text-bgColor"
-          : " border-none text-secondaryTextColor max-w-fit text-md flex-grow px-4 py-[0.2rem] bg-btnColor list-none rounded-full transition-all duration-300 ease-in-out hover:bg-secondaryTextColor hover:text-bgColor"
-      }
       onClick={() => onPageChange(page)}
+      className={`min-w-[40px] h-10 px-3.5 rounded-full text-xs font-extrabold transition-all duration-200 flex items-center justify-center border ${
+        isSelected
+          ? "bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 border-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.5)] scale-105"
+          : "bg-slate-900/80 text-slate-300 border-white/10 hover:border-amber-400/50 hover:text-amber-400 backdrop-blur-md"
+      }`}
     >
-      <span className="page-link">{page}</span>
-    </button>
-  ) : (
-    <button
-      style={{ display: "none" }}
-      className={
-        page === Number(currentPage)
-          ? " border-none flex-grow max-w-[5rem] text-md px-4 py-[0.2rem] bg-otherColor text-bgColor list-none rounded-full transition-all duration-300 ease-in-out hover:bg-secondaryTextColor hover:text-bgColor"
-          : " border-none text-secondaryTextColor text-md flex-grow max-w-[5rem] px-4 py-[0.2rem] bg-btnColor list-none rounded-full transition-all duration-300 ease-in-out hover:bg-secondaryTextColor hover:text-bgColor"
-      }
-      onClick={() => onPageChange(page)}
-    >
-      <span className="page-link">{page}</span>
+      {page}
     </button>
   );
 };
 
 const Pagination = ({ currentPage, total, limit, onPageChange, pagesNum }) => {
-  const pagesCount = Math.ceil(total / limit); // Calculate total number of pages
+  const pagesCount = Math.ceil(total / limit);
   const pagesCut = getPagesCut({ pagesCount, pagesCutCount: 5, currentPage });
   const pages = range(pagesCut.start, pagesCut.end);
 
   const isFirstPage = Number(currentPage) === 1;
   const isLastPage = Number(currentPage) === pagesCount;
 
+  if (pagesCount <= 1) return null;
+
   return (
-    <ul className="flex items-center gap-2 flex-wrap mt-6">
-      <PaginationItem
-        page={<AiOutlineFastBackward className="text-xl" />}
-        currentPage={Number(currentPage)}
-        onPageChange={() => onPageChange(1)}
-        isDisabled={isFirstPage}
-      />
-      <PaginationItem
-        page={<AiOutlineArrowLeft className="text-xl" />}
-        currentPage={Number(currentPage)}
-        onPageChange={() => onPageChange(Number(currentPage) - 1)}
-        isDisabled={isFirstPage}
-      />
+    <div className="flex items-center justify-center gap-2 flex-wrap mt-10 mb-6">
+      {!isFirstPage && (
+        <>
+          <button
+            onClick={() => onPageChange(1)}
+            className="w-10 h-10 rounded-full bg-slate-900/80 border border-white/10 text-amber-400 hover:bg-amber-500/20 flex items-center justify-center transition-all shadow-md"
+            aria-label="First page"
+          >
+            <AiOutlineFastBackward className="text-base" />
+          </button>
+          <button
+            onClick={() => onPageChange(Number(currentPage) - 1)}
+            className="w-10 h-10 rounded-full bg-slate-900/80 border border-white/10 text-amber-400 hover:bg-amber-500/20 flex items-center justify-center transition-all shadow-md"
+            aria-label="Previous page"
+          >
+            <AiOutlineArrowLeft className="text-base" />
+          </button>
+        </>
+      )}
+
       {pages.map((page) => (
         <PaginationItem
           page={page}
@@ -84,21 +86,27 @@ const Pagination = ({ currentPage, total, limit, onPageChange, pagesNum }) => {
           onPageChange={onPageChange}
         />
       ))}
-      <PaginationItem
-        page={<AiOutlineArrowRight className="text-xl" />}
-        currentPage={Number(currentPage)}
-        onPageChange={() => onPageChange(Number(currentPage) + 1)}
-        isDisabled={isLastPage}
-      />
-      <PaginationItem
-        page={<AiFillFastForward className="text-xl" />}
-        currentPage={Number(currentPage)}
-        onPageChange={() => onPageChange(pagesNum)}
-        isDisabled={isLastPage}
-      />
-    </ul>
+
+      {!isLastPage && (
+        <>
+          <button
+            onClick={() => onPageChange(Number(currentPage) + 1)}
+            className="w-10 h-10 rounded-full bg-slate-900/80 border border-white/10 text-amber-400 hover:bg-amber-500/20 flex items-center justify-center transition-all shadow-md"
+            aria-label="Next page"
+          >
+            <AiOutlineArrowRight className="text-base" />
+          </button>
+          <button
+            onClick={() => onPageChange(pagesNum || pagesCount)}
+            className="w-10 h-10 rounded-full bg-slate-900/80 border border-white/10 text-amber-400 hover:bg-amber-500/20 flex items-center justify-center transition-all shadow-md"
+            aria-label="Last page"
+          >
+            <AiFillFastForward className="text-base" />
+          </button>
+        </>
+      )}
+    </div>
   );
 };
 
 export default Pagination;
-

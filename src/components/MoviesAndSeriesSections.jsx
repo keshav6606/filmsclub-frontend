@@ -1,62 +1,67 @@
 import React from "react";
 import MovieCard from "./MovieCard";
-import MovieCardSkeleton from "./MovieCardSkeleton"
+import MovieCardSkeleton from "./MovieCardSkeleton";
+import { HiSparkles } from "react-icons/hi2";
 
 export default function HomeSection(props) {
+  const filterOptions = [
+    { name: "⚡ Latest Drops", value: "updated_on" },
+    { name: "⭐ Top Rated", value: "rating" },
+    { name: "📅 New Releases", value: "release_year" },
+  ];
+
   return (
-    <>
-      {/* Title */}
-      <div className="mt-[5rem] flex items-center flex-wrap gap-5 text-primaryTextColor pb-[1.5rem]">
-        <div className="pl-[1rem] border-l-2 border-primaryBtn">
-          <p className="text-[0.8rem] uppercase font-bold sm:text-[1rem]">
-            {props.sectionTitle}
-          </p>
-        </div>
-
-        <div className="flex items-center flex-wrap gap-8 text-secondaryTextColor">
-          {(props.dataType === "movies" || props.dataType === "series") && (
-            <div className="flex items-center gap-2 flex-wrap justify-start">
-              {[
-                { name: "Latest", value: "updated_on" },
-                { name: "Top Rated", value: "rating" },
-                { name: "New", value: "release_year" },
-              ].map((item, index) => (
-                <button
-                  key={index}
-                  onClick={() => {
-                    props.setMovieFilterVal(item.value);
-                    props.setMovieFilter(item.value);
-                  }}
-                  className={
-                    item.value === props.movieFilterVal
-                      ? "py-2 px-2 bg-secondaryTextColor rounded-full text-bgColor text-xs flex-grow transition-all duration-300 ease-in-out hover:bg-primaryTextColor sm:text-sm sm:px-4"
-                      : "py-2 px-2 bg-bgColorSecondary rounded-full text-secondaryTextColor text-xs transition-all duration-300 ease-in-out hover:bg-primaryTextColor flex-grow hover:text-bgColor sm:text-sm sm:px-4"
-                  }
-                >
-                  {item.name}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Movies, series, and all other sections */}
-      <div>
-        {!props.isMovieDataLoading ? (
-          <div className="relative">
-            <div className="grid gap-x-2 gap-y-6 grid-cols-2 md:grid-cols-3 bsmmd:grid-cols-4 lg:grid-cols-5 blgxl:grid-cols-6 xl:grid-cols-7">
-              {props.movieData.map(
-                (movie, index) =>
-                    <MovieCard key={index} movie={movie} />
-              )}
-            </div>
+    <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 mt-20 mb-8">
+      {/* Title & Filter Options Bar */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 mb-8 border-b border-white/10">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 shadow-md">
+            <HiSparkles className="text-xl" />
           </div>
-        ) : (
-          <MovieCardSkeleton />
+          <h1 className="section-title text-2xl md:text-3xl font-black">
+            {props.sectionTitle}
+          </h1>
+        </div>
+
+        {/* Filter Buttons */}
+        {(props.dataType === "movies" || props.dataType === "series") && (
+          <div className="flex items-center gap-2 flex-wrap bg-slate-900/80 p-1.5 rounded-full border border-white/10 backdrop-blur-md">
+            {filterOptions.map((item, index) => (
+              <button
+                key={index}
+                onClick={() => {
+                  props.setMovieFilterVal(item.value);
+                  props.setMovieFilter(item.value);
+                }}
+                className={`py-2 px-4 rounded-full text-xs font-bold transition-all duration-250 ${
+                  item.value === props.movieFilterVal
+                    ? "bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 shadow-[0_0_15px_rgba(245,158,11,0.5)] scale-105"
+                    : "text-slate-300 hover:text-white hover:bg-white/10"
+                }`}
+              >
+                {item.name}
+              </button>
+            ))}
+          </div>
         )}
       </div>
-    </>
+
+      {/* Cards Grid */}
+      <div>
+        {!props.isMovieDataLoading ? (
+          <div className="grid grid-cols-2 xs:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 blgxl:grid-cols-6 xl:grid-cols-7 gap-4 md:gap-5">
+            {props.movieData.map((movie, index) => (
+              <MovieCard key={index} movie={movie} />
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 xs:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 blgxl:grid-cols-6 xl:grid-cols-7 gap-4 md:gap-5">
+            {Array.from({ length: 14 }).map((_, i) => (
+              <MovieCardSkeleton key={i} />
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
-
