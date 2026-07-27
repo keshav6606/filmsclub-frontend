@@ -38,6 +38,17 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* ─── Legacy Color & Theme Aliases (Prevents Blank Text Pages) ────────── */
+.text-primaryTextColor { color: #F8FAFC !important; }
+.text-secondaryTextColor { color: #CBD5E1 !important; }
+.text-primaryBtn { color: #FBBF24 !important; }
+.bg-primaryBtn { background-color: #F59E0B !important; }
+.bg-bgColor { background-color: #06080D !important; }
+.bg-bgColorSecondary { background-color: #0F131C !important; }
+.border-border { border-color: rgba(255, 255, 255, 0.12) !important; }
+.placeholder-mutedText::placeholder { color: #64748B !important; }
+.shadow-gold { box-shadow: 0 0 25px rgba(245, 158, 11, 0.4) !important; }
+
 /* ─── Custom Scrollbar ──────────────────────────────────────────────────── */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: #06080D; }
