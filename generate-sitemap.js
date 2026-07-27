@@ -44,13 +44,14 @@ async function generateSitemap() {
     { loc: `${CANONICAL_HOST}/disclaimer`, changefreq: 'monthly', priority: '0.7' }
   ];
 
-  // Fetch Movies
+  // Fetch Movies with safety timeout
   try {
     let page = 1;
     let hasMore = true;
-    while (hasMore && page <= 5) { // Fetch up to 100 movies
+    while (hasMore && page <= 5) {
       const res = await axios.get(`${BASE_URL}/api/movies`, {
-        params: { sort_by: 'updated_on:desc', page, page_size: 20 }
+        params: { sort_by: 'updated_on:desc', page, page_size: 20 },
+        timeout: 7000
       });
       const movies = res.data.movies || [];
       if (movies.length === 0) {
@@ -69,16 +70,17 @@ async function generateSitemap() {
       }
     }
   } catch (error) {
-    console.error('Error fetching movies for sitemap:', error.message);
+    console.warn('Warning: Could not fetch movies for sitemap during build:', error.message);
   }
 
-  // Fetch TV Shows
+  // Fetch TV Shows with safety timeout
   try {
     let page = 1;
     let hasMore = true;
-    while (hasMore && page <= 5) { // Fetch up to 100 shows
+    while (hasMore && page <= 5) {
       const res = await axios.get(`${BASE_URL}/api/tvshows`, {
-        params: { sort_by: 'updated_on:desc', page, page_size: 20 }
+        params: { sort_by: 'updated_on:desc', page, page_size: 20 },
+        timeout: 7000
       });
       const shows = res.data.tv_shows || [];
       if (shows.length === 0) {
@@ -97,7 +99,7 @@ async function generateSitemap() {
       }
     }
   } catch (error) {
-    console.error('Error fetching tv shows for sitemap:', error.message);
+    console.warn('Warning: Could not fetch tv shows for sitemap during build:', error.message);
   }
 
   // Build XML
@@ -119,4 +121,6 @@ async function generateSitemap() {
   console.log(`Sitemap generated successfully at ${outputPath} with ${urls.length} URLs!`);
 }
 
-generateSitemap();
+generateSitemap().catch(err => {
+  console.warn("Non-fatal sitemap generation error:", err.message);
+});
