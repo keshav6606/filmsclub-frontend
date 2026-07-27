@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFD166" />
+      <stop offset="50%" stop-color="#D4A017" />
+      <stop offset="100%" stop-color="#B8860B" />
+    </linearGradient>
+    <linearGradient id="darkBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#141820" />
+      <stop offset="100%" stop-color="#07080B" />
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="12" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- Background Rounded Shield -->
+  <rect x="24" y="24" width="464" height="464" rx="100" fill="url(#darkBg)" stroke="url(#goldGrad)" stroke-width="12" />
+
+  <!-- Outer Film Reel / Glow Ring -->
+  <circle cx="256" cy="256" r="170" fill="none" stroke="url(#goldGrad)" stroke-width="16" opacity="0.3" filter="url(#glow)" />
+  <circle cx="256" cy="256" r="160" fill="none" stroke="url(#goldGrad)" stroke-width="8" stroke-dasharray="24 16" />
+
+  <!-- Central Play Icon -->
+  <path d="M210 160 L350 256 L210 352 Z" fill="url(#goldGrad)" filter="url(#glow)" />
+  
+  <!-- Film Sprocket Accents -->
+  <circle cx="256" cy="116" r="12" fill="#FFD166" />
+  <circle cx="256" cy="396" r="12" fill="#FFD166" />
+  <circle cx="116" cy="256" r="12" fill="#FFD166" />
+  <circle cx="396" cy="256" r="12" fill="#FFD166" />
+</svg>

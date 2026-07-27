@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { BiSearch, BiX } from "react-icons/bi";
-import { HiOutlineHome, HiOutlineFilm, HiOutlineTv } from "react-icons/hi2";
+import { BiSearch, BiX, BiChevronDown } from "react-icons/bi";
+import { HiOutlineHome, HiOutlineFilm, HiOutlineTv, HiOutlineShieldCheck, HiOutlineInformationCircle, HiOutlineEnvelope, HiOutlineScale, HiOutlineDocumentText, HiOutlineShieldExclamation } from "react-icons/hi2";
 import { RiSearchLine } from "react-icons/ri";
-import { MdLocalMovies } from "react-icons/md";
 import posterPlaceholder from "../assets/images/poster-placeholder.png";
+import BrandLogo from "./svg/BrandLogo";
 
 const BASE = import.meta.env.VITE_BASE_URL;
-const SITENAME = import.meta.env.VITE_SITENAME;
+const SITENAME = import.meta.env.VITE_SITENAME || "Filmy4uhd";
 
 export default function Nav() {
   const location = useLocation();
@@ -21,24 +21,29 @@ export default function Nav() {
   const [isLoading, setIsLoading] = useState(false);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [policiesOpen, setPoliciesOpen] = useState(false);
 
-  // Scroll detection for nav shadow
+  // Scroll detection
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Update navStatus based on the current path
+  // Active path tracking
   useEffect(() => {
     const path = location.pathname;
     if (path === "/") setNavStatus("Home");
     else if (path.startsWith("/mov") || path.startsWith("/Movies")) setNavStatus("Movies");
     else if (path.startsWith("/ser") || path.startsWith("/Series")) setNavStatus("Series");
-    else if (path.startsWith("/search")) setNavStatus("Search");
+    else if (["/privacy-policy", "/terms", "/about", "/contact", "/dmca", "/disclaimer"].includes(path)) {
+      setNavStatus("Help & Legal");
+    } else {
+      setNavStatus("");
+    }
   }, [location.pathname]);
 
-  // Query Data Fetcher
+  // Fetch search data
   useEffect(() => {
     if (!debouncedVal) {
       setSearchResult([]);
@@ -54,14 +59,16 @@ export default function Nav() {
       .catch(() => setIsLoading(false));
   }, [debouncedVal]);
 
-  // Debounce
+  // Debounce search input
   useEffect(() => {
-    const timer = setTimeout(() => setDebouncedVal(query), 500);
+    const timer = setTimeout(() => setDebouncedVal(query), 400);
     return () => clearTimeout(timer);
   }, [query]);
 
-  // Close on outside click
+  // Outside click close
   const closeRef = useRef();
+  const dropdownRef = useRef();
+
   useEffect(() => {
     const handler = (e) => {
       if (closeRef.current && !closeRef.current.contains(e.target)) {
@@ -69,15 +76,27 @@ export default function Nav() {
         setQuery("");
         setMobileSearchOpen(false);
       }
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setPoliciesOpen(false);
+      }
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  const navLinks = [
+  const primaryNavLinks = [
     { name: "Home", icon: <HiOutlineHome />, path: "/" },
     { name: "Movies", icon: <HiOutlineFilm />, path: "/movies" },
     { name: "Series", icon: <HiOutlineTv />, path: "/series" },
+  ];
+
+  const policyLinks = [
+    { name: "About Us", path: "/about", icon: <HiOutlineInformationCircle className="text-primaryBtn" /> },
+    { name: "Contact Us", path: "/contact", icon: <HiOutlineEnvelope className="text-accent" /> },
+    { name: "Privacy Policy", path: "/privacy-policy", icon: <HiOutlineShieldCheck className="text-goldLight" /> },
+    { name: "Terms of Service", path: "/terms", icon: <HiOutlineScale className="text-primaryBtn" /> },
+    { name: "DMCA Policy", path: "/dmca", icon: <HiOutlineDocumentText className="text-red-400" /> },
+    { name: "Disclaimer", path: "/disclaimer", icon: <HiOutlineShieldExclamation className="text-accent" /> },
   ];
 
   return (
@@ -87,27 +106,26 @@ export default function Nav() {
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           scrolled
             ? "bg-bgColorTertiary/95 backdrop-blur-xl border-b border-border shadow-nav"
-            : "bg-transparent"
+            : "bg-gradient-to-b from-bgColor/90 via-bgColor/50 to-transparent"
         }`}
       >
         <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 h-16 flex items-center justify-between gap-4">
+          
           {/* Logo */}
           <Link
             to="/"
-            className="flex items-center gap-2 shrink-0 group"
+            className="flex items-center gap-2.5 shrink-0 group"
             aria-label={`${SITENAME} Home`}
           >
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-accent to-primaryBtn flex items-center justify-center shadow-gold">
-              <MdLocalMovies className="text-bgColor text-lg" />
-            </div>
-            <span className="gold-text font-extrabold text-xl tracking-tight block">
-              {SITENAME || "Filmy4uhd"}
+            <BrandLogo size={34} className="w-8 h-8 sm:w-9 sm:h-9 transition-transform duration-300 group-hover:scale-105" />
+            <span className="gold-text font-extrabold text-xl sm:text-2xl tracking-tight block">
+              {SITENAME}
             </span>
           </Link>
 
           {/* Desktop Nav Links */}
           <nav className="hidden md:flex items-center gap-1" aria-label="Main navigation">
-            {navLinks.map((link) => (
+            {primaryNavLinks.map((link) => (
               <Link
                 key={link.name}
                 to={link.path}
@@ -128,12 +146,52 @@ export default function Nav() {
                 )}
               </Link>
             ))}
+
+            {/* Help & Legal Policies Dropdown */}
+            <div className="relative" ref={dropdownRef}>
+              <button
+                onClick={() => setPoliciesOpen((prev) => !prev)}
+                className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
+                  navStatus === "Help & Legal"
+                    ? "text-accent bg-accent/10"
+                    : "text-secondaryTextColor hover:text-primaryTextColor hover:bg-white/5"
+                }`}
+              >
+                <HiOutlineShieldCheck className="text-base" />
+                Help & Policies
+                <BiChevronDown className={`text-base transition-transform duration-200 ${policiesOpen ? "rotate-180" : ""}`} />
+              </button>
+
+              <AnimatePresence>
+                {policiesOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 8, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 8, scale: 0.95 }}
+                    transition={{ duration: 0.15 }}
+                    className="absolute top-full right-0 mt-2 w-56 glass-card p-2 rounded-xl border border-border shadow-card z-50 bg-bgColorTertiary/95 backdrop-blur-xl"
+                  >
+                    {policyLinks.map((item) => (
+                      <Link
+                        key={item.name}
+                        to={item.path}
+                        onClick={() => setPoliciesOpen(false)}
+                        className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold text-secondaryTextColor hover:text-primaryTextColor hover:bg-white/5 transition-colors"
+                      >
+                        <span className="text-sm">{item.icon}</span>
+                        {item.name}
+                      </Link>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
           </nav>
 
           {/* Search Bar */}
           <div className="flex-1 max-w-sm hidden sm:block" ref={closeRef}>
             <div className="relative">
-              <div className="flex items-center gap-2 bg-bgColorSecondary border border-border rounded-full px-4 py-2 transition-all duration-200 focus-within:border-primaryBtn focus-within:shadow-gold">
+              <div className="flex items-center gap-2 bg-bgColorSecondary/80 border border-border rounded-full px-4 py-2 transition-all duration-200 focus-within:border-primaryBtn focus-within:shadow-gold">
                 {isLoading ? (
                   <div className="loader-search shrink-0" />
                 ) : (
@@ -171,7 +229,7 @@ export default function Nav() {
                         key={movie.tmdb_id}
                         to={movie.media_type === "movie" ? `/mov/${movie.tmdb_id}` : `/ser/${movie.tmdb_id}`}
                         onClick={() => { setQuery(""); setDebouncedVal(""); }}
-                        className="flex items-center gap-3 px-4 py-3 hover:bg-white/5 transition-colors duration-150"
+                        className="flex items-center gap-3 px-4 py-3 hover:bg-white/5 transition-colors duration-150 border-b border-border/40 last:border-0"
                       >
                         <img
                           src={movie.poster || posterPlaceholder}
@@ -231,7 +289,7 @@ export default function Nav() {
                     id="mobile-search"
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
-                    placeholder="Search…"
+                    placeholder="Search movies, series…"
                     className="bg-transparent text-primaryTextColor placeholder-mutedText text-sm w-full outline-none"
                     aria-label="Mobile search"
                   />
@@ -283,7 +341,7 @@ export default function Nav() {
         className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-bgColorTertiary/95 backdrop-blur-xl border-t border-border flex items-center justify-around h-16 safe-area-pb"
         aria-label="Mobile bottom navigation"
       >
-        {navLinks.map((link) => (
+        {primaryNavLinks.map((link) => (
           <Link
             key={link.name}
             to={link.path}
@@ -298,6 +356,20 @@ export default function Nav() {
             <span className="text-[0.6rem] font-semibold">{link.name}</span>
           </Link>
         ))}
+        
+        {/* Help / Legal Link on Mobile */}
+        <Link
+          to="/about"
+          className={`flex flex-col items-center gap-0.5 px-4 py-2 transition-all duration-200 ${
+            navStatus === "Help & Legal" ? "text-accent" : "text-secondaryTextColor"
+          }`}
+          aria-label="About"
+        >
+          <HiOutlineShieldCheck className="text-2xl" />
+          <span className="text-[0.6rem] font-semibold">About</span>
+        </Link>
+
+        {/* Search */}
         <button
           onClick={() => setMobileSearchOpen((p) => !p)}
           className={`flex flex-col items-center gap-0.5 px-4 py-2 transition-all duration-200 ${

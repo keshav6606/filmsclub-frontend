@@ -16,137 +16,107 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://filmy4uhd.com/mov/1303331</loc>
+    <loc>https://filmy4uhd.com/about</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://filmy4uhd.com/contact</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://filmy4uhd.com/privacy-policy</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://filmy4uhd.com/terms</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://filmy4uhd.com/dmca</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://filmy4uhd.com/disclaimer</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://filmy4uhd.com/mov/1731480</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://filmy4uhd.com/mov/1585219</loc>
+    <loc>https://filmy4uhd.com/mov/819737</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://filmy4uhd.com/mov/1484913</loc>
+    <loc>https://filmy4uhd.com/mov/20695</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://filmy4uhd.com/mov/1020047</loc>
+    <loc>https://filmy4uhd.com/mov/284536</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://filmy4uhd.com/mov/1626170</loc>
+    <loc>https://filmy4uhd.com/mov/587030</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://filmy4uhd.com/mov/1368314</loc>
+    <loc>https://filmy4uhd.com/mov/1273221</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://filmy4uhd.com/mov/1320660</loc>
+    <loc>https://filmy4uhd.com/mov/32091</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://filmy4uhd.com/mov/1212763</loc>
+    <loc>https://filmy4uhd.com/mov/1720201</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://filmy4uhd.com/mov/1728951</loc>
+    <loc>https://filmy4uhd.com/mov/350</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://filmy4uhd.com/mov/1595852</loc>
+    <loc>https://filmy4uhd.com/mov/270774</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://filmy4uhd.com/mov/19167</loc>
+    <loc>https://filmy4uhd.com/mov/1738125</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://filmy4uhd.com/mov/399361</loc>
+    <loc>https://filmy4uhd.com/mov/1119449</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://filmy4uhd.com/mov/458897</loc>
+    <loc>https://filmy4uhd.com/mov/11975</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://filmy4uhd.com/mov/31983</loc>
+    <loc>https://filmy4uhd.com/mov/1275779</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://filmy4uhd.com/mov/1283636</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://filmy4uhd.com/mov/163921</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://filmy4uhd.com/mov/15764</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://filmy4uhd.com/mov/840873</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://filmy4uhd.com/mov/22625</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://filmy4uhd.com/mov/2135</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://filmy4uhd.com/mov/451379</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://filmy4uhd.com/mov/645710</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://filmy4uhd.com/mov/572802</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://filmy4uhd.com/mov/1633263</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://filmy4uhd.com/mov/13491</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://filmy4uhd.com/mov/432527</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://filmy4uhd.com/mov/1235263</loc>
+    <loc>https://filmy4uhd.com/mov/1475803</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -156,97 +126,97 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://filmy4uhd.com/mov/1688062</loc>
+    <loc>https://filmy4uhd.com/mov/1596008</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://filmy4uhd.com/mov/576121</loc>
+    <loc>https://filmy4uhd.com/mov/898704</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://filmy4uhd.com/mov/1681970</loc>
+    <loc>https://filmy4uhd.com/mov/9486</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://filmy4uhd.com/mov/20413</loc>
+    <loc>https://filmy4uhd.com/mov/144118</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://filmy4uhd.com/mov/68029</loc>
+    <loc>https://filmy4uhd.com/mov/1451321</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://filmy4uhd.com/mov/11452</loc>
+    <loc>https://filmy4uhd.com/mov/58233</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://filmy4uhd.com/mov/1256952</loc>
+    <loc>https://filmy4uhd.com/mov/1616674</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://filmy4uhd.com/mov/1371023</loc>
+    <loc>https://filmy4uhd.com/mov/463272</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://filmy4uhd.com/mov/502356</loc>
+    <loc>https://filmy4uhd.com/mov/1656220</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://filmy4uhd.com/mov/581218</loc>
+    <loc>https://filmy4uhd.com/mov/114436</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://filmy4uhd.com/mov/1727444</loc>
+    <loc>https://filmy4uhd.com/mov/14255</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://filmy4uhd.com/mov/1070157</loc>
+    <loc>https://filmy4uhd.com/mov/1668364</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://filmy4uhd.com/mov/1728629</loc>
+    <loc>https://filmy4uhd.com/mov/1468683</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://filmy4uhd.com/mov/1442396</loc>
+    <loc>https://filmy4uhd.com/mov/35053</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://filmy4uhd.com/mov/1512084</loc>
+    <loc>https://filmy4uhd.com/mov/366169</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://filmy4uhd.com/mov/581449</loc>
+    <loc>https://filmy4uhd.com/mov/69346</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://filmy4uhd.com/mov/39538</loc>
+    <loc>https://filmy4uhd.com/mov/258216</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://filmy4uhd.com/mov/415445</loc>
+    <loc>https://filmy4uhd.com/mov/249397</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://filmy4uhd.com/mov/1167307</loc>
+    <loc>https://filmy4uhd.com/mov/324218</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -256,17 +226,112 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://filmy4uhd.com/mov/1315772</loc>
+    <loc>https://filmy4uhd.com/mov/287903</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://filmy4uhd.com/mov/1241674</loc>
+    <loc>https://filmy4uhd.com/mov/4248</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://filmy4uhd.com/mov/29959</loc>
+    <loc>https://filmy4uhd.com/mov/4256</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://filmy4uhd.com/mov/4258</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://filmy4uhd.com/mov/4247</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://filmy4uhd.com/mov/4257</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://filmy4uhd.com/mov/714338</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://filmy4uhd.com/mov/1171094</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://filmy4uhd.com/mov/118632</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://filmy4uhd.com/mov/1339173</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://filmy4uhd.com/mov/1440050</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://filmy4uhd.com/mov/1380316</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://filmy4uhd.com/mov/298584</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://filmy4uhd.com/mov/60397</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://filmy4uhd.com/mov/123056</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://filmy4uhd.com/mov/138934</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://filmy4uhd.com/mov/1147016</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://filmy4uhd.com/mov/934632</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://filmy4uhd.com/mov/848326</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://filmy4uhd.com/mov/1316092</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://filmy4uhd.com/mov/402446</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://filmy4uhd.com/mov/1499984</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -281,237 +346,207 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://filmy4uhd.com/mov/385453</loc>
+    <loc>https://filmy4uhd.com/mov/22448</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://filmy4uhd.com/mov/35696</loc>
+    <loc>https://filmy4uhd.com/mov/8852</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://filmy4uhd.com/mov/784963</loc>
+    <loc>https://filmy4uhd.com/mov/1679791</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://filmy4uhd.com/mov/1122030</loc>
+    <loc>https://filmy4uhd.com/mov/55157</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://filmy4uhd.com/mov/1722430</loc>
+    <loc>https://filmy4uhd.com/mov/1708234</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://filmy4uhd.com/mov/1721640</loc>
+    <loc>https://filmy4uhd.com/mov/1397201</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://filmy4uhd.com/mov/1721639</loc>
+    <loc>https://filmy4uhd.com/mov/1368337</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://filmy4uhd.com/mov/1081003</loc>
+    <loc>https://filmy4uhd.com/mov/313922</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://filmy4uhd.com/mov/1716933</loc>
+    <loc>https://filmy4uhd.com/mov/11128</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://filmy4uhd.com/mov/1515729</loc>
+    <loc>https://filmy4uhd.com/mov/1653470</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://filmy4uhd.com/mov/4234</loc>
+    <loc>https://filmy4uhd.com/mov/1607821</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://filmy4uhd.com/mov/646385</loc>
+    <loc>https://filmy4uhd.com/mov/1108427</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://filmy4uhd.com/mov/1159559</loc>
+    <loc>https://filmy4uhd.com/mov/1134260</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://filmy4uhd.com/mov/934433</loc>
+    <loc>https://filmy4uhd.com/mov/475968</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://filmy4uhd.com/mov/4233</loc>
+    <loc>https://filmy4uhd.com/mov/17927</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://filmy4uhd.com/mov/41446</loc>
+    <loc>https://filmy4uhd.com/mov/1722713</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://filmy4uhd.com/mov/4232</loc>
+    <loc>https://filmy4uhd.com/mov/1516529</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://filmy4uhd.com/mov/1169516</loc>
+    <loc>https://filmy4uhd.com/mov/1202033</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://filmy4uhd.com/mov/1477317</loc>
+    <loc>https://filmy4uhd.com/mov/1602337</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://filmy4uhd.com/mov/1620034</loc>
+    <loc>https://filmy4uhd.com/mov/1265827</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://filmy4uhd.com/mov/1431068</loc>
+    <loc>https://filmy4uhd.com/mov/1430077</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://filmy4uhd.com/mov/1410937</loc>
+    <loc>https://filmy4uhd.com/mov/1729508</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://filmy4uhd.com/mov/1392469</loc>
+    <loc>https://filmy4uhd.com/mov/1070157</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://filmy4uhd.com/mov/1248251</loc>
+    <loc>https://filmy4uhd.com/mov/726739</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://filmy4uhd.com/mov/1650873</loc>
+    <loc>https://filmy4uhd.com/mov/1367220</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://filmy4uhd.com/mov/1641819</loc>
+    <loc>https://filmy4uhd.com/mov/609242</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://filmy4uhd.com/mov/1486860</loc>
+    <loc>https://filmy4uhd.com/mov/9962</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://filmy4uhd.com/mov/1714670</loc>
+    <loc>https://filmy4uhd.com/mov/1320660</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://filmy4uhd.com/mov/1475803</loc>
+    <loc>https://filmy4uhd.com/mov/1595852</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://filmy4uhd.com/mov/1565790</loc>
+    <loc>https://filmy4uhd.com/mov/11327</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://filmy4uhd.com/mov/1610418</loc>
+    <loc>https://filmy4uhd.com/mov/9825</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://filmy4uhd.com/mov/277015</loc>
+    <loc>https://filmy4uhd.com/mov/5852</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://filmy4uhd.com/mov/1057265</loc>
+    <loc>https://filmy4uhd.com/mov/1728629</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://filmy4uhd.com/mov/1339713</loc>
+    <loc>https://filmy4uhd.com/mov/1101684</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://filmy4uhd.com/mov/1228710</loc>
+    <loc>https://filmy4uhd.com/mov/274188</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://filmy4uhd.com/mov/1375646</loc>
+    <loc>https://filmy4uhd.com/mov/855297</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://filmy4uhd.com/mov/1065834</loc>
+    <loc>https://filmy4uhd.com/mov/1484913</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://filmy4uhd.com/mov/1699574</loc>
+    <loc>https://filmy4uhd.com/mov/8914</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://filmy4uhd.com/mov/847742</loc>
+    <loc>https://filmy4uhd.com/mov/1728951</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://filmy4uhd.com/mov/1206167</loc>
+    <loc>https://filmy4uhd.com/mov/1710008</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://filmy4uhd.com/mov/1442975</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://filmy4uhd.com/mov/1561144</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://filmy4uhd.com/mov/1421552</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://filmy4uhd.com/mov/1643729</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://filmy4uhd.com/mov/1445033</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://filmy4uhd.com/mov/1673393</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://filmy4uhd.com/mov/1247165</loc>
+    <loc>https://filmy4uhd.com/ser/328402</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
