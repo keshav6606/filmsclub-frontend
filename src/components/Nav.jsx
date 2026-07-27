@@ -4,9 +4,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import { BiSearch, BiX } from "react-icons/bi";
 import { HiOutlineHome, HiOutlineFilm, HiOutlineTv, HiOutlineInformationCircle } from "react-icons/hi2";
 import { RiSearchLine } from "react-icons/ri";
-import { MdLocalMovies, MdOutlineEmail } from "react-icons/md";
+import { MdOutlineEmail } from "react-icons/md";
 import posterPlaceholder from "../assets/images/poster-placeholder.png";
 import { BASE_URL as BASE } from "../config/api";
+import BrandLogo from "./BrandLogo";
 
 const SITENAME = import.meta.env.VITE_SITENAME || "Filmy4uhd";
 
@@ -95,23 +96,17 @@ export default function Nav() {
         }`}
       >
         <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 h-16 flex items-center justify-between gap-4">
-          {/* Brand Logo with HD Badge */}
+          {/* Brand Logo & Name */}
           <Link
             to="/"
-            className="flex items-center gap-2.5 shrink-0 group"
+            className="flex items-center gap-3 shrink-0 group"
             aria-label={`${SITENAME} Home`}
           >
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 via-amber-500 to-amber-600 flex items-center justify-center shadow-[0_0_20px_rgba(245,158,11,0.6)] group-hover:scale-105 transition-transform border border-white/20">
-              <MdLocalMovies className="text-slate-950 text-2xl" />
-            </div>
-            <div className="flex items-center gap-1.5">
-              <span className="gold-text font-black text-2xl tracking-tight block drop-shadow-md">
-                Filmy
-              </span>
-              <span className="bg-gradient-to-r from-cyan-500/20 to-amber-500/20 border border-cyan-400/50 text-cyan-300 text-xs font-black px-2 py-0.5 rounded-md tracking-wider shadow-[0_0_12px_rgba(6,182,212,0.4)] uppercase">
-                4UHD
-              </span>
-            </div>
+            <BrandLogo className="w-10 h-10" />
+            <span className="text-2xl font-black tracking-tight flex items-center">
+              <span className="gold-text">Filmy</span>
+              <span className="text-amber-400">4uhd</span>
+            </span>
           </Link>
 
           {/* Desktop Nav Links */}

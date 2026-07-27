@@ -2,7 +2,8 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { FaTelegram } from "react-icons/fa";
 import { HiOutlineFilm, HiOutlineTv, HiOutlineHome, HiOutlineInformationCircle } from "react-icons/hi2";
-import { MdLocalMovies, MdOutlinePrivacyTip, MdGavel, MdOutlineEmail, MdOutlineSecurity } from "react-icons/md";
+import { MdOutlinePrivacyTip, MdGavel, MdOutlineEmail, MdOutlineSecurity } from "react-icons/md";
+import BrandLogo from "./BrandLogo";
 
 export default function Footer() {
   const TG_URL = import.meta.env.VITE_TG_URL;
@@ -34,18 +35,12 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
           {/* ── Column 1: Brand & Telegram ── */}
           <div className="space-y-4">
-            <Link to="/" className="flex items-center gap-2.5 group w-fit">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 via-amber-500 to-amber-600 flex items-center justify-center shadow-[0_0_20px_rgba(245,158,11,0.6)] border border-white/20">
-                <MdLocalMovies className="text-slate-950 text-2xl" />
-              </div>
-              <div className="flex items-center gap-1.5">
-                <span className="gold-text font-black text-2xl tracking-tight block">
-                  Filmy
-                </span>
-                <span className="bg-gradient-to-r from-cyan-500/20 to-amber-500/20 border border-cyan-400/50 text-cyan-300 text-xs font-black px-2 py-0.5 rounded-md tracking-wider shadow-[0_0_12px_rgba(6,182,212,0.4)] uppercase">
-                  4UHD
-                </span>
-              </div>
+            <Link to="/" className="flex items-center gap-3 group w-fit">
+              <BrandLogo className="w-10 h-10" />
+              <span className="text-2xl font-black tracking-tight flex items-center">
+                <span className="gold-text">Filmy</span>
+                <span className="text-amber-400">4uhd</span>
+              </span>
             </Link>
             <p className="text-slate-300 text-xs sm:text-sm leading-relaxed max-w-xs font-medium">
               Your premier destination for HD movies, web series, and TV shows. Free direct cloud streaming links with zero subscriptions.
