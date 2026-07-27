@@ -21,7 +21,7 @@ function loadEnv() {
 }
 
 const env = loadEnv();
-const BASE_URL = env.VITE_BASE_URL || 'https://old-emelia-filetolink7-3cbdcb5a.koyeb.app';
+const BASE_URL = env.VITE_BASE_URL || 'https://screeching-cherye-filmy4uhd-b60bef55.koyeb.app';
 const SITENAME = env.VITE_SITENAME || 'Filmy4uhd';
 const CANONICAL_HOST = `https://${SITENAME.toLowerCase()}.com`;
 
@@ -33,8 +33,15 @@ async function generateSitemap() {
 
   const urls = [
     { loc: `${CANONICAL_HOST}/`, changefreq: 'daily', priority: '1.0' },
-    { loc: `${CANONICAL_HOST}/Movies`, changefreq: 'weekly', priority: '0.8' },
-    { loc: `${CANONICAL_HOST}/Series`, changefreq: 'weekly', priority: '0.8' }
+    { loc: `${CANONICAL_HOST}/movies`, changefreq: 'daily', priority: '0.9' },
+    { loc: `${CANONICAL_HOST}/Movies`, changefreq: 'daily', priority: '0.9' },
+    { loc: `${CANONICAL_HOST}/series`, changefreq: 'daily', priority: '0.9' },
+    { loc: `${CANONICAL_HOST}/Series`, changefreq: 'daily', priority: '0.9' },
+    { loc: `${CANONICAL_HOST}/about`, changefreq: 'monthly', priority: '0.7' },
+    { loc: `${CANONICAL_HOST}/privacy-policy`, changefreq: 'monthly', priority: '0.7' },
+    { loc: `${CANONICAL_HOST}/terms`, changefreq: 'monthly', priority: '0.7' },
+    { loc: `${CANONICAL_HOST}/contact`, changefreq: 'monthly', priority: '0.7' },
+    { loc: `${CANONICAL_HOST}/disclaimer`, changefreq: 'monthly', priority: '0.7' }
   ];
 
   // Fetch Movies
@@ -54,7 +61,7 @@ async function generateSitemap() {
             urls.push({
               loc: `${CANONICAL_HOST}/mov/${movie.tmdb_id}`,
               changefreq: 'weekly',
-              priority: '0.6'
+              priority: '0.8'
             });
           }
         });
@@ -82,7 +89,7 @@ async function generateSitemap() {
             urls.push({
               loc: `${CANONICAL_HOST}/ser/${show.tmdb_id}`,
               changefreq: 'weekly',
-              priority: '0.6'
+              priority: '0.8'
             });
           }
         });

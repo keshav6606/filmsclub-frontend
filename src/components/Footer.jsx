@@ -25,9 +25,9 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="relative border-t border-white/10 bg-[#040609] mt-20 pb-20 md:pb-0 overflow-hidden">
+    <footer className="relative border-t border-amber-500/20 bg-[#040609] mt-20 pb-20 md:pb-0 overflow-hidden">
       {/* Top ambient glowing bar */}
-      <div className="h-0.5 w-full bg-gradient-to-r from-transparent via-amber-500 to-transparent shadow-[0_0_15px_rgba(245,158,11,0.8)]" />
+      <div className="h-0.5 w-full bg-gradient-to-r from-transparent via-amber-500 to-transparent shadow-[0_0_20px_rgba(245,158,11,0.9)]" />
       <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-[600px] h-48 bg-amber-500/10 blur-[120px] rounded-full pointer-events-none" />
 
       <div className="max-w-[1600px] mx-auto px-5 sm:px-10 py-14 relative z-10">
@@ -35,14 +35,19 @@ export default function Footer() {
           {/* ── Column 1: Brand & Telegram ── */}
           <div className="space-y-4">
             <Link to="/" className="flex items-center gap-2.5 group w-fit">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 via-amber-500 to-amber-600 flex items-center justify-center shadow-[0_0_20px_rgba(245,158,11,0.5)]">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 via-amber-500 to-amber-600 flex items-center justify-center shadow-[0_0_20px_rgba(245,158,11,0.6)] border border-white/20">
                 <MdLocalMovies className="text-slate-950 text-2xl" />
               </div>
-              <span className="gold-text font-black text-2xl tracking-tight">
-                {SITENAME}
-              </span>
+              <div className="flex items-center gap-1.5">
+                <span className="gold-text font-black text-2xl tracking-tight block">
+                  Filmy
+                </span>
+                <span className="bg-gradient-to-r from-cyan-500/20 to-amber-500/20 border border-cyan-400/50 text-cyan-300 text-xs font-black px-2 py-0.5 rounded-md tracking-wider shadow-[0_0_12px_rgba(6,182,212,0.4)] uppercase">
+                  4UHD
+                </span>
+              </div>
             </Link>
-            <p className="text-slate-300 text-xs sm:text-sm leading-relaxed max-w-xs">
+            <p className="text-slate-300 text-xs sm:text-sm leading-relaxed max-w-xs font-medium">
               Your premier destination for HD movies, web series, and TV shows. Free direct cloud streaming links with zero subscriptions.
             </p>
             <p className="text-slate-400 text-[0.75rem] leading-relaxed">

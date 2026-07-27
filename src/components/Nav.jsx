@@ -8,7 +8,7 @@ import { MdLocalMovies, MdOutlineEmail } from "react-icons/md";
 import posterPlaceholder from "../assets/images/poster-placeholder.png";
 
 const BASE = import.meta.env.VITE_BASE_URL;
-const SITENAME = import.meta.env.VITE_SITENAME;
+const SITENAME = import.meta.env.VITE_SITENAME || "Filmy4uhd";
 
 export default function Nav() {
   const location = useLocation();
@@ -29,7 +29,7 @@ export default function Nav() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Update navStatus based on the current path
+  // Update navStatus based on current path
   useEffect(() => {
     const path = location.pathname.toLowerCase();
     if (path === "/") setNavStatus("Home");
@@ -90,35 +90,40 @@ export default function Nav() {
       <header
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           scrolled
-            ? "bg-[#06080D]/90 backdrop-blur-2xl border-b border-white/10 shadow-[0_10px_30px_rgba(0,0,0,0.8)]"
-            : "bg-gradient-to-b from-[#06080D]/90 to-transparent backdrop-blur-md"
+            ? "bg-[#06080D]/95 backdrop-blur-2xl border-b border-amber-500/20 shadow-[0_10px_35px_rgba(0,0,0,0.9)]"
+            : "bg-gradient-to-b from-[#06080D]/95 to-transparent backdrop-blur-md"
         }`}
       >
         <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 h-16 flex items-center justify-between gap-4">
-          {/* Logo */}
+          {/* Brand Logo with HD Badge */}
           <Link
             to="/"
             className="flex items-center gap-2.5 shrink-0 group"
             aria-label={`${SITENAME} Home`}
           >
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-400 via-amber-500 to-amber-600 flex items-center justify-center shadow-[0_0_15px_rgba(245,158,11,0.5)] group-hover:scale-105 transition-transform">
-              <MdLocalMovies className="text-slate-950 text-xl" />
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 via-amber-500 to-amber-600 flex items-center justify-center shadow-[0_0_20px_rgba(245,158,11,0.6)] group-hover:scale-105 transition-transform border border-white/20">
+              <MdLocalMovies className="text-slate-950 text-2xl" />
             </div>
-            <span className="gold-text font-black text-2xl tracking-tight block drop-shadow-md">
-              {SITENAME || "Filmy4uhd"}
-            </span>
+            <div className="flex items-center gap-1.5">
+              <span className="gold-text font-black text-2xl tracking-tight block drop-shadow-md">
+                Filmy
+              </span>
+              <span className="bg-gradient-to-r from-cyan-500/20 to-amber-500/20 border border-cyan-400/50 text-cyan-300 text-xs font-black px-2 py-0.5 rounded-md tracking-wider shadow-[0_0_12px_rgba(6,182,212,0.4)] uppercase">
+                4UHD
+              </span>
+            </div>
           </Link>
 
           {/* Desktop Nav Links */}
-          <nav className="hidden md:flex items-center gap-1.5 bg-slate-900/60 p-1.5 rounded-full border border-white/10 backdrop-blur-md" aria-label="Main navigation">
+          <nav className="hidden md:flex items-center gap-1.5 bg-slate-900/80 p-1.5 rounded-full border border-white/10 backdrop-blur-md shadow-inner" aria-label="Main navigation">
             {navLinks.map((link) => (
               <Link
                 key={link.name}
                 to={link.path}
-                className={`relative flex items-center gap-2 px-4 py-1.5 rounded-full text-xs sm:text-sm font-bold transition-all duration-200 ${
+                className={`relative flex items-center gap-2 px-4 py-1.5 rounded-full text-xs sm:text-sm font-extrabold transition-all duration-200 ${
                   navStatus === link.name
-                    ? "text-amber-400 bg-amber-500/15 border border-amber-500/30 shadow-md"
-                    : "text-slate-300 hover:text-white hover:bg-white/5"
+                    ? "text-amber-400 bg-gradient-to-r from-amber-500/20 to-amber-600/10 border border-amber-500/40 shadow-md"
+                    : "text-slate-300 hover:text-white hover:bg-white/10"
                 }`}
               >
                 <span className="text-base text-amber-400">{link.icon}</span>
@@ -130,7 +135,7 @@ export default function Nav() {
           {/* Search Bar */}
           <div className="flex-1 max-w-sm hidden sm:block" ref={closeRef}>
             <div className="relative">
-              <div className="flex items-center gap-2.5 bg-slate-900/80 border border-white/10 rounded-full px-4 py-2 transition-all duration-200 focus-within:border-amber-400 focus-within:shadow-[0_0_20px_rgba(245,158,11,0.3)] backdrop-blur-md">
+              <div className="flex items-center gap-2.5 bg-slate-900/90 border border-white/15 rounded-full px-4 py-2 transition-all duration-200 focus-within:border-amber-400 focus-within:shadow-[0_0_25px_rgba(245,158,11,0.4)] backdrop-blur-md">
                 {isLoading ? (
                   <div className="loader-search shrink-0" />
                 ) : (
@@ -142,7 +147,7 @@ export default function Nav() {
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="Search 4K movies, series…"
-                  className="bg-transparent text-slate-100 placeholder-slate-400 text-xs sm:text-sm w-full outline-none font-medium"
+                  className="bg-transparent text-slate-100 placeholder-slate-400 text-xs sm:text-sm w-full outline-none font-semibold"
                   aria-label="Search"
                   autoComplete="off"
                 />
