@@ -25,7 +25,7 @@ export default function HeroSlider({ movieData, isMovieDataLoading }) {
     arr?.map((l) => langMap[l] || l.toUpperCase()).join(" · ") || "";
 
   return (
-    <section className="relative w-full min-h-[75dvh] md:min-h-[85dvh] pt-16 overflow-hidden bg-[#06080D]" aria-label="Featured movies slider">
+    <section className="relative w-full min-h-[80dvh] md:min-h-[90dvh] pt-16 overflow-hidden bg-[#06080D]" aria-label="Featured movies slider">
       {!isMovieDataLoading ? (
         <>
           <Swiper
@@ -40,8 +40,8 @@ export default function HeroSlider({ movieData, isMovieDataLoading }) {
           >
             {movieData.slice(0, 8).map((movie) => (
               <SwiperSlide key={movie.tmdb_id || movie.title} className="bg-[#06080D]">
-                <div className="relative w-full min-h-[75dvh] md:min-h-[85dvh] flex items-end overflow-hidden">
-                  {/* Backdrop Image */}
+                <div className="relative w-full min-h-[80dvh] md:min-h-[90dvh] flex items-end overflow-hidden">
+                  {/* Full-Screen Edge-to-Edge Backdrop Image */}
                   <div className="absolute inset-0 bg-[#06080D]">
                     <LazyLoadImage
                       src={movie.backdrop || movie.poster}
@@ -51,19 +51,19 @@ export default function HeroSlider({ movieData, isMovieDataLoading }) {
                       wrapperClassName="w-full h-full"
                     />
 
-                    {/* Gradient Overlays for High Legibility */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-[#06080D] via-[#06080D]/85 to-transparent" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#06080D] via-[#06080D]/50 to-transparent" />
-                    <div className="absolute top-1/4 left-10 w-96 h-96 bg-amber-500/15 blur-[120px] rounded-full pointer-events-none" />
-                    <div className="absolute bottom-10 left-1/3 w-80 h-80 bg-cyan-500/10 blur-[100px] rounded-full pointer-events-none" />
+                    {/* Cinematic Full-Bleed Ambient Gradients */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-[#06080D] via-[#06080D]/75 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#06080D] via-[#06080D]/40 to-transparent" />
+                    <div className="absolute top-1/4 left-10 w-[500px] h-[500px] bg-amber-500/10 blur-[150px] rounded-full pointer-events-none" />
+                    <div className="absolute bottom-10 left-1/3 w-[400px] h-[400px] bg-cyan-500/10 blur-[140px] rounded-full pointer-events-none" />
                   </div>
 
-                  {/* Content Container (Card with Clear Contrast) */}
-                  <div className="relative z-10 w-full max-w-[1600px] mx-auto px-4 sm:px-8 lg:px-16 pb-16 md:pb-20">
-                    <div className="max-w-3xl bg-[#090C14]/90 backdrop-blur-2xl border border-amber-500/25 p-6 sm:p-10 rounded-3xl shadow-[0_25px_70px_rgba(0,0,0,0.9)]">
+                  {/* Clean Text & Action Buttons Overlay */}
+                  <div className="relative z-10 w-full max-w-[1600px] mx-auto px-4 sm:px-8 lg:px-16 pb-16 md:pb-24">
+                    <div className="max-w-2xl space-y-4">
                       {/* Featured Badge & Genres */}
-                      <div className="flex flex-wrap items-center gap-2 mb-3.5">
-                        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-amber-400 to-amber-600 text-slate-950 font-black text-[0.68rem] tracking-wider uppercase shadow-lg">
+                      <div className="flex flex-wrap items-center gap-2 mb-2">
+                        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-amber-400 to-amber-600 text-slate-950 font-black text-[0.68rem] tracking-wider uppercase shadow-[0_0_20px_rgba(245,158,11,0.6)]">
                           <HiSparkles /> FEATURED BLOCKBUSTER
                         </div>
                         {movie.genres?.length > 0 && (
@@ -76,12 +76,12 @@ export default function HeroSlider({ movieData, isMovieDataLoading }) {
                       </div>
 
                       {/* Movie Title */}
-                      <h1 className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-white leading-tight mb-4 drop-shadow-2xl">
+                      <h1 className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-white leading-none drop-shadow-[0_10px_25px_rgba(0,0,0,0.9)]">
                         <span className="gold-text">{movie.title}</span>
                       </h1>
 
                       {/* Metadata Details Row */}
-                      <div className="flex flex-wrap items-center gap-3.5 mb-5 text-xs sm:text-sm">
+                      <div className="flex flex-wrap items-center gap-3 text-xs sm:text-sm">
                         {movie.rating && (
                           <div className="flex items-center gap-1.5 bg-amber-500/20 border border-amber-500/50 text-amber-400 font-extrabold rounded-full px-3.5 py-1 backdrop-blur-md shadow-md">
                             <PiStarFill className="text-amber-400 text-base" />
@@ -89,18 +89,18 @@ export default function HeroSlider({ movieData, isMovieDataLoading }) {
                           </div>
                         )}
                         {movie.release_year && (
-                          <span className="text-slate-200 font-bold bg-white/10 border border-white/15 rounded-full px-3 py-1">
+                          <span className="text-slate-200 font-bold bg-white/10 border border-white/15 rounded-full px-3 py-1 backdrop-blur-md">
                             {movie.release_year}
                           </span>
                         )}
                         {movie.runtime && (
-                          <div className="flex items-center gap-1 text-slate-300 font-semibold">
+                          <div className="flex items-center gap-1 text-slate-300 font-semibold bg-slate-900/60 px-3 py-1 rounded-full border border-white/10 backdrop-blur-md">
                             <BiTime className="text-amber-400 text-base" />
                             <span>{movie.runtime} min</span>
                           </div>
                         )}
                         {movie.languages?.length > 0 && (
-                          <div className="flex items-center gap-1 text-slate-300 font-semibold">
+                          <div className="flex items-center gap-1 text-slate-300 font-semibold bg-slate-900/60 px-3 py-1 rounded-full border border-white/10 backdrop-blur-md">
                             <BiCategory className="text-cyan-400 text-base" />
                             <span>{formatLang(movie.languages)}</span>
                           </div>
@@ -110,13 +110,13 @@ export default function HeroSlider({ movieData, isMovieDataLoading }) {
 
                       {/* Overview Description */}
                       {movie.description && (
-                        <p className="text-slate-300 text-xs sm:text-sm sm:text-base line-clamp-2 sm:line-clamp-3 mb-6 max-w-2xl leading-relaxed font-medium">
+                        <p className="text-slate-200 text-xs sm:text-sm sm:text-base line-clamp-2 sm:line-clamp-3 max-w-xl leading-relaxed font-medium drop-shadow-md">
                           {movie.description}
                         </p>
                       )}
 
                       {/* Action CTA Buttons */}
-                      <div className="flex items-center flex-wrap gap-4">
+                      <div className="flex items-center flex-wrap gap-4 pt-2">
                         <Link
                           to={movie.media_type === "movie" ? `/mov/${movie.tmdb_id}` : `/ser/${movie.tmdb_id}`}
                           className="btn-gold flex items-center gap-3 px-8 py-3.5 text-sm font-extrabold shadow-[0_0_35px_rgba(245,158,11,0.6)] hover:scale-105"
@@ -160,7 +160,7 @@ export default function HeroSlider({ movieData, isMovieDataLoading }) {
         </>
       ) : (
         /* Skeleton */
-        <div className="w-full min-h-[75dvh] md:min-h-[85dvh] bg-[#0E121B] shimmer-effect" />
+        <div className="w-full min-h-[80dvh] md:min-h-[90dvh] bg-[#0E121B] shimmer-effect" />
       )}
     </section>
   );
