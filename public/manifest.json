@@ -1,0 +1,16 @@
+{
+  "short_name": "Filmy4uhd",
+  "name": "Filmy4uhd - 4K Movies & Series",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "type": "image/svg+xml",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#06080D",
+  "theme_color": "#06080D",
+  "display": "standalone",
+  "orientation": "portrait"
+}
