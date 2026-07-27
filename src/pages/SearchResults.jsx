@@ -3,11 +3,11 @@ import axios from "axios";
 import MoviesAndSeriesSections from "../components/MoviesAndSeriesSections";
 import Pagination from "../components/Pagination";
 import { useParams } from "react-router-dom";
-import SEO from "../components/SEO"; // import SEO
+import SEO from "../components/SEO";
+import { BASE_URL as BASE } from "../config/api";
 
 export default function SimilarMovies() {
-  const BASE = import.meta.env.VITE_BASE_URL; // Base URL for backend
-  const SITENAME = import.meta.env.VITE_SITENAME;
+  const SITENAME = import.meta.env.VITE_SITENAME || "Filmy4uhd";
 
 
   // States

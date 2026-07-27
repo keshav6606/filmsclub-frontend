@@ -7,10 +7,10 @@ import SEO from "../components/SEO";
 import AdBanner from "../components/AdBanner";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { BASE_URL as BASE } from "../config/api";
 
 export default function Home() {
-  const BASE = import.meta.env.VITE_BASE_URL; // Base Url for backend
-  const SITENAME = import.meta.env.VITE_SITENAME;
+  const SITENAME = import.meta.env.VITE_SITENAME || "Filmy4uhd";
 
   // States
   const [heroPopularMovies, setHeroPopularMovies] = useState([]);

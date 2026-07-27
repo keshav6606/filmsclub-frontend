@@ -6,8 +6,8 @@ import { HiOutlineHome, HiOutlineFilm, HiOutlineTv, HiOutlineInformationCircle }
 import { RiSearchLine } from "react-icons/ri";
 import { MdLocalMovies, MdOutlineEmail } from "react-icons/md";
 import posterPlaceholder from "../assets/images/poster-placeholder.png";
+import { BASE_URL as BASE } from "../config/api";
 
-const BASE = import.meta.env.VITE_BASE_URL;
 const SITENAME = import.meta.env.VITE_SITENAME || "Filmy4uhd";
 
 export default function Nav() {

@@ -13,8 +13,8 @@ import { MdOndemandVideo, MdSmartDisplay } from "react-icons/md";
 import { HiChevronDown } from "react-icons/hi2";
 import { AnimatePresence, motion } from "framer-motion";
 import Spinner from "./svg/Spinner";
+import { BASE_URL as BASE } from "../config/api";
 
-const BASE = import.meta.env.VITE_BASE_URL;
 const API_URL = import.meta.env.VITE_API_URL;
 const API_KEY = import.meta.env.VITE_API_KEY;
 

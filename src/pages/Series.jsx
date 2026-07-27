@@ -3,11 +3,11 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Pagination from "../components/Pagination";
 import MoviesAndSeriesSections from "../components/MoviesAndSeriesSections";
-import SEO from "../components/SEO"; // import SEO
+import SEO from "../components/SEO";
+import { BASE_URL as BASE } from "../config/api";
 
 export default function Series() {
-  const BASE = import.meta.env.VITE_BASE_URL; // Base URL for backend
-  const SITENAME = import.meta.env.VITE_SITENAME;
+  const SITENAME = import.meta.env.VITE_SITENAME || "Filmy4uhd";
 
 
   // States

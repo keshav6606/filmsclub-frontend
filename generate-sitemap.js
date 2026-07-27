@@ -21,7 +21,11 @@ function loadEnv() {
 }
 
 const env = loadEnv();
-const BASE_URL = env.VITE_BASE_URL || 'https://screeching-cherye-filmy4uhd-b60bef55.koyeb.app';
+let BASE_URL = process.env.VITE_BASE_URL || env.VITE_BASE_URL || 'https://screeching-cherye-filmy4uhd-b60bef55.koyeb.app';
+if (!BASE_URL || BASE_URL.includes('old-emelia')) {
+  BASE_URL = 'https://screeching-cherye-filmy4uhd-b60bef55.koyeb.app';
+}
+
 const SITENAME = env.VITE_SITENAME || 'Filmy4uhd';
 const CANONICAL_HOST = `https://${SITENAME.toLowerCase()}.com`;
 
