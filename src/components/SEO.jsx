@@ -23,8 +23,9 @@ export default function SEO({
   name,
 }) {
   const siteName = name || import.meta.env.VITE_SITENAME || "Filmy4uhd";
-  const canonicalUrl = link || "https://filmy4uhd.com";
-  const ogImage = image || "https://filmy4uhd.com/og-image.jpg";
+  const defaultSiteUrl = import.meta.env.VITE_SITE_URL || "https://filmy4uhd.site";
+  const canonicalUrl = link || defaultSiteUrl;
+  const ogImage = image || `${defaultSiteUrl}/og-image.jpg`;
 
   // Build BreadcrumbList schema
   const breadcrumbSchema = breadcrumbs?.length

@@ -27,7 +27,7 @@ if (!BASE_URL || BASE_URL.includes('old-emelia')) {
 }
 
 const SITENAME = env.VITE_SITENAME || 'Filmy4uhd';
-const CANONICAL_HOST = `https://${SITENAME.toLowerCase()}.com`;
+const CANONICAL_HOST = env.VITE_SITE_URL || 'https://filmy4uhd.site';
 
 async function generateSitemap() {
   console.log('Generating sitemap...');
