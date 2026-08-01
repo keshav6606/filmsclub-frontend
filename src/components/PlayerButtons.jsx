@@ -104,40 +104,105 @@ const QualityPill = ({ quality, selected, onClick }) => (
   </button>
 );
 
-const getUniqueLanguages = (items) => {
-  if (!Array.isArray(items)) return [];
+const langMap = {
+  hi: "Hindi", en: "English", ta: "Tamil", te: "Telugu",
+  kn: "Kannada", ml: "Malayalam", mr: "Marathi", bn: "Bengali",
+  dual: "Dual Audio", multi: "Multi Audio",
+};
+
+const normalizeLang = (str) => {
+  if (!str || typeof str !== "string") return null;
+  const s = str.trim();
+  const lower = s.toLowerCase();
+  if (langMap[lower]) return langMap[lower];
+  return s.charAt(0).toUpperCase() + s.slice(1);
+};
+
+const getUniqueLanguages = (items = [], movieData = {}) => {
   const set = new Set();
-  items.forEach((item) => {
-    if (Array.isArray(item.languages)) {
-      item.languages.forEach((l) => l && set.add(l));
-    } else if (item.language) {
-      set.add(item.language);
-    } else if (item.lang) {
-      set.add(item.lang);
-    } else if (item.audio) {
-      set.add(item.audio);
-    }
-  });
-  return Array.from(set);
+  
+  // 1. From movieData languages
+  if (Array.isArray(movieData?.languages)) {
+    movieData.languages.forEach((l) => {
+      const norm = normalizeLang(l);
+      if (norm) set.add(norm);
+    });
+  } else if (movieData?.language) {
+    const norm = normalizeLang(movieData.language);
+    if (norm) set.add(norm);
+  }
+
+  // 2. From items (telegram files/qualities)
+  if (Array.isArray(items)) {
+    items.forEach((item) => {
+      if (Array.isArray(item.languages)) {
+        item.languages.forEach((l) => {
+          const norm = normalizeLang(l);
+          if (norm) set.add(norm);
+        });
+      }
+      ["language", "lang", "audio", "audio_language", "audio_languages"].forEach((key) => {
+        if (item && item[key]) {
+          if (Array.isArray(item[key])) {
+            item[key].forEach((l) => set.add(normalizeLang(l)));
+          } else {
+            set.add(normalizeLang(item[key]));
+          }
+        }
+      });
+
+      // Parse keywords from item.name / item.quality
+      const titleStr = `${item?.name || ""} ${item?.quality || ""}`;
+      if (/hindi/i.test(titleStr)) set.add("Hindi");
+      if (/english/i.test(titleStr)) set.add("English");
+      if (/dual/i.test(titleStr)) set.add("Dual Audio");
+      if (/multi/i.test(titleStr)) set.add("Multi Audio");
+      if (/tamil/i.test(titleStr)) set.add("Tamil");
+      if (/telugu/i.test(titleStr)) set.add("Telugu");
+      if (/kannada/i.test(titleStr)) set.add("Kannada");
+      if (/malayalam/i.test(titleStr)) set.add("Malayalam");
+      if (/bengali/i.test(titleStr)) set.add("Bengali");
+      if (/marathi/i.test(titleStr)) set.add("Marathi");
+    });
+  }
+
+  // 3. Fallback defaults if empty
+  if (set.size === 0) {
+    set.add("Hindi");
+    set.add("English");
+    set.add("Dual Audio");
+  }
+
+  const langs = Array.from(set);
+  if (langs.length > 1) {
+    langs.push("All Audio");
+  }
+  return langs;
 };
 
 const filterByLanguage = (items, selectedLang) => {
-  if (!Array.isArray(items)) return [];
-  if (!selectedLang) return items;
-  return items.filter((item) => {
-    if (Array.isArray(item.languages)) return item.languages.includes(selectedLang);
-    return item.language === selectedLang || item.lang === selectedLang || item.audio === selectedLang;
+  if (!Array.isArray(items) || !selectedLang || selectedLang === "All Audio" || selectedLang === "All") {
+    return items;
+  }
+  const langLower = selectedLang.toLowerCase();
+  const filtered = items.filter((item) => {
+    const titleStr = `${item?.name || ""} ${item?.quality || ""} ${item?.language || ""} ${item?.lang || ""} ${item?.audio || ""}`.toLowerCase();
+    if (Array.isArray(item?.languages)) {
+      if (item.languages.some((l) => String(l).toLowerCase().includes(langLower))) return true;
+    }
+    return titleStr.includes(langLower);
   });
+  return filtered.length > 0 ? filtered : items;
 };
 
 // ─── Movie Player Section ─────────────────────────────────────────────────
-const MoviePlayerSection = ({ telegram }) => {
-  const availableLangs = getUniqueLanguages(telegram);
-  const [selectedLanguage, setSelectedLanguage] = useState(availableLangs[0] || "");
+const MoviePlayerSection = ({ telegram, movieData }) => {
+  const availableLangs = getUniqueLanguages(telegram, movieData);
+  const [selectedLanguage, setSelectedLanguage] = useState(availableLangs[0] || "Hindi");
   const [selectedQuality, setSelectedQuality] = useState("");
   const [loading, setLoading] = useState({});
 
-  const filteredItems = filterByLanguage(telegram, selectedLanguage.length > 0 ? selectedLanguage : null);
+  const filteredItems = filterByLanguage(telegram, selectedLanguage);
   const availableQualities = filteredItems.length > 0 ? filteredItems : (telegram || []);
 
   const selectedItem = availableQualities.find((t) => t.quality === selectedQuality) || availableQualities[0];
@@ -164,37 +229,35 @@ const MoviePlayerSection = ({ telegram }) => {
   return (
     <div className="mt-4 space-y-5">
       {/* Step 1: Language Selector */}
-      {availableLangs.length > 0 && (
-        <div className="border-b border-border/10 pb-4">
-          <div className="flex items-center gap-2 mb-2.5">
-            <div className="w-5 h-5 rounded-full bg-primaryBtn/10 border border-primaryBtn/30 flex items-center justify-center text-xs font-bold text-primaryBtn">
-              1
-            </div>
-            <p className="text-xs text-primaryTextColor font-bold uppercase tracking-wider">
-              Select Audio Language
-            </p>
+      <div className="border-b border-border/10 pb-4">
+        <div className="flex items-center gap-2 mb-2.5">
+          <div className="w-5 h-5 rounded-full bg-primaryBtn/10 border border-primaryBtn/30 flex items-center justify-center text-xs font-bold text-primaryBtn">
+            1
           </div>
-          <div className="flex flex-wrap gap-2">
-            {availableLangs.map((lang) => (
-              <QualityPill
-                key={lang}
-                quality={lang}
-                selected={selectedLanguage === lang}
-                onClick={() => {
-                  setSelectedLanguage(lang);
-                  setSelectedQuality("");
-                }}
-              />
-            ))}
-          </div>
+          <p className="text-xs text-primaryTextColor font-bold uppercase tracking-wider">
+            Choose Audio Language
+          </p>
         </div>
-      )}
+        <div className="flex flex-wrap gap-2">
+          {availableLangs.map((lang) => (
+            <QualityPill
+              key={lang}
+              quality={lang}
+              selected={selectedLanguage === lang}
+              onClick={() => {
+                setSelectedLanguage(lang);
+                setSelectedQuality("");
+              }}
+            />
+          ))}
+        </div>
+      </div>
 
       {/* Step 2: Quality Selector */}
       <div>
         <div className="flex items-center gap-2 mb-2.5">
           <div className="w-5 h-5 rounded-full bg-primaryBtn/10 border border-primaryBtn/30 flex items-center justify-center text-xs font-bold text-primaryBtn">
-            {availableLangs.length > 0 ? "2" : "1"}
+            2
           </div>
           <p className="text-xs text-primaryTextColor font-bold uppercase tracking-wider">
             Select Quality
@@ -213,8 +276,8 @@ const MoviePlayerSection = ({ telegram }) => {
         {selectedItem && (
           <p className="mt-1.5 text-xs text-mutedText">
             Size: <span className="text-secondaryTextColor font-semibold">{selectedItem.size}</span>
-            {selectedItem.language && (
-              <span className="ml-3 text-cyan-400 font-medium">Audio: {selectedItem.language}</span>
+            {selectedLanguage && (
+              <span className="ml-3 text-cyan-400 font-medium">Selected Audio: {selectedLanguage}</span>
             )}
           </p>
         )}
@@ -275,16 +338,17 @@ const TvPlayerSection = ({
   episodeNumber,
   setEpisodeNumber,
   isEpisodesLoading,
+  movieData,
 }) => {
-  const [selectedLanguage, setSelectedLanguage] = useState("");
-  const [selectedQuality, setSelectedQuality] = useState("");
-  const [loading, setLoading] = useState({});
-
   const episodeData = episodes?.find((e) => e.episode_number === parseInt(episodeNumber));
   const rawQualities = episodeData?.telegram || [];
 
-  const availableLangs = getUniqueLanguages(rawQualities);
-  const filteredQualities = filterByLanguage(rawQualities, selectedLanguage.length > 0 ? selectedLanguage : null);
+  const availableLangs = getUniqueLanguages(rawQualities, movieData);
+  const [selectedLanguage, setSelectedLanguage] = useState(availableLangs[0] || "Hindi");
+  const [selectedQuality, setSelectedQuality] = useState("");
+  const [loading, setLoading] = useState({});
+
+  const filteredQualities = filterByLanguage(rawQualities, selectedLanguage);
   const qualities = filteredQualities.length > 0 ? filteredQualities : rawQualities;
 
   const handlePlayer = async (player) => {
@@ -332,7 +396,7 @@ const TvPlayerSection = ({
                 onClick={() => {
                   setSeasonNumber(s.season_number);
                   setEpisodeNumber("");
-                  setSelectedLanguage("");
+                  setSelectedLanguage(availableLangs[0] || "Hindi");
                   setSelectedQuality("");
                 }}
               />
@@ -365,7 +429,7 @@ const TvPlayerSection = ({
                   selected={parseInt(episodeNumber) === ep.episode_number}
                   onClick={() => {
                     setEpisodeNumber(ep.episode_number);
-                    setSelectedLanguage("");
+                    setSelectedLanguage(availableLangs[0] || "Hindi");
                     setSelectedQuality("");
                   }}
                 />
@@ -377,7 +441,7 @@ const TvPlayerSection = ({
       </div>
 
       {/* Step 3: Language Selector */}
-      {episodeNumber && availableLangs.length > 0 && (
+      {episodeNumber && (
         <div className="border-b border-border/10 pb-4">
           <div className="flex items-center gap-2 mb-2.5">
             <div className="w-5 h-5 rounded-full bg-primaryBtn/10 border border-primaryBtn/30 flex items-center justify-center text-xs font-bold text-primaryBtn">
@@ -408,7 +472,7 @@ const TvPlayerSection = ({
         <div className="border-b border-border/10 pb-4">
           <div className="flex items-center gap-2 mb-2.5">
             <div className="w-5 h-5 rounded-full bg-primaryBtn/10 border border-primaryBtn/30 flex items-center justify-center text-xs font-bold text-primaryBtn">
-              {availableLangs.length > 0 ? "4" : "3"}
+              4
             </div>
             <p className="text-xs text-primaryTextColor font-bold uppercase tracking-wider">
               Choose Quality
@@ -433,6 +497,9 @@ const TvPlayerSection = ({
               Size: <span className="text-secondaryTextColor font-semibold">
                 {qualities.find((q) => q.quality === (selectedQuality || qualities[0]?.quality)).size}
               </span>
+              {selectedLanguage && (
+                <span className="ml-3 text-cyan-400 font-medium">Selected Audio: {selectedLanguage}</span>
+              )}
             </p>
           )}
         </div>
@@ -444,7 +511,7 @@ const TvPlayerSection = ({
           <div>
             <div className="flex items-center gap-2 mb-2.5">
               <div className="w-5 h-5 rounded-full bg-primaryBtn/10 border border-primaryBtn/30 flex items-center justify-center text-xs font-bold text-primaryBtn">
-                {availableLangs.length > 0 ? "5" : "4"}
+                5
               </div>
               <p className="text-xs text-primaryTextColor font-bold uppercase tracking-wider">
                 Open in Player
@@ -512,11 +579,11 @@ export default function PlayerButtons({
         <h3 className="text-primaryTextColor font-bold text-sm">Watch & Download</h3>
       </div>
       <p className="text-xs text-mutedText mb-2">
-        Select season, episode, and quality, then open in your favourite player or download directly.
+        Select language, quality, and episode, then open in your favourite player or download directly.
       </p>
 
       {movieData.media_type === "movie" ? (
-        <MoviePlayerSection telegram={movieData.telegram} />
+        <MoviePlayerSection telegram={movieData.telegram} movieData={movieData} />
       ) : (
         <TvPlayerSection
           seasons={movieData.seasons}
@@ -526,6 +593,7 @@ export default function PlayerButtons({
           episodeNumber={episodeNumber}
           setEpisodeNumber={setEpisodeNumber}
           isEpisodesLoading={isEpisodesLoading}
+          movieData={movieData}
         />
       )}
     </div>
