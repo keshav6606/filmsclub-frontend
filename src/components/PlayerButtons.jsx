@@ -65,15 +65,15 @@ const launchPlayer = (videoUrl, playerId) => {
     else if (playerId === "mx") packageName = "com.mxtech.videoplayer.ad";
     else if (playerId === "vlc") packageName = "org.videolan.vlc";
     
-    const urlWithoutScheme = videoUrl.replace(/^https?:\/\//, "");
-    const intentUrl = `intent://${urlWithoutScheme}#Intent;scheme=https;package=${packageName};S.browser_fallback_url=${encodeURIComponent(MPVEX_PLAY_LINK)};end`;
+    // Correct Android Intent syntax with mime type video/* so media players load stream directly
+    const intentUrl = `intent:${videoUrl}#Intent;type=video/*;package=${packageName};S.title=${encodeURIComponent("Filmy4uhd Stream")};end`;
     window.location.href = intentUrl;
   } else {
     // Non-Android fallback
     if (playerId === "vlc") {
       window.location.href = `vlc://${videoUrl.replace(/^https?:\/\//, "")}`;
     } else {
-      window.open(MPVEX_PLAY_LINK, "_blank", "noopener noreferrer");
+      window.open(videoUrl, "_blank", "noopener noreferrer");
     }
   }
 };
@@ -387,18 +387,14 @@ const TvPlayerSection = ({
     window.open(finalUrl, "_blank", "noopener noreferrer");
   };
 
+  const currentQualityItem = qualities.find((q) => q.quality === selectedQuality) || qualities[0];
+
   return (
-    <div className="mt-4 space-y-6">
-      {/* Step 1: Season Selector */}
-      <div className="border-b border-border/10 pb-4">
-        <div className="flex items-center gap-2 mb-2.5">
-          <div className="w-5 h-5 rounded-full bg-primaryBtn/10 border border-primaryBtn/30 flex items-center justify-center text-xs font-bold text-primaryBtn">
-            1
-          </div>
-          <p className="text-xs text-primaryTextColor font-bold uppercase tracking-wider">
-            Choose Season
-          </p>
-        </div>
+    <div className="mt-4 space-y-5">
+      {/* Season Selector Bar */}
+      <div className="flex items-center gap-3 bg-slate-900/80 p-3 rounded-2xl border border-white/10">
+        <HiChevronDown className="text-amber-400 text-xl" />
+        <span className="text-xs font-bold text-slate-300 uppercase tracking-wider">Select Season:</span>
         <div className="flex flex-wrap gap-2">
           {seasons
             ?.filter((s) => s.season_number > 0)
@@ -406,7 +402,7 @@ const TvPlayerSection = ({
             .map((s) => (
               <QualityPill
                 key={s.season_number}
-                quality={`Season ${s.season_number}`}
+                quality={`SEASON ${s.season_number}`}
                 selected={parseInt(seasonNumber) === s.season_number}
                 onClick={() => {
                   setSeasonNumber(s.season_number);
@@ -419,171 +415,161 @@ const TvPlayerSection = ({
         </div>
       </div>
 
-      {/* Step 2: Episode Selector */}
-      <div className="border-b border-border/10 pb-4">
-        <div className="flex items-center gap-2 mb-2.5">
-          <div className="w-5 h-5 rounded-full bg-primaryBtn/10 border border-primaryBtn/30 flex items-center justify-center text-xs font-bold text-primaryBtn">
-            2
-          </div>
-          <p className="text-xs text-primaryTextColor font-bold uppercase tracking-wider">
-            Choose Episode
-          </p>
-        </div>
+      {/* Episode List Container (Matching Screenshot Design) */}
+      <div className="bg-slate-900/60 p-4 rounded-2xl border border-white/10 space-y-2 max-h-[480px] overflow-y-auto custom-scrollbar">
         {isEpisodesLoading ? (
-          <div className="py-2">
-            <div className="loader-episode" />
+          <div className="py-6 flex items-center justify-center gap-3 text-sm text-slate-400">
+            <Spinner /> Loading episodes...
           </div>
         ) : episodes && episodes.length > 0 ? (
-          <div className="flex flex-wrap gap-2 max-h-40 overflow-y-auto pr-1">
-            {episodes
-              .sort((a, b) => a.episode_number - b.episode_number)
-              .map((ep) => (
-                <QualityPill
-                  key={ep.episode_number}
-                  quality={`Ep ${ep.episode_number}: ${ep.title || `Episode ${ep.episode_number}`}`}
-                  selected={parseInt(episodeNumber) === ep.episode_number}
-                  onClick={() => {
-                    setEpisodeNumber(ep.episode_number);
-                    setSelectedLanguage(availableLangs[0] || "Hindi");
-                    setSelectedQuality("");
-                  }}
-                />
-              ))}
-          </div>
+          episodes
+            .sort((a, b) => a.episode_number - b.episode_number)
+            .map((ep) => {
+              const isSelected = parseInt(episodeNumber) === ep.episode_number;
+              const epTitle = ep.title ? ep.title.toUpperCase() : `EPISODE ${ep.episode_number}`;
+              const isCombined = String(ep.episode_number).includes("-") || (ep.title && ep.title.toLowerCase().includes("combined"));
+
+              return (
+                <div key={ep.episode_number} className="space-y-2">
+                  {/* Line Item Button */}
+                  <button
+                    onClick={() => {
+                      if (isSelected) {
+                        setEpisodeNumber("");
+                      } else {
+                        setEpisodeNumber(ep.episode_number);
+                        setSelectedLanguage(availableLangs[0] || "Hindi");
+                        setSelectedQuality("");
+                      }
+                    }}
+                    className={`w-full text-left px-4 py-3 rounded-xl border flex items-center justify-between text-xs sm:text-sm font-semibold transition-all duration-200 ${
+                      isSelected
+                        ? "bg-amber-500/20 text-amber-300 border-amber-500/50 shadow-md"
+                        : "bg-slate-800/40 text-slate-200 border-white/5 hover:bg-slate-800/80 hover:border-white/10"
+                    }`}
+                  >
+                    <div className="flex items-center gap-2.5 overflow-hidden">
+                      <span className="text-amber-400 font-bold shrink-0">►</span>
+                      <span className="truncate">
+                        Eps {ep.episode_number}: {epTitle}
+                        {isCombined && <span className="ml-2 text-cyan-400 text-xs">(Combined)</span>}
+                      </span>
+                    </div>
+                    <span className="text-xs text-slate-400 shrink-0 ml-2">
+                      {isSelected ? "▲" : "▼"}
+                    </span>
+                  </button>
+
+                  {/* Expanded Unified Options Card for Selected Episode */}
+                  {isSelected && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="p-4 rounded-xl bg-slate-950/80 border border-amber-500/30 space-y-4 shadow-xl"
+                    >
+                      {/* Step 1: Audio Language */}
+                      <div>
+                        <p className="text-xs font-bold text-amber-400 uppercase tracking-wider mb-2">
+                          1. Choose Audio Language
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                          {availableLangs.map((lang) => (
+                            <QualityPill
+                              key={lang}
+                              quality={lang}
+                              selected={selectedLanguage === lang}
+                              onClick={() => {
+                                setSelectedLanguage(lang);
+                                setSelectedQuality("");
+                              }}
+                            />
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Step 2: Quality */}
+                      <div>
+                        <p className="text-xs font-bold text-amber-400 uppercase tracking-wider mb-2">
+                          2. Choose Quality
+                        </p>
+                        {qualities.length > 0 ? (
+                          <div className="flex flex-wrap gap-2">
+                            {qualities.map((q) => (
+                              <QualityPill
+                                key={q.quality}
+                                quality={q.quality}
+                                selected={(selectedQuality || qualities[0]?.quality) === q.quality}
+                                onClick={() => setSelectedQuality(q.quality)}
+                              />
+                            ))}
+                          </div>
+                        ) : (
+                          <p className="text-xs text-slate-400 italic">No qualities available for this audio track</p>
+                        )}
+                        {currentQualityItem && (
+                          <p className="mt-2 text-xs text-slate-400">
+                            Size: <span className="text-slate-200 font-semibold">{currentQualityItem.size}</span>
+                            <span className="ml-3 text-cyan-400 font-medium">Audio: {selectedLanguage}</span>
+                          </p>
+                        )}
+                      </div>
+
+                      {/* Step 3: Open in Player */}
+                      {qualities.length > 0 && (
+                        <div className="space-y-3 pt-2 border-t border-white/10">
+                          <p className="text-xs font-bold text-amber-400 uppercase tracking-wider">
+                            3. Open Player / Download
+                          </p>
+                          <div className="flex flex-wrap gap-2">
+                            {PLAYERS.map((player) => (
+                              <button
+                                key={player.id}
+                                onClick={() => handlePlayer(player)}
+                                disabled={loading[player.id]}
+                                className="player-btn disabled:opacity-40"
+                                aria-label={`Open in ${player.name}`}
+                              >
+                                {loading[player.id] ? <Spinner /> : player.icon}
+                                <span>{player.name}</span>
+                              </button>
+                            ))}
+                          </div>
+
+                          {/* Direct Download & Telegram Buttons in 1 Box */}
+                          <div className="flex flex-wrap items-center gap-3 pt-1">
+                            <button
+                              onClick={handleDownload}
+                              disabled={loading.download}
+                              className="flex items-center gap-2 btn-gold px-5 py-2.5 text-xs sm:text-sm font-bold disabled:opacity-40"
+                              aria-label="Download episode"
+                            >
+                              {loading.download ? <Spinner /> : <FaDownload />}
+                              Download ({selectedQuality || qualities[0]?.quality})
+                            </button>
+
+                            <a
+                              href={`https://t.me/${TG_USERNAME}?start=file_${currentQualityItem?.id || movieData?.tmdb_id}_${seasonNumber}_${ep.episode_number}_${selectedQuality || qualities[0]?.quality}_${selectedLanguage}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              onClick={triggerPopunder}
+                              className="flex items-center gap-2 bg-[#0088cc] hover:bg-[#0077b5] text-white font-bold px-5 py-2.5 rounded-full text-xs sm:text-sm transition-all shadow-md hover:scale-105"
+                            >
+                              <TbBrandTelegram className="text-lg" />
+                              Get Episode on Telegram
+                            </a>
+                          </div>
+                        </div>
+                      )}
+                    </motion.div>
+                  )}
+                </div>
+              );
+            })
         ) : (
-          <p className="text-xs text-mutedText italic">Select a season first</p>
+          <p className="text-xs text-slate-400 italic py-4 text-center">Select a season above to load episodes</p>
         )}
       </div>
-
-      {/* Step 3: Language Selector */}
-      {episodeNumber && (
-        <div className="border-b border-border/10 pb-4">
-          <div className="flex items-center gap-2 mb-2.5">
-            <div className="w-5 h-5 rounded-full bg-primaryBtn/10 border border-primaryBtn/30 flex items-center justify-center text-xs font-bold text-primaryBtn">
-              3
-            </div>
-            <p className="text-xs text-primaryTextColor font-bold uppercase tracking-wider">
-              Choose Audio Language
-            </p>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {availableLangs.map((lang) => (
-              <QualityPill
-                key={lang}
-                quality={lang}
-                selected={selectedLanguage === lang}
-                onClick={() => {
-                  setSelectedLanguage(lang);
-                  setSelectedQuality("");
-                }}
-              />
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Step 4: Quality Selector */}
-      {episodeNumber && (
-        <div className="border-b border-border/10 pb-4">
-          <div className="flex items-center gap-2 mb-2.5">
-            <div className="w-5 h-5 rounded-full bg-primaryBtn/10 border border-primaryBtn/30 flex items-center justify-center text-xs font-bold text-primaryBtn">
-              4
-            </div>
-            <p className="text-xs text-primaryTextColor font-bold uppercase tracking-wider">
-              Choose Quality
-            </p>
-          </div>
-          {qualities.length > 0 ? (
-            <div className="flex flex-wrap gap-2">
-              {qualities.map((q) => (
-                <QualityPill
-                  key={q.quality}
-                  quality={q.quality}
-                  selected={(selectedQuality || qualities[0]?.quality) === q.quality}
-                  onClick={() => setSelectedQuality(q.quality)}
-                />
-              ))}
-            </div>
-          ) : (
-            <p className="text-xs text-mutedText italic">No qualities available for this episode</p>
-          )}
-          {qualities.find((q) => q.quality === (selectedQuality || qualities[0]?.quality)) && (
-            <p className="mt-1.5 text-xs text-mutedText">
-              Size: <span className="text-secondaryTextColor font-semibold">
-                {qualities.find((q) => q.quality === (selectedQuality || qualities[0]?.quality)).size}
-              </span>
-              {selectedLanguage && (
-                <span className="ml-3 text-cyan-400 font-medium">Selected Audio: {selectedLanguage}</span>
-              )}
-            </p>
-          )}
-        </div>
-      )}
-
-      {/* Step 5: Player Buttons */}
-      {episodeNumber && qualities.length > 0 && (
-        <div className="space-y-4">
-          <div>
-            <div className="flex items-center gap-2 mb-2.5">
-              <div className="w-5 h-5 rounded-full bg-primaryBtn/10 border border-primaryBtn/30 flex items-center justify-center text-xs font-bold text-primaryBtn">
-                5
-              </div>
-              <p className="text-xs text-primaryTextColor font-bold uppercase tracking-wider">
-                Open in Player
-              </p>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {PLAYERS.map((player) => (
-                <button
-                  key={player.id}
-                  onClick={() => handlePlayer(player)}
-                  disabled={loading[player.id]}
-                  className="player-btn disabled:opacity-40"
-                  aria-label={`Open in ${player.name}`}
-                >
-                  {loading[player.id] ? <Spinner /> : player.icon}
-                  <span>{player.name}</span>
-                </button>
-              ))}
-            </div>
-            <a
-              href={MPVEX_PLAY_LINK}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 mt-2.5 text-xs text-mutedText hover:text-primaryBtn transition-colors"
-            >
-              <FaAndroid className="text-green-500" />
-              Get mpvEx on Google Play
-            </a>
-          </div>
-
-          {/* Download & Telegram Direct File Buttons */}
-          <div className="flex flex-wrap items-center gap-3">
-            <button
-              onClick={handleDownload}
-              disabled={loading.download}
-              className="flex items-center gap-2 btn-gold px-5 py-2.5 text-sm disabled:opacity-40"
-              aria-label="Download episode"
-            >
-              {loading.download ? <Spinner /> : <FaDownload />}
-              Download ({selectedQuality || qualities[0]?.quality})
-            </button>
-
-            {qualities.length > 0 && (
-              <a
-                href={`https://t.me/${TG_USERNAME}?start=file_${(qualities.find((q) => q.quality === selectedQuality) || qualities[0])?.id || movieData?.tmdb_id}_${seasonNumber}_${episodeNumber}_${selectedQuality || qualities[0]?.quality}_${selectedLanguage}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={triggerPopunder}
-                className="flex items-center gap-2 bg-[#0088cc] hover:bg-[#0077b5] text-white font-bold px-5 py-2.5 rounded-full text-sm transition-all shadow-md hover:scale-105"
-              >
-                <TbBrandTelegram className="text-lg" />
-                Get Episode on Telegram
-              </a>
-            )}
-          </div>
-        </div>
-      )}
     </div>
   );
 };
