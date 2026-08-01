@@ -104,12 +104,43 @@ const QualityPill = ({ quality, selected, onClick }) => (
   </button>
 );
 
+const getUniqueLanguages = (items) => {
+  if (!Array.isArray(items)) return [];
+  const set = new Set();
+  items.forEach((item) => {
+    if (Array.isArray(item.languages)) {
+      item.languages.forEach((l) => l && set.add(l));
+    } else if (item.language) {
+      set.add(item.language);
+    } else if (item.lang) {
+      set.add(item.lang);
+    } else if (item.audio) {
+      set.add(item.audio);
+    }
+  });
+  return Array.from(set);
+};
+
+const filterByLanguage = (items, selectedLang) => {
+  if (!Array.isArray(items)) return [];
+  if (!selectedLang) return items;
+  return items.filter((item) => {
+    if (Array.isArray(item.languages)) return item.languages.includes(selectedLang);
+    return item.language === selectedLang || item.lang === selectedLang || item.audio === selectedLang;
+  });
+};
+
 // ─── Movie Player Section ─────────────────────────────────────────────────
 const MoviePlayerSection = ({ telegram }) => {
-  const [selectedQuality, setSelectedQuality] = useState(telegram?.[0]?.quality || "");
+  const availableLangs = getUniqueLanguages(telegram);
+  const [selectedLanguage, setSelectedLanguage] = useState(availableLangs[0] || "");
+  const [selectedQuality, setSelectedQuality] = useState("");
   const [loading, setLoading] = useState({});
 
-  const selectedItem = telegram?.find((t) => t.quality === selectedQuality);
+  const filteredItems = filterByLanguage(telegram, selectedLanguage.length > 0 ? selectedLanguage : null);
+  const availableQualities = filteredItems.length > 0 ? filteredItems : (telegram || []);
+
+  const selectedItem = availableQualities.find((t) => t.quality === selectedQuality) || availableQualities[0];
 
   const handlePlayer = async (player) => {
     if (!selectedItem) return;
@@ -131,18 +162,50 @@ const MoviePlayerSection = ({ telegram }) => {
   };
 
   return (
-    <div className="mt-4 space-y-4">
-      {/* Quality Selector */}
+    <div className="mt-4 space-y-5">
+      {/* Step 1: Language Selector */}
+      {availableLangs.length > 0 && (
+        <div className="border-b border-border/10 pb-4">
+          <div className="flex items-center gap-2 mb-2.5">
+            <div className="w-5 h-5 rounded-full bg-primaryBtn/10 border border-primaryBtn/30 flex items-center justify-center text-xs font-bold text-primaryBtn">
+              1
+            </div>
+            <p className="text-xs text-primaryTextColor font-bold uppercase tracking-wider">
+              Select Audio Language
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {availableLangs.map((lang) => (
+              <QualityPill
+                key={lang}
+                quality={lang}
+                selected={selectedLanguage === lang}
+                onClick={() => {
+                  setSelectedLanguage(lang);
+                  setSelectedQuality("");
+                }}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Step 2: Quality Selector */}
       <div>
-        <p className="text-xs text-secondaryTextColor font-semibold uppercase tracking-wider mb-2">
-          Select Quality
-        </p>
+        <div className="flex items-center gap-2 mb-2.5">
+          <div className="w-5 h-5 rounded-full bg-primaryBtn/10 border border-primaryBtn/30 flex items-center justify-center text-xs font-bold text-primaryBtn">
+            {availableLangs.length > 0 ? "2" : "1"}
+          </div>
+          <p className="text-xs text-primaryTextColor font-bold uppercase tracking-wider">
+            Select Quality
+          </p>
+        </div>
         <div className="flex flex-wrap gap-2">
-          {telegram?.map((t) => (
+          {availableQualities.map((t) => (
             <QualityPill
-              key={t.quality}
+              key={t.id || t.quality}
               quality={t.quality}
-              selected={selectedQuality === t.quality}
+              selected={(selectedQuality || selectedItem?.quality) === t.quality}
               onClick={() => setSelectedQuality(t.quality)}
             />
           ))}
@@ -150,11 +213,14 @@ const MoviePlayerSection = ({ telegram }) => {
         {selectedItem && (
           <p className="mt-1.5 text-xs text-mutedText">
             Size: <span className="text-secondaryTextColor font-semibold">{selectedItem.size}</span>
+            {selectedItem.language && (
+              <span className="ml-3 text-cyan-400 font-medium">Audio: {selectedItem.language}</span>
+            )}
           </p>
         )}
       </div>
 
-      {/* Player Buttons */}
+      {/* Step 3: Player Buttons */}
       <div>
         <p className="text-xs text-secondaryTextColor font-semibold uppercase tracking-wider mb-2">
           Open in Player
@@ -164,7 +230,7 @@ const MoviePlayerSection = ({ telegram }) => {
             <button
               key={player.id}
               onClick={() => handlePlayer(player)}
-              disabled={!selectedQuality || loading[player.id]}
+              disabled={!selectedItem || loading[player.id]}
               className="player-btn disabled:opacity-40 disabled:cursor-not-allowed"
               aria-label={`Open in ${player.name}`}
             >
@@ -173,7 +239,6 @@ const MoviePlayerSection = ({ telegram }) => {
             </button>
           ))}
         </div>
-        {/* mpvEx app link */}
         <a
           href={MPVEX_PLAY_LINK}
           target="_blank"
@@ -189,12 +254,12 @@ const MoviePlayerSection = ({ telegram }) => {
       <div>
         <button
           onClick={handleDownload}
-          disabled={!selectedQuality || loading.download}
+          disabled={!selectedItem || loading.download}
           className="flex items-center gap-2 btn-gold px-5 py-2.5 text-sm disabled:opacity-40 disabled:cursor-not-allowed"
           aria-label="Download selected quality"
         >
           {loading.download ? <Spinner /> : <FaDownload />}
-          Download {selectedQuality && `(${selectedQuality})`}
+          Download {selectedItem?.quality && `(${selectedItem.quality})`}
         </button>
       </div>
     </div>
@@ -211,14 +276,19 @@ const TvPlayerSection = ({
   setEpisodeNumber,
   isEpisodesLoading,
 }) => {
+  const [selectedLanguage, setSelectedLanguage] = useState("");
   const [selectedQuality, setSelectedQuality] = useState("");
   const [loading, setLoading] = useState({});
 
   const episodeData = episodes?.find((e) => e.episode_number === parseInt(episodeNumber));
-  const qualities = episodeData?.telegram || [];
+  const rawQualities = episodeData?.telegram || [];
+
+  const availableLangs = getUniqueLanguages(rawQualities);
+  const filteredQualities = filterByLanguage(rawQualities, selectedLanguage.length > 0 ? selectedLanguage : null);
+  const qualities = filteredQualities.length > 0 ? filteredQualities : rawQualities;
 
   const handlePlayer = async (player) => {
-    const q = qualities.find((q) => q.quality === selectedQuality);
+    const q = qualities.find((q) => q.quality === selectedQuality) || qualities[0];
     if (!q) return;
     setLoading((p) => ({ ...p, [player.id]: true }));
     const rawUrl = generateVideoUrl(q.id, q.name);
@@ -228,7 +298,7 @@ const TvPlayerSection = ({
   };
 
   const handleDownload = async () => {
-    const q = qualities.find((q) => q.quality === selectedQuality);
+    const q = qualities.find((q) => q.quality === selectedQuality) || qualities[0];
     if (!q) return;
     triggerPopunder();
     setLoading((p) => ({ ...p, download: true }));
@@ -262,6 +332,7 @@ const TvPlayerSection = ({
                 onClick={() => {
                   setSeasonNumber(s.season_number);
                   setEpisodeNumber("");
+                  setSelectedLanguage("");
                   setSelectedQuality("");
                 }}
               />
@@ -290,10 +361,11 @@ const TvPlayerSection = ({
               .map((ep) => (
                 <QualityPill
                   key={ep.episode_number}
-                  quality={`Ep ${ep.episode_number}: ${ep.title}`}
+                  quality={`Ep ${ep.episode_number}: ${ep.title || `Episode ${ep.episode_number}`}`}
                   selected={parseInt(episodeNumber) === ep.episode_number}
                   onClick={() => {
                     setEpisodeNumber(ep.episode_number);
+                    setSelectedLanguage("");
                     setSelectedQuality("");
                   }}
                 />
@@ -304,12 +376,39 @@ const TvPlayerSection = ({
         )}
       </div>
 
-      {/* Step 3: Quality Selector */}
-      {episodeNumber && (
+      {/* Step 3: Language Selector */}
+      {episodeNumber && availableLangs.length > 0 && (
         <div className="border-b border-border/10 pb-4">
           <div className="flex items-center gap-2 mb-2.5">
             <div className="w-5 h-5 rounded-full bg-primaryBtn/10 border border-primaryBtn/30 flex items-center justify-center text-xs font-bold text-primaryBtn">
               3
+            </div>
+            <p className="text-xs text-primaryTextColor font-bold uppercase tracking-wider">
+              Choose Audio Language
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {availableLangs.map((lang) => (
+              <QualityPill
+                key={lang}
+                quality={lang}
+                selected={selectedLanguage === lang}
+                onClick={() => {
+                  setSelectedLanguage(lang);
+                  setSelectedQuality("");
+                }}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Step 4: Quality Selector */}
+      {episodeNumber && (
+        <div className="border-b border-border/10 pb-4">
+          <div className="flex items-center gap-2 mb-2.5">
+            <div className="w-5 h-5 rounded-full bg-primaryBtn/10 border border-primaryBtn/30 flex items-center justify-center text-xs font-bold text-primaryBtn">
+              {availableLangs.length > 0 ? "4" : "3"}
             </div>
             <p className="text-xs text-primaryTextColor font-bold uppercase tracking-wider">
               Choose Quality
@@ -321,7 +420,7 @@ const TvPlayerSection = ({
                 <QualityPill
                   key={q.quality}
                   quality={q.quality}
-                  selected={selectedQuality === q.quality}
+                  selected={(selectedQuality || qualities[0]?.quality) === q.quality}
                   onClick={() => setSelectedQuality(q.quality)}
                 />
               ))}
@@ -329,23 +428,23 @@ const TvPlayerSection = ({
           ) : (
             <p className="text-xs text-mutedText italic">No qualities available for this episode</p>
           )}
-          {selectedQuality && qualities.find((q) => q.quality === selectedQuality) && (
+          {qualities.find((q) => q.quality === (selectedQuality || qualities[0]?.quality)) && (
             <p className="mt-1.5 text-xs text-mutedText">
               Size: <span className="text-secondaryTextColor font-semibold">
-                {qualities.find((q) => q.quality === selectedQuality).size}
+                {qualities.find((q) => q.quality === (selectedQuality || qualities[0]?.quality)).size}
               </span>
             </p>
           )}
         </div>
       )}
 
-      {/* Step 4: Player Buttons */}
-      {selectedQuality && (
+      {/* Step 5: Player Buttons */}
+      {episodeNumber && qualities.length > 0 && (
         <div className="space-y-4">
           <div>
             <div className="flex items-center gap-2 mb-2.5">
               <div className="w-5 h-5 rounded-full bg-primaryBtn/10 border border-primaryBtn/30 flex items-center justify-center text-xs font-bold text-primaryBtn">
-                4
+                {availableLangs.length > 0 ? "5" : "4"}
               </div>
               <p className="text-xs text-primaryTextColor font-bold uppercase tracking-wider">
                 Open in Player
@@ -385,7 +484,7 @@ const TvPlayerSection = ({
               aria-label="Download episode"
             >
               {loading.download ? <Spinner /> : <FaDownload />}
-              Download ({selectedQuality})
+              Download ({selectedQuality || qualities[0]?.quality})
             </button>
           </div>
         </div>
