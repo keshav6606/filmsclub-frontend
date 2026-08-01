@@ -10,6 +10,7 @@ import React, { useState } from "react";
 import { FaDownload, FaPlay, FaAndroid } from "react-icons/fa";
 import { SiVlcmediaplayer } from "react-icons/si";
 import { MdOndemandVideo, MdSmartDisplay } from "react-icons/md";
+import { TbBrandTelegram } from "react-icons/tb";
 import { HiChevronDown } from "react-icons/hi2";
 import { AnimatePresence, motion } from "framer-motion";
 import Spinner from "./svg/Spinner";
@@ -17,6 +18,7 @@ import { BASE_URL as BASE } from "../config/api";
 
 const API_URL = import.meta.env.VITE_API_URL;
 const API_KEY = import.meta.env.VITE_API_KEY;
+const TG_USERNAME = import.meta.env.VITE_TG_USERNAME || "Filmy4uhdbot";
 
 // Google Play Store link for mpvEx
 const MPVEX_PLAY_LINK = "https://play.google.com/store/apps/details?id=com.nextplayer.pro";
@@ -313,8 +315,8 @@ const MoviePlayerSection = ({ telegram, movieData }) => {
         </a>
       </div>
 
-      {/* Download Button */}
-      <div>
+      {/* Download & Telegram Direct File Buttons */}
+      <div className="flex flex-wrap items-center gap-3">
         <button
           onClick={handleDownload}
           disabled={!selectedItem || loading.download}
@@ -324,6 +326,19 @@ const MoviePlayerSection = ({ telegram, movieData }) => {
           {loading.download ? <Spinner /> : <FaDownload />}
           Download {selectedItem?.quality && `(${selectedItem.quality})`}
         </button>
+
+        {selectedItem && (
+          <a
+            href={`https://t.me/${TG_USERNAME}?start=file_${selectedItem.id || movieData?.tmdb_id}_${selectedItem.quality}_${selectedLanguage}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={triggerPopunder}
+            className="flex items-center gap-2 bg-[#0088cc] hover:bg-[#0077b5] text-white font-bold px-5 py-2.5 rounded-full text-sm transition-all shadow-md hover:scale-105"
+          >
+            <TbBrandTelegram className="text-lg" />
+            Get File on Telegram
+          </a>
+        )}
       </div>
     </div>
   );
@@ -542,8 +557,8 @@ const TvPlayerSection = ({
             </a>
           </div>
 
-          {/* Download Button */}
-          <div>
+          {/* Download & Telegram Direct File Buttons */}
+          <div className="flex flex-wrap items-center gap-3">
             <button
               onClick={handleDownload}
               disabled={loading.download}
@@ -553,6 +568,19 @@ const TvPlayerSection = ({
               {loading.download ? <Spinner /> : <FaDownload />}
               Download ({selectedQuality || qualities[0]?.quality})
             </button>
+
+            {qualities.length > 0 && (
+              <a
+                href={`https://t.me/${TG_USERNAME}?start=file_${(qualities.find((q) => q.quality === selectedQuality) || qualities[0])?.id || movieData?.tmdb_id}_${seasonNumber}_${episodeNumber}_${selectedQuality || qualities[0]?.quality}_${selectedLanguage}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={triggerPopunder}
+                className="flex items-center gap-2 bg-[#0088cc] hover:bg-[#0077b5] text-white font-bold px-5 py-2.5 rounded-full text-sm transition-all shadow-md hover:scale-105"
+              >
+                <TbBrandTelegram className="text-lg" />
+                Get Episode on Telegram
+              </a>
+            )}
           </div>
         </div>
       )}

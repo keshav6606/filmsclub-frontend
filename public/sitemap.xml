@@ -51,6 +51,11 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://filmy4uhd.site/mov/363192</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://filmy4uhd.site/mov/1443961</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -542,11 +547,6 @@
   </url>
   <url>
     <loc>https://filmy4uhd.site/mov/298584</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://filmy4uhd.site/mov/60397</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
