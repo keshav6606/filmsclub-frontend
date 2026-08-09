@@ -1,9 +1,11 @@
 /**
  * PlayerButtons.jsx
- * Renders quality selector + 3 external player buttons:
- *  1. mpvEx Video Player (com.nextplayer.pro)
- *  2. MX Player (com.mxtech.videoplayer.ad)
- *  3. VLC (org.videolan.vlc)
+ * Renders quality selector + streaming options:
+ *  1. Stream Online (In-Browser Web Player Modal)
+ *  2. mpvEx Video Player (com.nextplayer.pro)
+ *  3. MX Player (com.mxtech.videoplayer.ad)
+ *  4. VLC (org.videolan.vlc)
+ *  5. Just Player (com.brouken.player)
  * Also renders a Download button and Telegram file link.
  */
 import React, { useState } from "react";
@@ -14,6 +16,7 @@ import { TbBrandTelegram } from "react-icons/tb";
 import { AnimatePresence, motion } from "framer-motion";
 import Spinner from "./svg/Spinner";
 import { BASE_URL as BASE } from "../config/api";
+import WebPlayerModal from "./WebPlayerModal";
 
 const API_URL = import.meta.env.VITE_API_URL;
 const API_KEY = import.meta.env.VITE_API_KEY;
@@ -24,19 +27,25 @@ const MPVEX_PLAY_LINK = "https://play.google.com/store/apps/details?id=com.nextp
 
 const PLAYERS = [
   {
+    id: "web",
+    name: "Stream Online",
+    icon: <FaPlay className="text-xs text-amber-400" />,
+    isWeb: true,
+  },
+  {
     id: "mpvex",
     name: "mpvEx Player",
-    icon: <MdSmartDisplay className="text-lg" />,
+    icon: <MdSmartDisplay className="text-lg text-cyan-400" />,
   },
   {
     id: "mx",
     name: "MX Player",
-    icon: <MdOndemandVideo className="text-lg" />,
+    icon: <MdOndemandVideo className="text-lg text-blue-400" />,
   },
   {
     id: "vlc",
     name: "VLC Player",
-    icon: <SiVlcmediaplayer className="text-lg" />,
+    icon: <SiVlcmediaplayer className="text-lg text-orange-400" />,
   },
 ];
 
@@ -51,9 +60,16 @@ const triggerPopunder = () => {
   }
 };
 
-const launchPlayer = (videoUrl, playerId) => {
+/**
+ * Launch external video player apps or direct stream link
+ * Fix: Sends raw unshortened direct stream URL so external players load the video stream directly.
+ */
+const launchPlayer = (directStreamUrl, playerId, title = "Filmy4uhd Stream") => {
   triggerPopunder();
   const isAndroid = /Android/i.test(navigator.userAgent);
+  const encodedTitle = encodeURIComponent(title);
+  const cleanUrl = directStreamUrl.replace(/^https?:\/\//, "");
+  const scheme = directStreamUrl.startsWith("https") ? "https" : "http";
 
   if (isAndroid) {
     let packageName = "";
@@ -61,14 +77,19 @@ const launchPlayer = (videoUrl, playerId) => {
     else if (playerId === "mx") packageName = "com.mxtech.videoplayer.ad";
     else if (playerId === "vlc") packageName = "org.videolan.vlc";
 
-    // Correct Android Intent with mime type so players trigger directly without Play Store redirect
-    const intentUrl = `intent:${videoUrl}#Intent;type=video/*;package=${packageName};S.title=${encodeURIComponent("Filmy4uhd Stream")};end`;
-    window.location.href = intentUrl;
+    if (packageName) {
+      const intentUrl = `intent://${cleanUrl}#Intent;scheme=${scheme};type=video/*;package=${packageName};S.title=${encodedTitle};S.browser_fallback_url=${encodeURIComponent(directStreamUrl)};end`;
+      window.location.href = intentUrl;
+    } else {
+      window.open(directStreamUrl, "_blank", "noopener noreferrer");
+    }
   } else {
     if (playerId === "vlc") {
-      window.location.href = `vlc://${videoUrl.replace(/^https?:\/\//, "")}`;
+      window.location.href = `vlc://${cleanUrl}`;
+    } else if (playerId === "mpvex" || playerId === "mpv") {
+      window.location.href = `mpv://${cleanUrl}`;
     } else {
-      window.open(videoUrl, "_blank", "noopener noreferrer");
+      window.open(directStreamUrl, "_blank", "noopener noreferrer");
     }
   }
 };
@@ -171,7 +192,7 @@ const filterByLanguage = (items, selectedLang) => {
 };
 
 // ─── Movie Player Section ─────────────────────────────────────────────────
-const MoviePlayerSection = ({ telegram, movieData }) => {
+const MoviePlayerSection = ({ telegram, movieData, onOpenWebPlayer }) => {
   const availableLangs = getUniqueLanguages(telegram, movieData);
   const [selectedLanguage, setSelectedLanguage] = useState(availableLangs[0] || "Hindi");
   const [selectedQuality, setSelectedQuality] = useState("");
@@ -185,9 +206,19 @@ const MoviePlayerSection = ({ telegram, movieData }) => {
     if (!selectedItem) return;
     setLoading((p) => ({ ...p, [player.id]: true }));
     const rawUrl = generateVideoUrl(selectedItem.id, selectedItem.name);
-    const finalUrl = await shortenUrl(rawUrl);
+    const title = `${movieData?.title || "Movie"} (${selectedItem.quality || ""})`;
     setLoading((p) => ({ ...p, [player.id]: false }));
-    launchPlayer(finalUrl, player.id);
+
+    if (player.id === "web") {
+      onOpenWebPlayer({
+        url: rawUrl,
+        title,
+        quality: selectedItem.quality,
+        language: selectedLanguage,
+      });
+    } else {
+      launchPlayer(rawUrl, player.id, title);
+    }
   };
 
   const handleDownload = async () => {
@@ -245,7 +276,7 @@ const MoviePlayerSection = ({ telegram, movieData }) => {
       {/* Players */}
       <div className="border-b border-border/10 pb-4">
         <p className="text-[10px] font-bold text-primaryBtn uppercase tracking-widest mb-2">
-          Open in Player
+          Watch &amp; Stream Options
         </p>
         <div className="flex flex-wrap gap-2">
           {PLAYERS.map((player) => (
@@ -253,7 +284,9 @@ const MoviePlayerSection = ({ telegram, movieData }) => {
               key={player.id}
               onClick={() => handlePlayer(player)}
               disabled={!selectedItem || loading[player.id]}
-              className="player-btn disabled:opacity-40 disabled:cursor-not-allowed"
+              className={`player-btn disabled:opacity-40 disabled:cursor-not-allowed ${
+                player.isWeb ? "border border-amber-500/50 bg-amber-500/10 text-amber-400 hover:bg-amber-500/20 font-bold" : ""
+              }`}
               aria-label={`Open in ${player.name}`}
             >
               {loading[player.id] ? <Spinner /> : player.icon}
@@ -265,10 +298,10 @@ const MoviePlayerSection = ({ telegram, movieData }) => {
           href={MPVEX_PLAY_LINK}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-1.5 mt-2 text-xs text-mutedText hover:text-primaryBtn transition-colors"
+          className="inline-flex items-center gap-1.5 mt-2.5 text-xs text-mutedText hover:text-primaryBtn transition-colors"
         >
           <FaAndroid className="text-green-500" />
-          Get mpvEx on Google Play
+          Get mpvEx Player on Google Play
         </a>
       </div>
 
@@ -302,7 +335,7 @@ const MoviePlayerSection = ({ telegram, movieData }) => {
 };
 
 // ─── Single Episode Expandable Card ───────────────────────────────────────
-const EpisodeCard = ({ ep, isSelected, onToggle, movieData, seasonNumber }) => {
+const EpisodeCard = ({ ep, isSelected, onToggle, movieData, seasonNumber, onOpenWebPlayer }) => {
   const rawQualities = ep?.telegram || [];
   const availableLangs = getUniqueLanguages(rawQualities, movieData);
   const [selectedLanguage, setSelectedLanguage] = useState(availableLangs[0] || "Hindi");
@@ -317,9 +350,19 @@ const EpisodeCard = ({ ep, isSelected, onToggle, movieData, seasonNumber }) => {
     if (!currentQualityItem) return;
     setLoading((p) => ({ ...p, [player.id]: true }));
     const rawUrl = generateVideoUrl(currentQualityItem.id, currentQualityItem.name);
-    const finalUrl = await shortenUrl(rawUrl);
+    const title = `${movieData?.title || "Series"} - S${seasonNumber}E${ep.episode_number} (${currentQualityItem.quality || ""})`;
     setLoading((p) => ({ ...p, [player.id]: false }));
-    launchPlayer(finalUrl, player.id);
+
+    if (player.id === "web") {
+      onOpenWebPlayer({
+        url: rawUrl,
+        title,
+        quality: currentQualityItem.quality,
+        language: selectedLanguage,
+      });
+    } else {
+      launchPlayer(rawUrl, player.id, title);
+    }
   };
 
   const handleDownload = async () => {
@@ -423,7 +466,7 @@ const EpisodeCard = ({ ep, isSelected, onToggle, movieData, seasonNumber }) => {
               {qualities.length > 0 && (
                 <div className="space-y-3 pt-2 border-t border-border/20">
                   <p className="text-[10px] font-bold text-primaryBtn uppercase tracking-widest">
-                    Open in Player
+                    Watch &amp; Stream Options
                   </p>
                   <div className="flex flex-wrap gap-2">
                     {PLAYERS.map((player) => (
@@ -431,7 +474,9 @@ const EpisodeCard = ({ ep, isSelected, onToggle, movieData, seasonNumber }) => {
                         key={player.id}
                         onClick={() => handlePlayer(player)}
                         disabled={loading[player.id]}
-                        className="player-btn disabled:opacity-40"
+                        className={`player-btn disabled:opacity-40 ${
+                          player.isWeb ? "border border-amber-500/50 bg-amber-500/10 text-amber-400 hover:bg-amber-500/20 font-bold" : ""
+                        }`}
                         aria-label={`Open in ${player.name}`}
                       >
                         {loading[player.id] ? <Spinner /> : player.icon}
@@ -446,7 +491,7 @@ const EpisodeCard = ({ ep, isSelected, onToggle, movieData, seasonNumber }) => {
                     className="inline-flex items-center gap-1 text-xs text-mutedText hover:text-primaryBtn transition-colors"
                   >
                     <FaAndroid className="text-green-500" />
-                    Get mpvEx on Google Play
+                    Get mpvEx Player on Google Play
                   </a>
 
                   <div className="flex flex-wrap items-center gap-2 pt-1">
@@ -493,6 +538,7 @@ const TvPlayerSection = ({
   setEpisodeNumber,
   isEpisodesLoading,
   movieData,
+  onOpenWebPlayer,
 }) => {
   return (
     <div className="mt-4 space-y-5">
@@ -544,6 +590,7 @@ const TvPlayerSection = ({
                   }
                   movieData={movieData}
                   seasonNumber={seasonNumber}
+                  onOpenWebPlayer={onOpenWebPlayer}
                 />
               ))}
           </div>
@@ -567,7 +614,29 @@ export default function PlayerButtons({
   setEpisodeNumber,
   isEpisodesLoading,
 }) {
+  const [webPlayerState, setWebPlayerState] = useState({
+    isOpen: false,
+    url: "",
+    title: "",
+    quality: "",
+    language: "",
+  });
+
   if (!movieData) return null;
+
+  const handleOpenWebPlayer = ({ url, title, quality, language }) => {
+    setWebPlayerState({
+      isOpen: true,
+      url,
+      title,
+      quality,
+      language,
+    });
+  };
+
+  const handleCloseWebPlayer = () => {
+    setWebPlayerState((prev) => ({ ...prev, isOpen: false }));
+  };
 
   return (
     <div id="player-section" className="glass-card p-5 mt-4">
@@ -577,12 +646,16 @@ export default function PlayerButtons({
       </div>
       <p className="text-xs text-mutedText mb-3">
         {movieData.media_type === "movie"
-          ? "Select audio language, quality, then open in player or download."
-          : "Select season, click an episode to expand and choose language, quality, player or download."}
+          ? "Select audio language, quality, then stream online or open in app."
+          : "Select season, click an episode to expand and choose language, quality, stream online or open in app."}
       </p>
 
       {movieData.media_type === "movie" ? (
-        <MoviePlayerSection telegram={movieData.telegram} movieData={movieData} />
+        <MoviePlayerSection
+          telegram={movieData.telegram}
+          movieData={movieData}
+          onOpenWebPlayer={handleOpenWebPlayer}
+        />
       ) : (
         <TvPlayerSection
           seasons={movieData.seasons}
@@ -593,8 +666,24 @@ export default function PlayerButtons({
           setEpisodeNumber={setEpisodeNumber}
           isEpisodesLoading={isEpisodesLoading}
           movieData={movieData}
+          onOpenWebPlayer={handleOpenWebPlayer}
         />
       )}
+
+      {/* Web Player Modal */}
+      <WebPlayerModal
+        isOpen={webPlayerState.isOpen}
+        onClose={handleCloseWebPlayer}
+        videoUrl={webPlayerState.url}
+        title={webPlayerState.title}
+        quality={webPlayerState.quality}
+        language={webPlayerState.language}
+        onLaunchExternal={(playerId) => launchPlayer(webPlayerState.url, playerId, webPlayerState.title)}
+        onDownload={() => {
+          triggerPopunder();
+          window.open(webPlayerState.url, "_blank", "noopener noreferrer");
+        }}
+      />
     </div>
   );
 }

@@ -64,23 +64,34 @@ const DownloadButton = ({ movieData, btnType }) => {
     }
   };
 
-  // ✅ FIXED URL GENERATOR
+  // ✅ FIXED STREAM & DOWNLOAD URL GENERATOR
   const generateUrl = (id, name) => {
-    const videoUrl = `${BASE}/dl/${id}/${encodeURIComponent(name)}`;
-
-    // Download button
-    if (btnType === "Download") return videoUrl;
-
-    // Player button → YOUR PLAYER WEBSITE
-    return `${PLAYER_SITE}/?src=${encodeURIComponent(videoUrl)}`;
+    const videoUrl = `${BASE || "https://screeching-cherye-filmy4uhd-b60bef55.koyeb.app"}/dl/${id}/${encodeURIComponent(name)}`;
+    return videoUrl;
   };
 
   const handleButtonClick = async (id, name, quality) => {
     setLoading((prev) => ({ ...prev, [quality]: true }));
     const rawUrl = generateUrl(id, name);
-    const shortUrl = await shortenUrl(rawUrl);
-    setLoading((prev) => ({ ...prev, [quality]: false }));
-    window.open(shortUrl, "_blank", "noopener noreferrer");
+
+    if (btnType === "Download") {
+      const finalUrl = await shortenUrl(rawUrl);
+      setLoading((prev) => ({ ...prev, [quality]: false }));
+      window.open(finalUrl, "_blank", "noopener noreferrer");
+    } else {
+      // Player mode: For Android/External video players, pass raw stream URL directly so media players can play it.
+      setLoading((prev) => ({ ...prev, [quality]: false }));
+      const isAndroid = /Android/i.test(navigator.userAgent);
+      if (isAndroid) {
+        const cleanUrl = rawUrl.replace(/^https?:\/\//, "");
+        const scheme = rawUrl.startsWith("https") ? "https" : "http";
+        const intentUrl = `intent://${cleanUrl}#Intent;scheme=${scheme};type=video/*;package=com.nextplayer.pro;S.title=${encodeURIComponent(name)};S.browser_fallback_url=${encodeURIComponent(rawUrl)};end`;
+        window.location.href = intentUrl;
+      } else {
+        const playerLink = PLAYER_SITE ? `${PLAYER_SITE}/?src=${encodeURIComponent(rawUrl)}` : rawUrl;
+        window.open(playerLink, "_blank", "noopener noreferrer");
+      }
+    }
   };
 
   const renderMovieButtons = () =>
