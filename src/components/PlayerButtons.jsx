@@ -9,6 +9,7 @@
  * Also renders a Download button and Telegram file link.
  */
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { FaDownload, FaPlay, FaAndroid } from "react-icons/fa";
 import { SiVlcmediaplayer } from "react-icons/si";
 import { MdOndemandVideo, MdSmartDisplay } from "react-icons/md";
@@ -211,10 +212,13 @@ const MoviePlayerSection = ({ telegram, movieData, onOpenWebPlayer }) => {
 
     if (player.id === "web") {
       onOpenWebPlayer({
-        url: rawUrl,
+        id: selectedItem.id,
+        name: selectedItem.name,
         title,
         quality: selectedItem.quality,
         language: selectedLanguage,
+        tmdbId: movieData?.tmdb_id,
+        mediaType: movieData?.media_type || "movie",
       });
     } else {
       launchPlayer(rawUrl, player.id, title);
@@ -355,10 +359,13 @@ const EpisodeCard = ({ ep, isSelected, onToggle, movieData, seasonNumber, onOpen
 
     if (player.id === "web") {
       onOpenWebPlayer({
-        url: rawUrl,
+        id: currentQualityItem.id,
+        name: currentQualityItem.name,
         title,
         quality: currentQualityItem.quality,
         language: selectedLanguage,
+        tmdbId: movieData?.tmdb_id,
+        mediaType: "tv",
       });
     } else {
       launchPlayer(rawUrl, player.id, title);
@@ -614,28 +621,21 @@ export default function PlayerButtons({
   setEpisodeNumber,
   isEpisodesLoading,
 }) {
-  const [webPlayerState, setWebPlayerState] = useState({
-    isOpen: false,
-    url: "",
-    title: "",
-    quality: "",
-    language: "",
-  });
+  const navigate = useNavigate();
 
   if (!movieData) return null;
 
-  const handleOpenWebPlayer = ({ url, title, quality, language }) => {
-    setWebPlayerState({
-      isOpen: true,
-      url,
-      title,
-      quality,
-      language,
-    });
-  };
+  const handleOpenWebPlayer = ({ id, name, title, quality, language, tmdbId, mediaType }) => {
+    const params = new URLSearchParams();
+    if (id) params.set("id", id);
+    if (name) params.set("name", name);
+    if (title) params.set("title", title);
+    if (quality) params.set("quality", quality);
+    if (language) params.set("lang", language);
+    if (tmdbId) params.set("tmdb_id", tmdbId);
+    if (mediaType) params.set("media_type", mediaType);
 
-  const handleCloseWebPlayer = () => {
-    setWebPlayerState((prev) => ({ ...prev, isOpen: false }));
+    navigate(`/watch?${params.toString()}`);
   };
 
   return (
@@ -669,21 +669,6 @@ export default function PlayerButtons({
           onOpenWebPlayer={handleOpenWebPlayer}
         />
       )}
-
-      {/* Web Player Modal */}
-      <WebPlayerModal
-        isOpen={webPlayerState.isOpen}
-        onClose={handleCloseWebPlayer}
-        videoUrl={webPlayerState.url}
-        title={webPlayerState.title}
-        quality={webPlayerState.quality}
-        language={webPlayerState.language}
-        onLaunchExternal={(playerId) => launchPlayer(webPlayerState.url, playerId, webPlayerState.title)}
-        onDownload={() => {
-          triggerPopunder();
-          window.open(webPlayerState.url, "_blank", "noopener noreferrer");
-        }}
-      />
     </div>
   );
 }

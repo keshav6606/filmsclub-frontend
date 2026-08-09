@@ -79,18 +79,16 @@ const DownloadButton = ({ movieData, btnType }) => {
       setLoading((prev) => ({ ...prev, [quality]: false }));
       window.open(finalUrl, "_blank", "noopener noreferrer");
     } else {
-      // Player mode: For Android/External video players, pass raw stream URL directly so media players can play it.
       setLoading((prev) => ({ ...prev, [quality]: false }));
-      const isAndroid = /Android/i.test(navigator.userAgent);
-      if (isAndroid) {
-        const cleanUrl = rawUrl.replace(/^https?:\/\//, "");
-        const scheme = rawUrl.startsWith("https") ? "https" : "http";
-        const intentUrl = `intent://${cleanUrl}#Intent;scheme=${scheme};type=video/*;package=com.nextplayer.pro;S.title=${encodeURIComponent(name)};S.browser_fallback_url=${encodeURIComponent(rawUrl)};end`;
-        window.location.href = intentUrl;
-      } else {
-        const playerLink = PLAYER_SITE ? `${PLAYER_SITE}/?src=${encodeURIComponent(rawUrl)}` : rawUrl;
-        window.open(playerLink, "_blank", "noopener noreferrer");
-      }
+      const params = new URLSearchParams({
+        id: id || "",
+        name: name || "",
+        title: movieData?.title || name || "Stream",
+        quality: quality || "HD",
+        tmdb_id: movieData?.tmdb_id || "",
+        media_type: movieData?.media_type || "movie",
+      });
+      window.location.href = `/watch?${params.toString()}`;
     }
   };
 
