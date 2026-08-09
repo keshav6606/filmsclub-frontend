@@ -51,11 +51,13 @@ export default function WebPlayerModal({
   useEffect(() => {
     if (isOpen) {
       setIsPlaying(false);
-      setCurrentTime(0);
+      const savedTime = localStorage.getItem(`filmsclub_watch_${title}`);
+      const initialTime = savedTime ? parseFloat(savedTime) : 0;
+      setCurrentTime(initialTime > 5 ? initialTime : 0);
       setDuration(0);
       setIsBuffering(true);
     }
-  }, [isOpen, videoUrl]);
+  }, [isOpen, videoUrl, title]);
 
   useEffect(() => {
     const handleKeyDown = (e) => {

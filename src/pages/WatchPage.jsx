@@ -250,7 +250,8 @@ export default function WatchPage() {
     const scheme = videoUrl.startsWith("https") ? "https" : "http";
 
     if (isAndroid) {
-      const intentUrl = `intent://${cleanUrl}#Intent;action=android.intent.action.VIEW;scheme=${scheme};type=video/*;package=${player.packageName};S.title=${encodedTitle};S.browser_fallback_url=${encodeURIComponent(videoUrl)};end`;
+      // Fix: Preserving full videoUrl scheme (https://) inside intent: URI so mpvEx, MX Player, & VLC auto-play stream directly
+      const intentUrl = `intent:${videoUrl}#Intent;action=android.intent.action.VIEW;type=video/*;package=${player.packageName};S.title=${encodedTitle};S.browser_fallback_url=${encodeURIComponent(videoUrl)};end`;
       window.location.href = intentUrl;
     } else {
       if (player.id === "vlc") {

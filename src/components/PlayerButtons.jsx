@@ -79,7 +79,8 @@ const launchPlayer = (directStreamUrl, playerId, title = "Filmy4uhd Stream") => 
     else if (playerId === "vlc") packageName = "org.videolan.vlc";
 
     if (packageName) {
-      const intentUrl = `intent://${cleanUrl}#Intent;action=android.intent.action.VIEW;scheme=${scheme};type=video/*;package=${packageName};S.title=${encodedTitle};S.browser_fallback_url=${encodeURIComponent(directStreamUrl)};end`;
+      // Fix: Preserving full directStreamUrl scheme (https://) inside intent: URI so mpvEx, MX Player, & VLC auto-play stream directly
+      const intentUrl = `intent:${directStreamUrl}#Intent;action=android.intent.action.VIEW;type=video/*;package=${packageName};S.title=${encodedTitle};S.browser_fallback_url=${encodeURIComponent(directStreamUrl)};end`;
       window.location.href = intentUrl;
     } else {
       window.open(directStreamUrl, "_blank", "noopener noreferrer");
