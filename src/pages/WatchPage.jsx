@@ -246,17 +246,42 @@ export default function WatchPage() {
     triggerPopunder();
     const isAndroid = /Android/i.test(navigator.userAgent);
     const encodedTitle = encodeURIComponent(title);
-    const cleanUrl = videoUrl.replace(/^https?:\/\//, "");
-    const scheme = videoUrl.startsWith("https") ? "https" : "http";
 
-    if (isAndroid) {
-      // Fix: Preserving full videoUrl scheme (https://) inside intent: URI so mpvEx, MX Player, & VLC auto-play stream directly
-      const intentUrl = `intent:${videoUrl}#Intent;action=android.intent.action.VIEW;type=video/*;package=${player.packageName};S.title=${encodedTitle};S.browser_fallback_url=${encodeURIComponent(videoUrl)};end`;
+    const isHttps = videoUrl.startsWith("https");
+    const scheme = isHttps ? "https" : "http";
+    const cleanUrl = videoUrl.replace(/^https?:\/\//, "");
+
+    const playerId = player?.id;
+    let packageName = player?.packageName || "";
+    let playStoreUrl = "";
+
+    if (playerId === "mpvex") {
+      packageName = packageName || "com.nextplayer.pro";
+      playStoreUrl = "https://play.google.com/store/apps/details?id=com.nextplayer.pro";
+    } else if (playerId === "mx") {
+      packageName = packageName || "com.mxtech.videoplayer.ad";
+      playStoreUrl = "https://play.google.com/store/apps/details?id=com.mxtech.videoplayer.ad";
+    } else if (playerId === "vlc") {
+      packageName = packageName || "org.videolan.vlc";
+      playStoreUrl = "https://play.google.com/store/apps/details?id=org.videolan.vlc";
+    }
+
+    if (isAndroid && packageName) {
+      const encodedFallback = encodeURIComponent(playStoreUrl);
+      const intentUrl = `intent://${cleanUrl}#Intent;scheme=${scheme};action=android.intent.action.VIEW;type=video/*;package=${packageName};S.title=${encodedTitle};S.browser_fallback_url=${encodedFallback};end`;
+      
+      const start = Date.now();
+      setTimeout(() => {
+        if (Date.now() - start < 2500 && !document.hidden && playStoreUrl) {
+          window.location.href = playStoreUrl;
+        }
+      }, 2000);
+
       window.location.href = intentUrl;
     } else {
-      if (player.id === "vlc") {
+      if (playerId === "vlc") {
         window.location.href = `vlc://${cleanUrl}`;
-      } else if (player.id === "mpvex") {
+      } else if (playerId === "mpvex" || playerId === "mpv") {
         window.location.href = `mpv://${cleanUrl}`;
       } else {
         window.open(videoUrl, "_blank", "noopener noreferrer");

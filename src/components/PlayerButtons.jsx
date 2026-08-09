@@ -66,25 +66,41 @@ const triggerPopunder = () => {
  * Fix: Sends raw unshortened direct stream URL so external players load the video stream directly.
  */
 const launchPlayer = (directStreamUrl, playerId, title = "Filmy4uhd Stream") => {
+  if (!directStreamUrl) return;
   triggerPopunder();
   const isAndroid = /Android/i.test(navigator.userAgent);
   const encodedTitle = encodeURIComponent(title);
+
+  const isHttps = directStreamUrl.startsWith("https");
+  const scheme = isHttps ? "https" : "http";
   const cleanUrl = directStreamUrl.replace(/^https?:\/\//, "");
-  const scheme = directStreamUrl.startsWith("https") ? "https" : "http";
 
-  if (isAndroid) {
-    let packageName = "";
-    if (playerId === "mpvex") packageName = "com.nextplayer.pro";
-    else if (playerId === "mx") packageName = "com.mxtech.videoplayer.ad";
-    else if (playerId === "vlc") packageName = "org.videolan.vlc";
+  let packageName = "";
+  let playStoreUrl = "";
 
-    if (packageName) {
-      // Fix: Preserving full directStreamUrl scheme (https://) inside intent: URI so mpvEx, MX Player, & VLC auto-play stream directly
-      const intentUrl = `intent:${directStreamUrl}#Intent;action=android.intent.action.VIEW;type=video/*;package=${packageName};S.title=${encodedTitle};S.browser_fallback_url=${encodeURIComponent(directStreamUrl)};end`;
-      window.location.href = intentUrl;
-    } else {
-      window.open(directStreamUrl, "_blank", "noopener noreferrer");
-    }
+  if (playerId === "mpvex") {
+    packageName = "com.nextplayer.pro";
+    playStoreUrl = "https://play.google.com/store/apps/details?id=com.nextplayer.pro";
+  } else if (playerId === "mx") {
+    packageName = "com.mxtech.videoplayer.ad";
+    playStoreUrl = "https://play.google.com/store/apps/details?id=com.mxtech.videoplayer.ad";
+  } else if (playerId === "vlc") {
+    packageName = "org.videolan.vlc";
+    playStoreUrl = "https://play.google.com/store/apps/details?id=org.videolan.vlc";
+  }
+
+  if (isAndroid && packageName) {
+    const encodedFallback = encodeURIComponent(playStoreUrl);
+    const intentUrl = `intent://${cleanUrl}#Intent;scheme=${scheme};action=android.intent.action.VIEW;type=video/*;package=${packageName};S.title=${encodedTitle};S.browser_fallback_url=${encodedFallback};end`;
+    
+    const start = Date.now();
+    setTimeout(() => {
+      if (Date.now() - start < 2500 && !document.hidden && playStoreUrl) {
+        window.location.href = playStoreUrl;
+      }
+    }, 2000);
+
+    window.location.href = intentUrl;
   } else {
     if (playerId === "vlc") {
       window.location.href = `vlc://${cleanUrl}`;
