@@ -19,6 +19,7 @@ import {
   FaTv,
   FaShieldAlt,
   FaBolt,
+  FaVolumeDown,
 } from "react-icons/fa";
 import { MdSmartDisplay, MdOndemandVideo, MdOutlineHighQuality } from "react-icons/md";
 import { SiVlcmediaplayer } from "react-icons/si";
@@ -37,7 +38,7 @@ const PLAYERS = [
     name: "mpvEx Player",
     packageName: "com.nextplayer.pro",
     icon: <MdSmartDisplay className="text-xl text-cyan-400" />,
-    desc: "Recommended for hardware acceleration & smooth H.265 / 4K playback.",
+    desc: "Recommended for hardware acceleration, 4K & full AC3/EAC3 audio decoding.",
     playStore: MPVEX_PLAY_LINK,
   },
   {
@@ -92,7 +93,7 @@ export default function WatchPage() {
   const tmdbId = searchParams.get("tmdb_id");
   const mediaType = searchParams.get("media_type") || "movie";
 
-  // Construct direct video stream URL
+  // Direct video stream URL
   const videoUrl = searchParams.get("src") ||
     (fileId && fileName ? `${BASE}/dl/${fileId}/${encodeURIComponent(fileName)}` : "");
 
@@ -109,6 +110,7 @@ export default function WatchPage() {
   const [showControls, setShowControls] = useState(true);
   const [isBuffering, setIsBuffering] = useState(true);
   const [isDownloadLoading, setIsDownloadLoading] = useState(false);
+  const [showAudioNotice, setShowAudioNotice] = useState(false);
 
   const controlsTimeoutRef = useRef(null);
 
@@ -120,10 +122,26 @@ export default function WatchPage() {
     if (!videoRef.current) return;
     if (isPlaying) {
       videoRef.current.pause();
+      setIsPlaying(false);
     } else {
-      videoRef.current.play();
+      // Ensure audio is unmuted on play interaction
+      videoRef.current.muted = false;
+      videoRef.current.volume = volume || 1;
+      setIsMuted(false);
+      
+      videoRef.current.play().then(() => {
+        setIsPlaying(true);
+      }).catch((err) => {
+        console.warn("Play error, trying muted play fallback:", err);
+        if (videoRef.current) {
+          videoRef.current.muted = true;
+          setIsMuted(true);
+          videoRef.current.play();
+          setIsPlaying(true);
+          setShowAudioNotice(true);
+        }
+      });
     }
-    setIsPlaying(!isPlaying);
   };
 
   const handleTimeUpdate = () => {
@@ -135,6 +153,9 @@ export default function WatchPage() {
     if (!videoRef.current) return;
     setDuration(videoRef.current.duration);
     setIsBuffering(false);
+    // Explicitly set unmuted audio volume on load
+    videoRef.current.muted = false;
+    videoRef.current.volume = volume;
   };
 
   const handleSeek = (e) => {
@@ -159,7 +180,9 @@ export default function WatchPage() {
     setVolume(newVol);
     if (videoRef.current) {
       videoRef.current.volume = newVol;
+      videoRef.current.muted = newVol === 0;
       setIsMuted(newVol === 0);
+      if (newVol > 0) setShowAudioNotice(false);
     }
   };
 
@@ -167,9 +190,12 @@ export default function WatchPage() {
     if (!videoRef.current) return;
     if (isMuted) {
       videoRef.current.volume = volume || 1;
+      videoRef.current.muted = false;
       setIsMuted(false);
+      setShowAudioNotice(false);
     } else {
       videoRef.current.volume = 0;
+      videoRef.current.muted = true;
       setIsMuted(true);
     }
   };
@@ -212,6 +238,9 @@ export default function WatchPage() {
     return `${displayMins}:${seconds < 10 ? "0" : ""}${seconds}`;
   };
 
+  /**
+   * Launch external Android & desktop video player apps directly
+   */
   const launchExternalPlayer = (player) => {
     if (!videoUrl) return;
     triggerPopunder();
@@ -221,7 +250,7 @@ export default function WatchPage() {
     const scheme = videoUrl.startsWith("https") ? "https" : "http";
 
     if (isAndroid) {
-      const intentUrl = `intent://${cleanUrl}#Intent;scheme=${scheme};type=video/*;package=${player.packageName};S.title=${encodedTitle};S.browser_fallback_url=${encodeURIComponent(videoUrl)};end`;
+      const intentUrl = `intent://${cleanUrl}#Intent;action=android.intent.action.VIEW;scheme=${scheme};type=video/*;package=${player.packageName};S.title=${encodedTitle};S.browser_fallback_url=${encodeURIComponent(videoUrl)};end`;
       window.location.href = intentUrl;
     } else {
       if (player.id === "vlc") {
@@ -246,14 +275,14 @@ export default function WatchPage() {
   const backLink = tmdbId ? (mediaType === "tv" ? `/ser/${tmdbId}` : `/mov/${tmdbId}`) : "/";
 
   return (
-    <div className="mt-20 mb-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10 text-white">
+    <div className="mt-20 mb-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 text-white">
       <SEO
         title={`Watch ${title} Online | High Speed Stream & Download`}
         description={`Stream ${title} online free in high quality. Open in mpvEx Player, MX Player, or VLC Player.`}
         keywords={`${title}, watch ${title} online, stream mpvEx, MX player, VLC stream, free stream`}
       />
 
-      {/* Top Breadcrumb / Back Button */}
+      {/* Top Navigation */}
       <div className="flex flex-wrap items-center justify-between gap-4">
         <Link
           to={backLink}
@@ -273,14 +302,36 @@ export default function WatchPage() {
         </div>
       </div>
 
-      {/* Title Bar */}
+      {/* Title Header */}
       <div>
         <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white tracking-tight">
           Streaming: <span className="gold-text">{title}</span>
         </h1>
         <p className="text-xs sm:text-sm text-slate-400 mt-1">
-          Enjoy fast online web streaming below or open directly in your preferred video player app.
+          Enjoy online web streaming below or open in mpvEx / MX / VLC Player for full Dolby audio output.
         </p>
+      </div>
+
+      {/* Audio Codec Alert Banner */}
+      <div className="p-4 rounded-2xl bg-gradient-to-r from-amber-500/15 via-slate-900 to-cyan-500/15 border border-amber-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs shadow-lg">
+        <div className="flex items-center gap-3">
+          <div className="p-2 rounded-xl bg-amber-500/20 text-amber-400 text-lg shrink-0">
+            <FaVolumeUp />
+          </div>
+          <div>
+            <span className="font-bold text-white block text-sm">No Sound / Silent Audio in Web Browser?</span>
+            <span className="text-slate-300">
+              Web browsers cannot decode Dolby AC3/EAC3 audio natively. Click <strong>mpvEx Player</strong>, <strong>MX Player</strong>, or <strong>VLC Player</strong> below to play with 100% sound!
+            </span>
+          </div>
+        </div>
+        <button
+          onClick={() => launchExternalPlayer(PLAYERS[0])}
+          className="shrink-0 bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold px-4 py-2 rounded-xl text-xs flex items-center gap-1.5 transition-all shadow-md"
+        >
+          <MdSmartDisplay className="text-base" />
+          <span>Open in mpvEx</span>
+        </button>
       </div>
 
       {/* Hero Embedded Web Player Container */}
@@ -294,8 +345,23 @@ export default function WatchPage() {
             <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-black/50 z-10">
               <div className="w-12 h-12 border-4 border-amber-500 border-t-transparent rounded-full animate-spin" />
               <span className="text-xs text-slate-300 font-semibold tracking-wide">
-                Buffering video stream...
+                Loading stream video...
               </span>
+            </div>
+          )}
+
+          {/* Muted Autoplay Warning Banner */}
+          {showAudioNotice && (
+            <div className="absolute top-4 inset-x-4 z-30 p-3 rounded-xl bg-amber-500 text-slate-950 font-bold text-xs flex items-center justify-between shadow-xl border border-white/30 animate-bounce">
+              <span className="flex items-center gap-2">
+                <FaVolumeMute className="text-base" /> Audio was muted by browser autoplay policy. Click button to unmute!
+              </span>
+              <button
+                onClick={toggleMute}
+                className="bg-slate-950 text-amber-400 px-3 py-1 rounded-lg text-xs font-black hover:bg-slate-900"
+              >
+                UNMUTE SOUND
+              </button>
             </div>
           )}
 
@@ -352,7 +418,7 @@ export default function WatchPage() {
               </span>
             </div>
 
-            {/* Buttons Row */}
+            {/* Controls Bar */}
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <button
@@ -382,7 +448,7 @@ export default function WatchPage() {
                     onClick={toggleMute}
                     className="p-1.5 text-slate-300 hover:text-white transition-colors text-base"
                   >
-                    {isMuted || volume === 0 ? <FaVolumeMute /> : <FaVolumeUp />}
+                    {isMuted || volume === 0 ? <FaVolumeMute className="text-amber-400" /> : <FaVolumeUp />}
                   </button>
                   <input
                     type="range"
@@ -429,10 +495,10 @@ export default function WatchPage() {
       <div className="glass-card p-6 space-y-4 border border-white/10">
         <div className="flex items-center gap-2">
           <FaTv className="text-amber-400 text-lg" />
-          <h2 className="text-lg font-bold text-white">External Player Apps &amp; Downloads</h2>
+          <h2 className="text-lg font-bold text-white">Open in External App for 100% Sound</h2>
         </div>
         <p className="text-xs text-slate-400">
-          Click any player below to launch the video stream directly into your mobile or desktop media player app:
+          Click any player below to launch the video stream directly into your mobile or desktop media player app with full audio output:
         </p>
 
         {/* Players Grid */}
@@ -440,7 +506,7 @@ export default function WatchPage() {
           {PLAYERS.map((player) => (
             <div
               key={player.id}
-              className="p-4 rounded-xl bg-slate-900/80 border border-white/5 hover:border-amber-500/40 transition-all flex flex-col justify-between space-y-3"
+              className="p-4 rounded-xl bg-slate-900/80 border border-white/5 hover:border-amber-500/40 transition-all flex flex-col justify-between space-y-3 shadow-md"
             >
               <div className="flex items-center gap-3">
                 {player.icon}
@@ -501,7 +567,7 @@ export default function WatchPage() {
         <div className="flex items-center gap-2 border-b border-white/10 pb-4">
           <FaBookOpen className="text-amber-400 text-xl" />
           <h2 className="text-xl font-black tracking-tight text-white">
-            Streaming Guides, App Reviews &amp; Setup Tips
+            Audio Troubleshooting, App Reviews &amp; Setup Guides
           </h2>
         </div>
 
@@ -513,14 +579,14 @@ export default function WatchPage() {
             </span>
             <div>
               <h3 className="text-lg font-bold text-white">
-                How to Watch &amp; Stream with mpvEx Player
+                How to Resolve Silent Audio &amp; Watch with mpvEx Player
               </h3>
-              <p className="text-xs text-slate-400">High-Performance Video Acceleration &amp; Customization</p>
+              <p className="text-xs text-slate-400">High-Performance Video Acceleration &amp; Dolby Audio Decoding</p>
             </div>
           </div>
 
           <p className="text-slate-300">
-            <strong>mpvEx Player</strong> (package: <code className="text-amber-400 bg-white/5 px-1.5 py-0.5 rounded">com.nextplayer.pro</code>) is an advanced video player tailored for Android devices. Powered by the renowned libmpv engine, it provides unmatched playback performance for modern video formats including H.265 (HEVC), AV1, and 4K Ultra HD videos.
+            <strong>mpvEx Player</strong> (package: <code className="text-amber-400 bg-white/5 px-1.5 py-0.5 rounded">com.nextplayer.pro</code>) is an advanced video player tailored for Android devices. Powered by libmpv, it provides native AC3 / EAC3 audio codec decoding and supports modern video formats including H.265 (HEVC), AV1, and 4K Ultra HD videos.
           </p>
 
           <div className="grid sm:grid-cols-2 gap-4 my-3">
