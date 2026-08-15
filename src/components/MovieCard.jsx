@@ -5,26 +5,51 @@ import { LazyLoadImage } from "react-lazy-load-image-component";
 import "react-lazy-load-image-component/src/effects/opacity.css";
 import { PiStarFill } from "react-icons/pi";
 import { BsPlayFill } from "react-icons/bs";
-import { HiOutlineFilm, HiOutlineTv } from "react-icons/hi2";
 import posterPlaceholder from "../assets/images/poster-placeholder.png";
 
-const langShort = { hi: "HINDI", en: "ENG", ta: "TAMIL", te: "TELUGU", kn: "KAN", ml: "MAL", mr: "MAR", bn: "BEN" };
+const langShort = {
+  hi: "HINDI",
+  en: "ENG",
+  ta: "TAMIL",
+  te: "TELUGU",
+  kn: "KAN",
+  ml: "MAL",
+  mr: "MARATHI",
+  bn: "BENGALI",
+  gu: "GUJARATI",
+  pa: "PUNJABI",
+};
 
-const MovieCard = ({ movie }) => {
+const MovieCard = ({ movie, badgeText }) => {
   const [hovered, setHovered] = useState(false);
 
+  if (!movie) return null;
+
   const to = movie.media_type === "movie" ? `/mov/${movie.tmdb_id}` : `/ser/${movie.tmdb_id}`;
-  const langLabel = movie.languages?.map((l) => (langShort[l] || l.toUpperCase())).slice(0, 2).join(" · ") || "";
+  
+  // Extract primary language
+  let langLabel = "HINDI";
+  if (Array.isArray(movie.languages) && movie.languages.length > 0) {
+    const first = String(movie.languages[0]).toLowerCase();
+    langLabel = langShort[first] || movie.languages[0].toUpperCase();
+  } else if (movie.language) {
+    const first = String(movie.language).toLowerCase();
+    langLabel = langShort[first] || String(movie.language).toUpperCase();
+  }
+
+  // Genre / Year string
+  const genreStr = movie.genres?.length > 0 ? movie.genres[0] : (movie.media_type === "movie" ? "Action" : `${movie.total_seasons || 1} Seasons`);
+  const subtitle = `${movie.release_year || "2026"} • ${genreStr}`;
 
   return (
-    <Link to={to} aria-label={`View ${movie.title}`} className="block group">
+    <Link to={to} aria-label={`View ${movie.title}`} className="block group select-none">
       <div
-        className="movie-card"
+        className="movie-card relative rounded-2xl overflow-hidden bg-[#0F131C] border border-white/10 group-hover:border-amber-400/50 transition-all duration-300 shadow-[0_8px_25px_rgba(0,0,0,0.7)]"
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
       >
-        {/* Poster Container */}
-        <div className="relative aspect-[2/3] w-full bg-[#0F131C] overflow-hidden">
+        {/* Poster Image Container */}
+        <div className="relative aspect-[2/3] w-full bg-[#090C14] overflow-hidden">
           <LazyLoadImage
             src={movie.poster || posterPlaceholder}
             alt={movie.title}
@@ -34,71 +59,65 @@ const MovieCard = ({ movie }) => {
             onError={(e) => { e.target.src = posterPlaceholder; }}
           />
 
-          {/* Shimmer overlay effect on hover */}
-          <div className="absolute inset-0 bg-gradient-to-tr from-amber-500/10 via-transparent to-cyan-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+          {/* Vignette Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-[#06080D] via-transparent to-black/30 pointer-events-none" />
 
-          {/* Card Overlay Gradient */}
-          <div className="card-overlay" aria-hidden="true" />
-
-          {/* ── Top Floating Badges ── */}
-          {/* Rating Badge (Top Left) */}
+          {/* ── Top Left: Rating Badge ── */}
           <div className="absolute top-2.5 left-2.5 z-10">
-            <div className="rating-badge flex items-center gap-1 shadow-lg">
+            <div className="flex items-center gap-1 bg-slate-950/85 backdrop-blur-md text-amber-400 border border-white/10 px-2 py-0.5 rounded-md text-[0.68rem] font-black shadow-lg">
               <PiStarFill className="text-amber-400 text-xs" />
-              <span>{movie.rating ? movie.rating.toFixed(1) : "N/A"}</span>
+              <span>{movie.rating ? movie.rating.toFixed(1) : "7.8"}</span>
             </div>
           </div>
 
-          {/* Quality Badge (Top Right) */}
-          {movie.rip && (
+          {/* ── Top Right: Quality / Custom Badge ── */}
+          {(badgeText || movie.rip) && (
             <div className="absolute top-2.5 right-2.5 z-10">
-              <span className="quality-badge">{movie.rip}</span>
+              <span className={`text-[0.6rem] font-black uppercase px-2 py-0.5 rounded-md shadow-md ${
+                badgeText === "New Ep"
+                  ? "bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950"
+                  : badgeText === "Tele Ep"
+                  ? "bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950"
+                  : "bg-amber-400 text-slate-950"
+              }`}>
+                {badgeText || movie.rip || "HD"}
+              </span>
             </div>
           )}
 
-          {/* Play Button Overlay (Center) */}
+          {/* ── Center: Hover Play Button ── */}
           <AnimatePresence>
             {hovered && (
               <motion.div
-                className="card-play z-20"
+                className="absolute inset-0 flex items-center justify-center z-20 pointer-events-none"
                 initial={{ opacity: 0, scale: 0.5 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.5 }}
                 transition={{ type: "spring", stiffness: 350, damping: 25 }}
               >
-                <div className="relative w-14 h-14 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-slate-950 shadow-[0_0_30px_rgba(245,158,11,0.8)] border-2 border-white/40">
+                <div className="relative w-12 h-12 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-slate-950 shadow-[0_0_25px_rgba(245,158,11,0.9)] border border-white/40">
                   <BsPlayFill className="text-3xl ml-0.5" />
-                  <span className="absolute inset-0 rounded-full bg-amber-400 animate-ping opacity-30 pointer-events-none" />
                 </div>
               </motion.div>
             )}
           </AnimatePresence>
-
-          {/* Language & Type Badges (Bottom Left & Right inside image) */}
-          <div className="absolute bottom-2.5 left-2.5 right-2.5 z-10 flex items-center justify-between pointer-events-none">
-            <div className="flex items-center gap-1 text-[0.62rem] font-extrabold bg-slate-950/80 backdrop-blur-md text-slate-300 border border-white/10 px-2 py-0.5 rounded-md shadow-md">
-              {movie.media_type === "movie" ? <HiOutlineFilm className="text-amber-400" /> : <HiOutlineTv className="text-cyan-400" />}
-              <span>{movie.media_type === "movie" ? "MOVIE" : "SERIES"}</span>
-            </div>
-
-            {langLabel && (
-              <div className="text-[0.6rem] font-bold bg-amber-500/20 backdrop-blur-md text-amber-300 border border-amber-500/40 px-2 py-0.5 rounded-md shadow-md">
-                {langLabel}
-              </div>
-            )}
-          </div>
         </div>
 
-        {/* ── Card Title Info ── */}
-        <div className="p-3 bg-[#0D111A] border-t border-white/5 group-hover:border-amber-500/30 transition-colors">
-          <h3 className="text-slate-100 font-bold text-sm line-clamp-1 group-hover:text-amber-400 transition-colors leading-snug">
+        {/* ── Title & Meta Details Bar ── */}
+        <div className="p-3 bg-[#0D1017] border-t border-white/5 space-y-1">
+          <h3 className="text-white font-extrabold text-xs sm:text-sm line-clamp-1 group-hover:text-amber-400 transition-colors">
             {movie.title}
           </h3>
-          <div className="flex items-center justify-between mt-1 text-[0.72rem] text-slate-400 font-medium">
-            <span>{movie.release_year || "Latest"}</span>
-            {movie.genres?.length > 0 && (
-              <span className="text-slate-500 truncate max-w-[100px]">{movie.genres[0]}</span>
-            )}
+
+          <div className="flex items-center justify-between gap-1 pt-0.5">
+            <span className="text-[0.68rem] text-slate-400 font-semibold truncate">
+              {subtitle}
+            </span>
+
+            {/* Audio Pill in Gold Background (Matching screenshot) */}
+            <span className="shrink-0 text-[0.58rem] font-black uppercase tracking-wider bg-gradient-to-r from-amber-400/20 to-amber-500/20 text-amber-300 border border-amber-400/40 px-1.5 py-0.5 rounded">
+              {langLabel}
+            </span>
           </div>
         </div>
       </div>

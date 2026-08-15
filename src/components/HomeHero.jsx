@@ -13,19 +13,19 @@ import { BsPlayFill } from "react-icons/bs";
 import { FaDownload } from "react-icons/fa";
 import { PiStarFill } from "react-icons/pi";
 import { HiChevronLeft, HiChevronRight, HiSparkles } from "react-icons/hi2";
-import { BiTime, BiCategory } from "react-icons/bi";
 
 export default function HeroSlider({ movieData, isMovieDataLoading }) {
   const langMap = {
     hi: "Hindi", en: "English", ta: "Tamil", te: "Telugu",
     kn: "Kannada", ml: "Malayalam", mr: "Marathi", bn: "Bengali",
+    dual: "Dual Audio", multi: "Multi Audio",
   };
 
   const formatLang = (arr) =>
-    arr?.map((l) => langMap[l] || l.toUpperCase()).join(" · ") || "";
+    arr?.map((l) => langMap[l] || l.toUpperCase()).slice(0, 2).join(" • ") || "Hindi • Dual Audio";
 
   return (
-    <section className="relative w-full min-h-[80dvh] md:min-h-[90dvh] pt-16 overflow-hidden bg-[#06080D]" aria-label="Featured movies slider">
+    <section className="relative w-full min-h-[80dvh] md:min-h-[88dvh] pt-16 overflow-hidden bg-[#06080D]" aria-label="Featured movies slider">
       {!isMovieDataLoading ? (
         <>
           <Swiper
@@ -38,129 +38,127 @@ export default function HeroSlider({ movieData, isMovieDataLoading }) {
             navigation={{ prevEl: ".hero-prev", nextEl: ".hero-next" }}
             className="hero-swiper w-full h-full"
           >
-            {movieData.slice(0, 8).map((movie) => (
-              <SwiperSlide key={movie.tmdb_id || movie.title} className="bg-[#06080D]">
-                <div className="relative w-full min-h-[80dvh] md:min-h-[90dvh] flex items-end overflow-hidden">
-                  {/* Full-Screen Edge-to-Edge Backdrop Image */}
-                  <div className="absolute inset-0 bg-[#06080D]">
-                    <LazyLoadImage
-                      src={movie.backdrop || movie.poster}
-                      alt={movie.title}
-                      effect="opacity"
-                      className="w-full h-full object-cover object-center scale-105"
-                      wrapperClassName="w-full h-full"
-                    />
+            {movieData.slice(0, 8).map((movie) => {
+              const watchLink = movie.media_type === "movie" ? `/mov/${movie.tmdb_id}` : `/ser/${movie.tmdb_id}`;
+              const genreStr = movie.genres?.length > 0 ? movie.genres.slice(0, 2).join(" • ") : "Action • Drama";
 
-                    {/* Cinematic Full-Bleed Ambient Gradients */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-[#06080D] via-[#06080D]/75 to-transparent" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#06080D] via-[#06080D]/40 to-transparent" />
-                    <div className="absolute top-1/4 left-10 w-[500px] h-[500px] bg-amber-500/10 blur-[150px] rounded-full pointer-events-none" />
-                    <div className="absolute bottom-10 left-1/3 w-[400px] h-[400px] bg-cyan-500/10 blur-[140px] rounded-full pointer-events-none" />
-                  </div>
+              return (
+                <SwiperSlide key={movie.tmdb_id || movie.title} className="bg-[#06080D]">
+                  <div className="relative w-full min-h-[80dvh] md:min-h-[88dvh] flex items-end overflow-hidden">
+                    {/* Full-Screen Edge-to-Edge Backdrop Image */}
+                    <div className="absolute inset-0 bg-[#06080D]">
+                      <LazyLoadImage
+                        src={movie.backdrop || movie.poster}
+                        alt={movie.title}
+                        effect="opacity"
+                        className="w-full h-full object-cover object-center md:object-right-top scale-105"
+                        wrapperClassName="w-full h-full"
+                      />
 
-                  {/* Clean Text & Action Buttons Overlay */}
-                  <div className="relative z-10 w-full max-w-[1600px] mx-auto px-4 sm:px-8 lg:px-16 pb-16 md:pb-24">
-                    <div className="max-w-2xl space-y-4">
-                      {/* Featured Badge & Genres */}
-                      <div className="flex flex-wrap items-center gap-2 mb-2">
-                        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-amber-400 to-amber-600 text-slate-950 font-black text-[0.68rem] tracking-wider uppercase shadow-[0_0_20px_rgba(245,158,11,0.6)]">
+                      {/* Cinematic Gradient Overlays */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-[#06080D] via-[#06080D]/80 to-transparent" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#06080D] via-[#06080D]/50 to-transparent" />
+                      <div className="absolute top-1/4 left-10 w-[500px] h-[500px] bg-amber-500/10 blur-[160px] rounded-full pointer-events-none" />
+                    </div>
+
+                    {/* Content Box (Matching Screen 1) */}
+                    <div className="relative z-10 w-full max-w-[1600px] mx-auto px-4 sm:px-8 lg:px-16 pb-16 md:pb-24">
+                      <div className="max-w-xl sm:max-w-2xl space-y-3.5">
+                        {/* FEATURED BLOCKBUSTER Pill Badge */}
+                        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 font-black text-[0.68rem] tracking-wider uppercase shadow-[0_0_20px_rgba(245,158,11,0.6)]">
                           <HiSparkles /> FEATURED BLOCKBUSTER
                         </div>
-                        {movie.genres?.length > 0 && (
-                          <div className="flex flex-wrap gap-2">
-                            {movie.genres.slice(0, 3).map((g, i) => (
-                              <span key={i} className="genre-pill">{g}</span>
-                            ))}
-                          </div>
-                        )}
-                      </div>
 
-                      {/* Movie Title */}
-                      <h1 className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-white leading-none drop-shadow-[0_10px_25px_rgba(0,0,0,0.9)]">
-                        <span className="gold-text">{movie.title}</span>
-                      </h1>
+                        {/* Title */}
+                        <h1 className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-white leading-tight drop-shadow-[0_10px_25px_rgba(0,0,0,0.9)]">
+                          {movie.title}
+                        </h1>
 
-                      {/* Metadata Details Row */}
-                      <div className="flex flex-wrap items-center gap-3 text-xs sm:text-sm">
-                        {movie.rating && (
-                          <div className="flex items-center gap-1.5 bg-amber-500/20 border border-amber-500/50 text-amber-400 font-extrabold rounded-full px-3.5 py-1 backdrop-blur-md shadow-md">
-                            <PiStarFill className="text-amber-400 text-base" />
-                            <span>{movie.rating.toFixed(1)} IMDb</span>
-                          </div>
-                        )}
-                        {movie.release_year && (
-                          <span className="text-slate-200 font-bold bg-white/10 border border-white/15 rounded-full px-3 py-1 backdrop-blur-md">
-                            {movie.release_year}
+                        {/* Meta Info Row 1: Genre • Year • Duration */}
+                        <div className="flex flex-wrap items-center gap-2 text-xs sm:text-sm font-bold text-slate-300">
+                          <span>{genreStr}</span>
+                          <span>•</span>
+                          <span>{movie.release_year || "2026"}</span>
+                          {movie.runtime && (
+                            <>
+                              <span>•</span>
+                              <span>{movie.runtime} min</span>
+                            </>
+                          )}
+                          {movie.rating && (
+                            <>
+                              <span>•</span>
+                              <span className="flex items-center gap-1 text-amber-400">
+                                <PiStarFill className="text-xs" /> {movie.rating.toFixed(1)}
+                              </span>
+                            </>
+                          )}
+                        </div>
+
+                        {/* Meta Info Row 2: Audio • Format Chips */}
+                        <div className="flex flex-wrap items-center gap-2 text-[0.72rem] font-bold text-slate-400">
+                          <span className="bg-white/10 px-2.5 py-0.5 rounded-md text-slate-200">
+                            {formatLang(movie.languages)}
                           </span>
-                        )}
-                        {movie.runtime && (
-                          <div className="flex items-center gap-1 text-slate-300 font-semibold bg-slate-900/60 px-3 py-1 rounded-full border border-white/10 backdrop-blur-md">
-                            <BiTime className="text-amber-400 text-base" />
-                            <span>{movie.runtime} min</span>
-                          </div>
-                        )}
-                        {movie.languages?.length > 0 && (
-                          <div className="flex items-center gap-1 text-slate-300 font-semibold bg-slate-900/60 px-3 py-1 rounded-full border border-white/10 backdrop-blur-md">
-                            <BiCategory className="text-cyan-400 text-base" />
-                            <span>{formatLang(movie.languages)}</span>
-                          </div>
-                        )}
-                        {movie.rip && <span className="quality-badge">{movie.rip}</span>}
-                      </div>
+                          <span className="bg-white/10 px-2.5 py-0.5 rounded-md text-amber-300">
+                            ORG Audio
+                          </span>
+                          <span className="quality-badge">{movie.rip || "Web-DL"}</span>
+                        </div>
 
-                      {/* Overview Description */}
-                      {movie.description && (
-                        <p className="text-slate-200 text-xs sm:text-sm sm:text-base line-clamp-2 sm:line-clamp-3 max-w-xl leading-relaxed font-medium drop-shadow-md">
-                          {movie.description}
-                        </p>
-                      )}
+                        {/* Synopsis */}
+                        {movie.description && (
+                          <p className="text-slate-300 text-xs sm:text-sm line-clamp-2 sm:line-clamp-3 leading-relaxed font-normal max-w-lg drop-shadow-md pt-1">
+                            {movie.description}
+                          </p>
+                        )}
 
-                      {/* Action CTA Buttons */}
-                      <div className="flex items-center flex-wrap gap-4 pt-2">
-                        <Link
-                          to={movie.media_type === "movie" ? `/mov/${movie.tmdb_id}` : `/ser/${movie.tmdb_id}`}
-                          className="btn-gold flex items-center gap-3 px-8 py-3.5 text-sm font-extrabold shadow-[0_0_35px_rgba(245,158,11,0.6)] hover:scale-105"
-                          aria-label={`Watch ${movie.title}`}
-                        >
-                          <BsPlayFill className="text-2xl" />
-                          Watch Now
-                        </Link>
-                        <Link
-                          to={movie.media_type === "movie" ? `/mov/${movie.tmdb_id}` : `/ser/${movie.tmdb_id}`}
-                          className="btn-outline-gold flex items-center gap-3 px-7 py-3.5 text-sm font-extrabold"
-                          aria-label={`Download ${movie.title}`}
-                        >
-                          <FaDownload className="text-sm" />
-                          Download HD
-                        </Link>
+                        {/* CTA Action Buttons */}
+                        <div className="flex items-center flex-wrap gap-3 pt-3">
+                          <Link
+                            to={watchLink}
+                            className="btn-gold flex items-center gap-2.5 px-7 py-3 text-xs sm:text-sm font-black shadow-[0_0_30px_rgba(245,158,11,0.6)] hover:scale-105"
+                            aria-label={`Watch ${movie.title}`}
+                          >
+                            <BsPlayFill className="text-xl" />
+                            Watch Now
+                          </Link>
+                          <Link
+                            to={watchLink}
+                            className="btn-outline-gold flex items-center gap-2 px-6 py-3 text-xs sm:text-sm font-extrabold"
+                            aria-label={`Download ${movie.title}`}
+                          >
+                            <FaDownload className="text-xs" />
+                            Download HD
+                          </Link>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              </SwiperSlide>
-            ))}
+                </SwiperSlide>
+              );
+            })}
           </Swiper>
 
-          {/* Navigation Arrows */}
+          {/* Navigation Controls */}
           <button
-            className="hero-prev absolute left-6 top-1/2 -translate-y-1/2 z-20 w-12 h-12 flex items-center justify-center rounded-full bg-slate-950/80 border border-amber-500/40 text-amber-400 hover:border-amber-400 hover:text-white hover:bg-amber-500/30 transition-all duration-300 shadow-2xl hidden md:flex backdrop-blur-md"
+            className="hero-prev absolute left-6 top-1/2 -translate-y-1/2 z-20 w-11 h-11 flex items-center justify-center rounded-full bg-slate-950/80 border border-amber-500/40 text-amber-400 hover:border-amber-400 hover:text-white hover:bg-amber-500/30 transition-all duration-300 shadow-2xl hidden md:flex backdrop-blur-md"
             aria-label="Previous slide"
           >
-            <HiChevronLeft className="text-2xl" />
+            <HiChevronLeft className="text-xl" />
           </button>
           <button
-            className="hero-next absolute right-6 top-1/2 -translate-y-1/2 z-20 w-12 h-12 flex items-center justify-center rounded-full bg-slate-950/80 border border-amber-500/40 text-amber-400 hover:border-amber-400 hover:text-white hover:bg-amber-500/30 transition-all duration-300 shadow-2xl hidden md:flex backdrop-blur-md"
+            className="hero-next absolute right-6 top-1/2 -translate-y-1/2 z-20 w-11 h-11 flex items-center justify-center rounded-full bg-slate-950/80 border border-amber-500/40 text-amber-400 hover:border-amber-400 hover:text-white hover:bg-amber-500/30 transition-all duration-300 shadow-2xl hidden md:flex backdrop-blur-md"
             aria-label="Next slide"
           >
-            <HiChevronRight className="text-2xl" />
+            <HiChevronRight className="text-xl" />
           </button>
 
           {/* Pagination Dots */}
-          <div className="hero-pagination absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex gap-2" />
+          <div className="hero-pagination absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex gap-2" />
         </>
       ) : (
-        /* Skeleton */
-        <div className="w-full min-h-[80dvh] md:min-h-[90dvh] bg-[#0E121B] shimmer-effect" />
+        <div className="w-full min-h-[80dvh] md:min-h-[88dvh] bg-[#0E121B] shimmer-effect" />
       )}
     </section>
   );

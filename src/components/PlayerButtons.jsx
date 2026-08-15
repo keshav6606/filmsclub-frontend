@@ -15,12 +15,15 @@ import {
   FaAndroid,
   FaCheck,
   FaVolumeUp,
+  FaEllipsisV,
 } from "react-icons/fa";
 import { SiVlcmediaplayer } from "react-icons/si";
 import { MdOndemandVideo, MdSmartDisplay, MdOutlineHighQuality } from "react-icons/md";
 import { TbBrandTelegram, TbDeviceTv } from "react-icons/tb";
 import { LuLanguages } from "react-icons/lu";
-import { HiChevronDown, HiChevronUp } from "react-icons/hi2";
+import { HiChevronDown, HiChevronUp, HiSparkles } from "react-icons/hi2";
+import { BsPlayFill } from "react-icons/bs";
+import { BiTime } from "react-icons/bi";
 import { AnimatePresence, motion } from "framer-motion";
 import Spinner from "./svg/Spinner";
 import { BASE_URL as BASE } from "../config/api";
@@ -37,7 +40,7 @@ const PLAYERS = [
     id: "web",
     name: "Web Player",
     tag: "Instant Play",
-    desc: "Stream instantly inside your web browser",
+    desc: "Stream instantly in browser",
     icon: <FaPlay className="text-xs text-amber-400" />,
     isWeb: true,
     accent: "amber",
@@ -55,7 +58,7 @@ const PLAYERS = [
     id: "mx",
     name: "MX Player",
     tag: "HW+ Codec",
-    desc: "Gesture controls & multi-audio support",
+    desc: "Gesture controls & multi-audio",
     icon: <MdOndemandVideo className="text-xl text-blue-400" />,
     accent: "blue",
     playStore: "https://play.google.com/store/apps/details?id=com.mxtech.videoplayer.ad",
@@ -64,7 +67,7 @@ const PLAYERS = [
     id: "vlc",
     name: "VLC Player",
     tag: "Open Source",
-    desc: "Native DTS & surround audio support",
+    desc: "Surround sound & subtitle support",
     icon: <SiVlcmediaplayer className="text-xl text-orange-400" />,
     accent: "orange",
     playStore: "https://play.google.com/store/apps/details?id=org.videolan.vlc",
@@ -118,85 +121,73 @@ const launchPlayer = (directStreamUrl, playerId, title = "Filmy4uhd Stream") => 
       if (Date.now() - start < 2500 && !document.hidden && playStoreUrl) {
         window.location.href = playStoreUrl;
       }
-    }, 2000);
+    }, 1500);
 
     window.location.href = intentUrl;
-  } else {
-    if (playerId === "vlc") {
-      window.location.href = `vlc://${cleanUrl}`;
-    } else if (playerId === "nextplayer" || playerId === "mpvex" || playerId === "mpv") {
-      window.location.href = `mpv://${cleanUrl}`;
-    } else {
-      window.open(directStreamUrl, "_blank", "noopener noreferrer");
-    }
+    return;
   }
+
+  // Windows / Mac / Desktop Fallback
+  if (playerId === "vlc") {
+    window.location.href = `vlc://${directStreamUrl}`;
+    setTimeout(() => {
+      window.open(directStreamUrl, "_blank");
+    }, 1200);
+    return;
+  }
+
+  window.open(directStreamUrl, "_blank");
 };
 
+/**
+ * Shorten URL via configured shortener or return direct link
+ */
 const shortenUrl = async (url) => {
   if (!API_URL || !API_KEY) return url;
   try {
-    const res = await fetch(`${API_URL}?api=${API_KEY}&url=${encodeURIComponent(url)}&format=json`);
+    const res = await fetch(
+      `https://${API_URL}/api?api=${API_KEY}&url=${encodeURIComponent(url)}`
+    );
     const data = await res.json();
-    return data?.shortenedUrl || data?.short || data?.url || url;
+    return data.shortenedUrl || url;
   } catch {
     return url;
   }
 };
 
-const generateVideoUrl = (id, name) =>
-  `${BASE}/dl/${id}/${encodeURIComponent(name)}`;
+/**
+ * Generate stream URL
+ */
+const generateVideoUrl = (id, name = "") => {
+  const isDirectUrl = id?.startsWith("http://") || id?.startsWith("https://");
+  if (isDirectUrl) return id;
 
-// ─── Lang helpers ─────────────────────────────────────────────────────────
+  const origin = BASE.replace(/\/$/, "");
+  const encodedName = encodeURIComponent(name || "video.mp4");
+  return `${origin}/api/stream/${id}/${encodedName}`;
+};
+
+// Language Helpers
 const langMap = {
   hi: "Hindi", en: "English", ta: "Tamil", te: "Telugu",
   kn: "Kannada", ml: "Malayalam", mr: "Marathi", bn: "Bengali",
-  dual: "Dual Audio", multi: "Multi Audio",
+  gu: "Gujarati", pa: "Punjabi", dual: "Dual Audio", multi: "Multi Audio",
 };
 
-const normalizeLang = (str) => {
-  if (!str || typeof str !== "string") return null;
-  const s = str.trim();
-  const lower = s.toLowerCase();
-  if (langMap[lower]) return langMap[lower];
-  return s.charAt(0).toUpperCase() + s.slice(1);
-};
-
-const getUniqueLanguages = (items = [], movieData = {}) => {
+const getUniqueLanguages = (items, movieData) => {
   const set = new Set();
-
-  if (Array.isArray(movieData?.languages)) {
-    movieData.languages.forEach((l) => { const n = normalizeLang(l); if (n) set.add(n); });
-  } else if (movieData?.language) {
-    const n = normalizeLang(movieData.language);
-    if (n) set.add(n);
+  if (movieData?.languages?.length > 0) {
+    movieData.languages.forEach((l) => set.add(langMap[l] || l.toUpperCase()));
   }
-
   if (Array.isArray(items)) {
     items.forEach((item) => {
-      if (Array.isArray(item?.languages)) {
-        item.languages.forEach((l) => { const n = normalizeLang(l); if (n) set.add(n); });
+      if (item?.languages?.length > 0) {
+        item.languages.forEach((l) => set.add(langMap[l] || l.toUpperCase()));
       }
-      ["language", "lang", "audio", "audio_language"].forEach((key) => {
-        if (item?.[key]) set.add(normalizeLang(item[key]));
-      });
-      const titleStr = `${item?.name || ""} ${item?.quality || ""}`;
-      if (/hindi/i.test(titleStr)) set.add("Hindi");
-      if (/english/i.test(titleStr)) set.add("English");
-      if (/dual/i.test(titleStr)) set.add("Dual Audio");
-      if (/multi/i.test(titleStr)) set.add("Multi Audio");
-      if (/tamil/i.test(titleStr)) set.add("Tamil");
-      if (/telugu/i.test(titleStr)) set.add("Telugu");
-      if (/kannada/i.test(titleStr)) set.add("Kannada");
-      if (/malayalam/i.test(titleStr)) set.add("Malayalam");
+      if (item?.language) set.add(langMap[item.language] || item.language.toUpperCase());
     });
   }
-
-  if (set.size === 0) {
-    set.add("Hindi");
-    set.add("English");
-    set.add("Dual Audio");
-  }
-
+  if (set.size === 0) set.add("Hindi");
   const langs = Array.from(set);
   if (langs.length > 1) langs.push("All Audio");
   return langs;
@@ -215,7 +206,7 @@ const filterByLanguage = (items, selectedLang) => {
   return filtered.length > 0 ? filtered : items;
 };
 
-// ─── Quality Card Component ───────────────────────────────────────────────
+// ─── Quality Card Component (Matching Screen 3) ───────────────────────────
 const QualityCard = ({ item, isSelected, onClick }) => {
   const quality = item?.quality || "HD";
   const size = item?.size || "";
@@ -223,37 +214,27 @@ const QualityCard = ({ item, isSelected, onClick }) => {
   return (
     <button
       onClick={onClick}
-      className={`relative group flex flex-col items-start p-3.5 rounded-2xl border transition-all duration-300 text-left min-w-[130px] sm:min-w-[150px] flex-1 ${
+      className={`relative group flex flex-col items-center justify-center p-3.5 sm:p-4 rounded-2xl border transition-all duration-300 text-center flex-1 min-w-[100px] ${
         isSelected
-          ? "bg-gradient-to-br from-amber-500/20 via-slate-900/90 to-amber-600/10 border-amber-400 shadow-[0_0_25px_rgba(245,158,11,0.35)] scale-[1.02]"
-          : "bg-slate-900/70 border-white/10 hover:border-amber-400/50 hover:bg-slate-900/90 hover:scale-[1.01]"
+          ? "bg-gradient-to-br from-amber-500/20 via-slate-900/90 to-amber-600/10 border-amber-400 shadow-[0_0_20px_rgba(245,158,11,0.4)] scale-105"
+          : "bg-slate-900/70 border-white/10 hover:border-amber-400/40 hover:bg-slate-900/90"
       }`}
     >
-      {/* Top row: Quality pill + Check indicator */}
-      <div className="flex items-center justify-between w-full mb-2">
-        <span
-          className={`text-xs font-black px-2.5 py-0.5 rounded-md uppercase tracking-wider ${
-            isSelected
-              ? "bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 shadow-md"
-              : "bg-white/10 text-slate-200 group-hover:text-amber-400 group-hover:bg-amber-400/10"
-          }`}
-        >
-          {quality}
-        </span>
-        {isSelected && (
-          <div className="w-5 h-5 rounded-full bg-amber-400 text-slate-950 flex items-center justify-center text-[10px] font-black shadow-sm">
-            <FaCheck />
-          </div>
-        )}
-      </div>
-
-      {/* Bottom row: File size info */}
+      <span
+        className={`text-xs sm:text-sm font-black uppercase tracking-wider ${
+          isSelected ? "text-amber-400" : "text-white"
+        }`}
+      >
+        {quality}
+      </span>
       {size ? (
-        <span className="text-[0.72rem] text-slate-400 font-semibold group-hover:text-slate-300">
-          Size: <strong className="text-slate-200">{size}</strong>
+        <span className="text-[0.68rem] text-slate-400 font-semibold mt-1">
+          {size}
         </span>
       ) : (
-        <span className="text-[0.72rem] text-slate-400 font-semibold">High Bitrate</span>
+        <span className="text-[0.68rem] text-slate-400 font-semibold mt-1">
+          High Bitrate
+        </span>
       )}
     </button>
   );
@@ -263,7 +244,7 @@ const QualityCard = ({ item, isSelected, onClick }) => {
 const PlayerCard = ({ player, onClick, loading, disabled }) => {
   return (
     <div
-      className={`relative p-4 rounded-2xl border transition-all duration-300 flex flex-col justify-between space-y-3 ${
+      className={`relative p-3.5 rounded-2xl border transition-all duration-300 flex flex-col justify-between space-y-2.5 ${
         player.id === "nextplayer"
           ? "bg-gradient-to-br from-cyan-950/40 via-slate-900/90 to-slate-950 border-cyan-500/40 shadow-[0_0_20px_rgba(6,182,212,0.15)] hover:border-cyan-400"
           : player.id === "web"
@@ -272,9 +253,9 @@ const PlayerCard = ({ player, onClick, loading, disabled }) => {
       }`}
     >
       <div className="flex items-start justify-between gap-2">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2.5">
           <div
-            className={`p-2.5 rounded-xl border ${
+            className={`p-2 rounded-xl border ${
               player.id === "nextplayer"
                 ? "bg-cyan-500/10 border-cyan-500/30 text-cyan-400"
                 : player.id === "web"
@@ -287,17 +268,17 @@ const PlayerCard = ({ player, onClick, loading, disabled }) => {
             {player.icon}
           </div>
           <div>
-            <h4 className="font-extrabold text-sm text-white flex items-center gap-2">
+            <h4 className="font-extrabold text-xs text-white">
               {player.name}
             </h4>
-            <span className="text-[0.68rem] text-slate-400 leading-tight block mt-0.5">
+            <span className="text-[0.62rem] text-slate-400 leading-tight block">
               {player.desc}
             </span>
           </div>
         </div>
 
         <span
-          className={`text-[0.62rem] font-black uppercase px-2 py-0.5 rounded-full shrink-0 ${
+          className={`text-[0.58rem] font-black uppercase px-2 py-0.5 rounded-full shrink-0 ${
             player.id === "nextplayer"
               ? "bg-cyan-400/20 text-cyan-300 border border-cyan-400/40"
               : player.id === "web"
@@ -309,15 +290,15 @@ const PlayerCard = ({ player, onClick, loading, disabled }) => {
         </span>
       </div>
 
-      <div className="flex items-center justify-between pt-2 border-t border-white/5 gap-2">
+      <div className="flex items-center justify-between pt-1 border-t border-white/5 gap-2">
         <button
           onClick={onClick}
           disabled={disabled || loading}
-          className={`flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-xl text-xs font-black transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed ${
+          className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-xl text-xs font-black transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed ${
             player.id === "web"
-              ? "bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 shadow-md hover:brightness-110 hover:scale-[1.02]"
+              ? "bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 shadow-md hover:scale-[1.02]"
               : player.id === "nextplayer"
-              ? "bg-gradient-to-r from-cyan-400 to-cyan-500 text-slate-950 shadow-md hover:brightness-110 hover:scale-[1.02]"
+              ? "bg-gradient-to-r from-cyan-400 to-cyan-500 text-slate-950 shadow-md hover:scale-[1.02]"
               : "bg-white/10 text-white hover:bg-white/20 hover:scale-[1.02]"
           }`}
         >
@@ -325,7 +306,7 @@ const PlayerCard = ({ player, onClick, loading, disabled }) => {
             <Spinner />
           ) : (
             <>
-              <FaPlay className="text-[10px]" />
+              <FaPlay className="text-[9px]" />
               <span>{player.isWeb ? "Play in Browser" : "Launch Player"}</span>
             </>
           )}
@@ -336,10 +317,10 @@ const PlayerCard = ({ player, onClick, loading, disabled }) => {
             href={player.playStore}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1 px-3 py-2 rounded-xl text-[0.7rem] font-bold text-slate-400 hover:text-white bg-slate-950/60 hover:bg-slate-950 border border-white/10 transition-colors shrink-0"
+            className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-[0.65rem] font-bold text-slate-400 hover:text-white bg-slate-950/60 border border-white/10 transition-colors shrink-0"
             title={`Get ${player.name} App`}
           >
-            <FaAndroid className="text-green-400" />
+            <FaAndroid className="text-green-400 text-xs" />
             <span>App</span>
           </a>
         )}
@@ -348,7 +329,7 @@ const PlayerCard = ({ player, onClick, loading, disabled }) => {
   );
 };
 
-// ─── Movie Player Section ─────────────────────────────────────────────────
+// ─── Screen 3: Movie Player Section (Stream or Download) ───────────────────
 const MoviePlayerSection = ({ telegram, movieData, onOpenWebPlayer }) => {
   const availableLangs = getUniqueLanguages(telegram, movieData);
   const [selectedLanguage, setSelectedLanguage] = useState(availableLangs[0] || "Hindi");
@@ -367,7 +348,7 @@ const MoviePlayerSection = ({ telegram, movieData, onOpenWebPlayer }) => {
     setLoading((p) => ({ ...p, [player.id]: false }));
 
     if (player.id === "web") {
-      onOpenWebPlayer({
+      onOpenWebPlayer?.({
         id: selectedItem.id,
         name: selectedItem.name,
         title,
@@ -393,75 +374,44 @@ const MoviePlayerSection = ({ telegram, movieData, onOpenWebPlayer }) => {
 
   return (
     <div className="space-y-6">
-      {/* ── 1. Audio Language Switcher ── */}
-      <div>
-        <div className="flex items-center gap-2 mb-3">
-          <LuLanguages className="text-cyan-400 text-base" />
-          <span className="text-xs font-black uppercase tracking-wider text-slate-300">
-            Select Audio Track
-          </span>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          {availableLangs.map((lang) => (
-            <button
-              key={lang}
-              onClick={() => { setSelectedLanguage(lang); setSelectedQuality(""); }}
-              className={`px-4 py-2 rounded-xl text-xs font-extrabold transition-all duration-200 border ${
-                selectedLanguage === lang
-                  ? "bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 border-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.4)] scale-105"
-                  : "bg-slate-900/80 text-slate-300 border-white/10 hover:border-amber-400/40 hover:text-white"
-              }`}
-            >
-              {lang}
-            </button>
-          ))}
-        </div>
-      </div>
+      {/* ── Screen 3: Stream or Download Section ── */}
+      <div className="space-y-4">
+        <h3 className="text-xs font-black uppercase tracking-wider text-slate-300">
+          Stream or Download
+        </h3>
 
-      {/* ── 2. Quality & Resolution Selector Cards ── */}
-      <div>
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <MdOutlineHighQuality className="text-amber-400 text-lg" />
-            <span className="text-xs font-black uppercase tracking-wider text-slate-300">
-              Select Video Stream Resolution
-            </span>
-          </div>
-          {selectedItem && (
-            <span className="text-[0.72rem] text-cyan-400 font-bold bg-cyan-500/10 border border-cyan-500/30 px-2.5 py-0.5 rounded-full">
-              Selected: {selectedItem.quality} • {selectedLanguage}
-            </span>
-          )}
-        </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-          {availableQualities.map((t, i) => (
+        {/* Resolution Selector Cards (Screen 3: 480p, 720p, 1080p, 4K UHD) */}
+        <div className="flex items-center gap-2.5 sm:gap-3 flex-wrap">
+          {availableQualities.map((item, idx) => (
             <QualityCard
-              key={t.id || t.quality || i}
-              item={t}
-              isSelected={(selectedQuality || selectedItem?.quality) === t.quality}
-              onClick={() => setSelectedQuality(t.quality)}
+              key={item.id || item.quality || idx}
+              item={item}
+              isSelected={(selectedQuality || availableQualities[0]?.quality) === item.quality}
+              onClick={() => setSelectedQuality(item.quality)}
             />
           ))}
         </div>
+
+        {/* Big Prominent "Watch Now" Gold CTA Button (Matching Screen 3) */}
+        <button
+          onClick={() => handlePlayer(PLAYERS[0])}
+          disabled={!selectedItem}
+          className="btn-gold w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl text-sm font-black shadow-[0_0_30px_rgba(245,158,11,0.5)] hover:scale-[1.01]"
+        >
+          <BsPlayFill className="text-2xl" />
+          <span>Watch Now</span>
+        </button>
       </div>
 
-      {/* ── 3. Audio Notice & Player Grid ── */}
+      {/* External Player Decks */}
       <div className="space-y-3 pt-2">
-        <div className="p-3.5 rounded-2xl bg-gradient-to-r from-cyan-500/15 via-slate-900 to-amber-500/15 border border-cyan-500/30 flex items-center justify-between gap-3 text-xs">
-          <div className="flex items-center gap-2.5">
-            <FaVolumeUp className="text-amber-400 text-lg shrink-0" />
-            <span className="text-slate-200 text-[0.75rem] font-medium">
-              Want 100% Dolby audio? Launch in <strong>NextPlayer</strong> or <strong>MX Player</strong> below.
-            </span>
-          </div>
-          <a
-            href={NEXTPLAYER_PLAY_LINK}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="shrink-0 text-[0.7rem] font-bold text-cyan-400 hover:text-cyan-300 underline"
-          >
-            Get NextPlayer &rarr;
-          </a>
+        <div className="flex items-center justify-between">
+          <span className="text-xs font-black uppercase tracking-wider text-slate-400">
+            External Video Players
+          </span>
+          <span className="text-[0.68rem] text-cyan-400 font-bold">
+            ✨ NextPlayer Recommended
+          </span>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
@@ -477,27 +427,27 @@ const MoviePlayerSection = ({ telegram, movieData, onOpenWebPlayer }) => {
         </div>
       </div>
 
-      {/* ── 4. Direct Cloud Download & Telegram Hub ── */}
-      <div className="flex flex-wrap items-center gap-4 pt-4 border-t border-white/10">
+      {/* Direct High-Speed Download and Telegram Links */}
+      <div className="flex flex-wrap items-center gap-3 pt-2 border-t border-white/10">
         <button
           onClick={handleDownload}
-          disabled={!selectedItem || loading.download}
-          className="flex items-center gap-2 btn-gold px-8 py-3.5 text-sm font-extrabold shadow-[0_0_25px_rgba(245,158,11,0.5)] disabled:opacity-40"
-          aria-label="Download selected quality"
+          disabled={loading.download || !selectedItem}
+          className="flex items-center gap-2 btn-outline-gold px-6 py-2.5 text-xs font-bold disabled:opacity-40"
+          aria-label="Direct Download Movie"
         >
           {loading.download ? <Spinner /> : <FaDownload />}
-          <span>Download File {selectedItem?.quality ? `(${selectedItem.quality})` : ""}</span>
+          <span>Direct Download ({selectedItem?.quality || "HD"})</span>
         </button>
 
         {selectedItem && (
           <a
-            href={`https://t.me/${TG_USERNAME}?start=file_${selectedItem.id || movieData?.tmdb_id}_${selectedItem.quality}`}
+            href={`https://t.me/${TG_USERNAME}?start=file_${selectedItem.id || movieData?.tmdb_id}_${selectedItem.quality || "HD"}`}
             target="_blank"
             rel="noopener noreferrer"
             onClick={triggerPopunder}
-            className="flex items-center gap-2.5 bg-[#0088cc] hover:bg-[#0077b5] text-white font-extrabold px-7 py-3.5 rounded-full text-sm transition-all shadow-[0_0_25px_rgba(0,136,204,0.4)] hover:scale-105"
+            className="flex items-center gap-2 bg-[#0088cc] hover:bg-[#0077b5] text-white font-bold px-6 py-2.5 rounded-full text-xs transition-all shadow-md hover:scale-105"
           >
-            <TbBrandTelegram className="text-xl" />
+            <TbBrandTelegram className="text-base" />
             <span>Get on Telegram</span>
           </a>
         )}
@@ -506,7 +456,7 @@ const MoviePlayerSection = ({ telegram, movieData, onOpenWebPlayer }) => {
   );
 };
 
-// ─── Single Episode Expandable Card ───────────────────────────────────────
+// ─── Screen 6: Episode Item Card ──────────────────────────────────────────
 const EpisodeCard = ({ ep, isSelected, onToggle, movieData, seasonNumber, onOpenWebPlayer }) => {
   const rawQualities = ep?.telegram || [];
   const availableLangs = getUniqueLanguages(rawQualities, movieData);
@@ -526,7 +476,7 @@ const EpisodeCard = ({ ep, isSelected, onToggle, movieData, seasonNumber, onOpen
     setLoading((p) => ({ ...p, [player.id]: false }));
 
     if (player.id === "web") {
-      onOpenWebPlayer({
+      onOpenWebPlayer?.({
         id: currentQualityItem.id,
         name: currentQualityItem.name,
         title,
@@ -550,50 +500,63 @@ const EpisodeCard = ({ ep, isSelected, onToggle, movieData, seasonNumber, onOpen
     window.open(finalUrl, "_blank", "noopener noreferrer");
   };
 
-  const isCombined =
-    String(ep.episode_number).includes("-") ||
-    (ep.title && ep.title.toLowerCase().includes("combined"));
-
   return (
     <div className="space-y-1">
-      {/* Episode Header Row Button */}
-      <button
-        onClick={onToggle}
-        className={`w-full text-left px-4 py-3.5 rounded-2xl border flex items-center justify-between text-xs sm:text-sm font-bold transition-all duration-300 ${
+      {/* Episode Row (Screen 6 format: Thumbnail left, title & duration center, download & menu right) */}
+      <div
+        className={`w-full px-3.5 py-3 rounded-2xl border flex items-center justify-between gap-3 text-xs sm:text-sm font-bold transition-all duration-300 ${
           isSelected
-            ? "bg-gradient-to-r from-amber-500/20 via-slate-900 to-amber-600/10 text-amber-400 border-amber-500/40 shadow-[0_0_20px_rgba(245,158,11,0.2)]"
-            : "bg-slate-900/60 text-slate-200 border-white/10 hover:bg-slate-900 hover:border-amber-500/30"
+            ? "bg-slate-900 border-amber-400 shadow-[0_0_20px_rgba(245,158,11,0.2)]"
+            : "bg-slate-900/60 text-slate-200 border-white/10 hover:bg-slate-900 hover:border-amber-400/30"
         }`}
       >
-        <div className="flex items-center gap-3 overflow-hidden min-w-0">
-          <div
-            className={`w-8 h-8 rounded-xl flex items-center justify-center text-xs font-black shrink-0 ${
-              isSelected ? "bg-amber-400 text-slate-950 shadow-md" : "bg-white/10 text-slate-300"
-            }`}
-          >
-            {ep.episode_number}
+        {/* Left: Thumbnail with Play Overlay */}
+        <div
+          onClick={onToggle}
+          className="relative w-16 sm:w-20 aspect-video rounded-xl bg-slate-950 overflow-hidden shrink-0 cursor-pointer group border border-white/10"
+        >
+          <img
+            src={ep.thumbnail || movieData?.backdrop || movieData?.poster}
+            alt={`Episode ${ep.episode_number}`}
+            className="w-full h-full object-cover group-hover:scale-110 transition-transform"
+          />
+          <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+            <div className="w-6 h-6 rounded-full bg-amber-400 text-slate-950 flex items-center justify-center shadow-md">
+              <BsPlayFill className="text-base ml-0.5" />
+            </div>
           </div>
-          <span className="truncate font-extrabold">
-            Episode {ep.episode_number}
-            {ep.title ? ` : ${ep.title.toUpperCase()}` : ""}
-            {isCombined && (
-              <span className="ml-2 text-cyan-400 text-[10px] font-bold bg-cyan-400/15 border border-cyan-400/30 px-2 py-0.5 rounded-full">
-                COMBINED
-              </span>
-            )}
-          </span>
         </div>
-        <div className="flex items-center gap-2 shrink-0 ml-2">
-          <span className="text-[0.7rem] text-slate-400 font-semibold hidden sm:inline">
-            {qualities.length} {qualities.length === 1 ? "stream" : "streams"}
-          </span>
-          {isSelected ? (
-            <HiChevronUp className="text-amber-400 text-lg" />
-          ) : (
-            <HiChevronDown className="text-slate-400 text-lg" />
-          )}
+
+        {/* Center: Title & Duration */}
+        <div onClick={onToggle} className="flex-1 min-w-0 cursor-pointer">
+          <p className="font-extrabold text-white text-xs sm:text-sm line-clamp-1">
+            {ep.episode_number}. Season {seasonNumber} - Episode {ep.episode_number}
+            {ep.title ? `: ${ep.title}` : ""}
+          </p>
+          <div className="flex items-center gap-2 mt-1 text-[0.68rem] text-slate-400 font-semibold">
+            <BiTime className="text-amber-400" />
+            <span>{ep.duration || "55 min"}</span>
+          </div>
         </div>
-      </button>
+
+        {/* Right: Actions (Download + Expand Toggle) */}
+        <div className="flex items-center gap-2 shrink-0">
+          <button
+            onClick={handleDownload}
+            className="p-2 rounded-xl bg-white/5 hover:bg-amber-400 hover:text-slate-950 text-slate-300 transition-colors"
+            title="Download Episode"
+          >
+            <FaDownload className="text-xs" />
+          </button>
+          <button
+            onClick={onToggle}
+            className="p-2 rounded-xl bg-white/5 hover:bg-white/15 text-slate-300 transition-colors"
+            title="Options & Streaming Decks"
+          >
+            <FaEllipsisV className="text-xs" />
+          </button>
+        </div>
+      </div>
 
       {/* Expanded Deck */}
       <AnimatePresence>
@@ -606,35 +569,13 @@ const EpisodeCard = ({ ep, isSelected, onToggle, movieData, seasonNumber, onOpen
             transition={{ duration: 0.25 }}
             className="overflow-hidden"
           >
-            <div className="p-5 rounded-2xl bg-slate-950/90 border border-amber-500/30 space-y-5 shadow-2xl mt-1 mb-2">
-              {/* Audio Languages */}
-              <div>
-                <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider block mb-2">
-                  Select Audio Track
-                </span>
-                <div className="flex flex-wrap gap-2">
-                  {availableLangs.map((lang) => (
-                    <button
-                      key={lang}
-                      onClick={() => { setSelectedLanguage(lang); setSelectedQuality(""); }}
-                      className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
-                        selectedLanguage === lang
-                          ? "bg-amber-400 text-slate-950 shadow-md scale-105"
-                          : "bg-slate-900 text-slate-300 border border-white/10 hover:text-white"
-                      }`}
-                    >
-                      {lang}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
+            <div className="p-4 sm:p-5 rounded-2xl bg-slate-950/95 border border-amber-500/30 space-y-4 shadow-2xl mt-1 mb-2">
               {/* Qualities */}
               <div>
                 <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider block mb-2">
                   Select Resolution
                 </span>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                <div className="flex items-center gap-2.5 flex-wrap">
                   {qualities.map((q, i) => (
                     <QualityCard
                       key={q.id || q.quality || i}
@@ -647,7 +588,7 @@ const EpisodeCard = ({ ep, isSelected, onToggle, movieData, seasonNumber, onOpen
               </div>
 
               {/* Players Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 pt-1">
                 {PLAYERS.map((player) => (
                   <PlayerCard
                     key={player.id}
@@ -658,32 +599,6 @@ const EpisodeCard = ({ ep, isSelected, onToggle, movieData, seasonNumber, onOpen
                   />
                 ))}
               </div>
-
-              {/* Download & Telegram */}
-              <div className="flex flex-wrap items-center gap-3 pt-2 border-t border-white/10">
-                <button
-                  onClick={handleDownload}
-                  disabled={loading.download || !currentQualityItem}
-                  className="flex items-center gap-2 btn-gold px-6 py-2.5 text-xs font-bold disabled:opacity-40"
-                  aria-label="Download episode"
-                >
-                  {loading.download ? <Spinner /> : <FaDownload />}
-                  <span>Download Episode ({selectedQuality || qualities[0]?.quality})</span>
-                </button>
-
-                {currentQualityItem && (
-                  <a
-                    href={`https://t.me/${TG_USERNAME}?start=file_${currentQualityItem.id || movieData?.tmdb_id}_s${seasonNumber}e${ep.episode_number}_${selectedQuality || qualities[0]?.quality}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={triggerPopunder}
-                    className="flex items-center gap-2 bg-[#0088cc] hover:bg-[#0077b5] text-white font-bold px-6 py-2.5 rounded-full text-xs transition-all shadow-md hover:scale-105"
-                  >
-                    <TbBrandTelegram className="text-base" />
-                    <span>Get on Telegram</span>
-                  </a>
-                )}
-              </div>
             </div>
           </motion.div>
         )}
@@ -692,7 +607,7 @@ const EpisodeCard = ({ ep, isSelected, onToggle, movieData, seasonNumber, onOpen
   );
 };
 
-// ─── TV Show Player Section ────────────────────────────────────────────────
+// ─── Screen 6: TV Show Player Section (Seasons + Episode List) ─────────────
 const TvPlayerSection = ({
   seasons,
   episodes,
@@ -706,15 +621,19 @@ const TvPlayerSection = ({
 }) => {
   return (
     <div className="space-y-6">
-      {/* Season Selector Bar */}
+      {/* ── Screen 5 & 6: Seasons Selector Bar ── */}
       <div>
-        <div className="flex items-center gap-2 mb-3">
-          <TbDeviceTv className="text-amber-400 text-lg" />
-          <span className="text-xs font-black uppercase tracking-wider text-slate-300">
-            Select Season
-          </span>
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <TbDeviceTv className="text-amber-400 text-lg" />
+            <span className="text-xs font-black uppercase tracking-wider text-slate-300">
+              Seasons
+            </span>
+          </div>
+          <span className="text-xs text-amber-400 font-bold">See all</span>
         </div>
-        <div className="flex flex-wrap gap-2">
+
+        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
           {seasons
             ?.filter((s) => s.season_number > 0)
             .sort((a, b) => a.season_number - b.season_number)
@@ -725,10 +644,10 @@ const TvPlayerSection = ({
                   setSeasonNumber(s.season_number);
                   setEpisodeNumber("");
                 }}
-                className={`px-5 py-2.5 rounded-2xl text-xs font-extrabold transition-all duration-200 border ${
+                className={`px-4 py-2 rounded-xl text-xs font-extrabold transition-all duration-200 border shrink-0 ${
                   parseInt(seasonNumber) === s.season_number
-                    ? "bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 border-amber-400 shadow-[0_0_20px_rgba(245,158,11,0.4)] scale-105"
-                    : "bg-slate-900/80 text-slate-300 border-white/10 hover:border-amber-400/40 hover:text-white"
+                    ? "bg-slate-900 border-amber-400 text-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.3)] scale-105"
+                    : "bg-slate-900/60 text-slate-300 border-white/10 hover:border-white/20"
                 }`}
               >
                 Season {s.season_number}
@@ -737,11 +656,11 @@ const TvPlayerSection = ({
         </div>
       </div>
 
-      {/* Episodes List Deck */}
+      {/* ── Screen 6: Episode List Deck ── */}
       <div>
         <div className="flex items-center justify-between mb-3">
           <span className="text-xs font-black uppercase tracking-wider text-slate-300">
-            Season {seasonNumber} Episodes
+            Season {seasonNumber} Episode List
           </span>
           {episodes?.length > 0 && (
             <span className="text-[0.72rem] text-slate-400 font-semibold">
@@ -750,33 +669,33 @@ const TvPlayerSection = ({
           )}
         </div>
 
-        {isEpisodesLoading ? (
-          <div className="flex items-center justify-center gap-3 py-12 text-sm text-slate-400 bg-slate-900/40 rounded-2xl border border-white/5">
-            <Spinner /> <span>Loading season episodes...</span>
+        {!isEpisodesLoading && episodes?.length > 0 ? (
+          <div className="space-y-2.5">
+            {episodes.map((ep) => (
+              <EpisodeCard
+                key={ep.episode_number}
+                ep={ep}
+                isSelected={String(episodeNumber) === String(ep.episode_number)}
+                onToggle={() =>
+                  setEpisodeNumber((prev) =>
+                    String(prev) === String(ep.episode_number) ? "" : String(ep.episode_number)
+                  )
+                }
+                movieData={movieData}
+                seasonNumber={seasonNumber}
+                onOpenWebPlayer={onOpenWebPlayer}
+              />
+            ))}
           </div>
-        ) : episodes && episodes.length > 0 ? (
-          <div className="space-y-2 max-h-[580px] overflow-y-auto pr-1">
-            {episodes
-              .sort((a, b) => a.episode_number - b.episode_number)
-              .map((ep) => (
-                <EpisodeCard
-                  key={ep.episode_number}
-                  ep={ep}
-                  isSelected={parseInt(episodeNumber) === ep.episode_number}
-                  onToggle={() =>
-                    setEpisodeNumber(
-                      parseInt(episodeNumber) === ep.episode_number ? "" : ep.episode_number
-                    )
-                  }
-                  movieData={movieData}
-                  seasonNumber={seasonNumber}
-                  onOpenWebPlayer={onOpenWebPlayer}
-                />
-              ))}
+        ) : isEpisodesLoading ? (
+          <div className="space-y-2.5">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="h-16 rounded-2xl shimmer-effect" />
+            ))}
           </div>
         ) : (
-          <div className="p-8 text-center text-xs text-slate-400 bg-slate-900/40 rounded-2xl border border-white/5">
-            {seasonNumber ? "No episodes found for this season." : "Select a season above to load episodes."}
+          <div className="p-8 text-center text-slate-400 text-xs bg-slate-900/40 rounded-2xl border border-white/5">
+            No episode streams found for Season {seasonNumber}.
           </div>
         )}
       </div>
@@ -784,71 +703,31 @@ const TvPlayerSection = ({
   );
 };
 
-// ─── Main Export ───────────────────────────────────────────────────────────
-export default function PlayerButtons({
-  movieData,
-  episodes,
-  seasonNumber,
-  setSeasonNumber,
-  episodeNumber,
-  setEpisodeNumber,
-  isEpisodesLoading,
-}) {
-  const navigate = useNavigate();
-
-  if (!movieData) return null;
-
-  const handleOpenWebPlayer = ({ id, name, title, quality, language, tmdbId, mediaType }) => {
-    const params = new URLSearchParams();
-    if (id) params.set("id", id);
-    if (name) params.set("name", name);
-    if (title) params.set("title", title);
-    if (quality) params.set("quality", quality);
-    if (language) params.set("lang", language);
-    if (tmdbId) params.set("tmdb_id", tmdbId);
-    if (mediaType) params.set("media_type", mediaType);
-
-    navigate(`/watch?${params.toString()}`);
-  };
+// ─── Main PlayerButtons Component ──────────────────────────────────────────
+export default function PlayerButtons(props) {
+  const isMovie = props.movieData?.media_type === "movie";
 
   return (
-    <div id="player-section" className="glass-card p-6 sm:p-8 border border-white/15 shadow-[0_25px_60px_rgba(0,0,0,0.85)]">
-      {/* Cockpit Section Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-5 mb-6 border-b border-white/10">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 text-slate-950 flex items-center justify-center shadow-[0_0_20px_rgba(245,158,11,0.6)]">
-            <FaPlay className="text-base ml-0.5" />
-          </div>
-          <div>
-            <h3 className="text-lg sm:text-xl font-black tracking-tight text-white flex items-center gap-2">
-              Streaming &amp; Download Cockpit
-            </h3>
-            <p className="text-xs text-slate-400">
-              Select your preferred audio track and resolution below to stream or download.
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {movieData.media_type === "movie" ? (
+    <section className="glass-card p-5 sm:p-7 rounded-3xl border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.8)]">
+      {isMovie ? (
         <MoviePlayerSection
-          telegram={movieData.telegram}
-          movieData={movieData}
-          onOpenWebPlayer={handleOpenWebPlayer}
+          telegram={props.movieData?.telegram || []}
+          movieData={props.movieData}
+          onOpenWebPlayer={props.onOpenWebPlayer}
         />
       ) : (
         <TvPlayerSection
-          seasons={movieData.seasons}
-          episodes={episodes}
-          seasonNumber={seasonNumber}
-          setSeasonNumber={setSeasonNumber}
-          episodeNumber={episodeNumber}
-          setEpisodeNumber={setEpisodeNumber}
-          isEpisodesLoading={isEpisodesLoading}
-          movieData={movieData}
-          onOpenWebPlayer={handleOpenWebPlayer}
+          seasons={props.movieData?.seasons || []}
+          episodes={props.episodes || []}
+          seasonNumber={props.seasonNumber}
+          setSeasonNumber={props.setSeasonNumber}
+          episodeNumber={props.episodeNumber}
+          setEpisodeNumber={props.setEpisodeNumber}
+          isEpisodesLoading={props.isEpisodesLoading}
+          movieData={props.movieData}
+          onOpenWebPlayer={props.onOpenWebPlayer}
         />
       )}
-    </div>
+    </section>
   );
 }

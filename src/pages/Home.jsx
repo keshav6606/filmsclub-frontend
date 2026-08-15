@@ -1,8 +1,8 @@
-// src/pages/Home.jsx
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import HeroSlider from "../components/HomeHero";
 import HomeSections from "../components/HomeSections";
+import PopularCategories from "../components/PopularCategories";
 import SEO from "../components/SEO";
 import AdBanner from "../components/AdBanner";
 import { ToastContainer } from "react-toastify";
@@ -15,11 +15,14 @@ export default function Home() {
   // States
   const [heroPopularMovies, setHeroPopularMovies] = useState([]);
   const [trendingMovies, setTrendingMovies] = useState([]);
+  const [recentlyAdded, setRecentlyAdded] = useState([]);
   const [trendingTv, setTrendingTv] = useState([]);
   const [isHeroLoading, setIsHeroLoading] = useState(true);
   const [isTrendingMoviesLoading, setIsTrendingMoviesLoading] = useState(true);
+  const [isRecentlyAddedLoading, setIsRecentlyAddedLoading] = useState(true);
   const [isTrendingTvLoading, setIsTrendingTvLoading] = useState(true);
 
+  // 1. Featured Movies for Hero
   useEffect(() => {
     setIsHeroLoading(true);
     window.scrollTo(0, 0);
@@ -32,7 +35,7 @@ export default function Home() {
         },
       })
       .then((response) => {
-        setHeroPopularMovies(response.data.movies);
+        setHeroPopularMovies(response.data.movies || []);
         setIsHeroLoading(false);
       })
       .catch((error) => {
@@ -41,18 +44,19 @@ export default function Home() {
       });
   }, [BASE]);
 
+  // 2. Trending Now
   useEffect(() => {
     setIsTrendingMoviesLoading(true);
     axios
       .get(`${BASE}/api/movies`, {
         params: {
-          sort_by: "updated_on:desc",
+          sort_by: "rating:desc",
           page: 1,
-          page_size: 20,
+          page_size: 14,
         },
       })
       .then((response) => {
-        setTrendingMovies(response.data.movies);
+        setTrendingMovies(response.data.movies || []);
         setIsTrendingMoviesLoading(false);
       })
       .catch((error) => {
@@ -61,6 +65,28 @@ export default function Home() {
       });
   }, [BASE]);
 
+  // 3. Recently Added Drops
+  useEffect(() => {
+    setIsRecentlyAddedLoading(true);
+    axios
+      .get(`${BASE}/api/movies`, {
+        params: {
+          sort_by: "updated_on:desc",
+          page: 1,
+          page_size: 14,
+        },
+      })
+      .then((response) => {
+        setRecentlyAdded(response.data.movies || []);
+        setIsRecentlyAddedLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching recently added movies:", error);
+        setIsRecentlyAddedLoading(false);
+      });
+  }, [BASE]);
+
+  // 4. Trending TV Shows
   useEffect(() => {
     setIsTrendingTvLoading(true);
     axios
@@ -68,11 +94,11 @@ export default function Home() {
         params: {
           sort_by: "updated_on:desc",
           page: 1,
-          page_size: 20,
+          page_size: 14,
         },
       })
       .then((response) => {
-        setTrendingTv(response.data.tv_shows);
+        setTrendingTv(response.data.tv_shows || []);
         setIsTrendingTvLoading(false);
       })
       .catch((error) => {
@@ -82,66 +108,52 @@ export default function Home() {
   }, [BASE]);
 
   return (
-    <div className="pb-16 md:pb-0">
+    <div className="pb-16 md:pb-10">
       <ToastContainer style={{ fontSize: "0.8rem" }} />
       {/* SEO SECTION */}
       <SEO
-        title={`${SITENAME} - Stream, Dream, Repeat.`}
-        description={`Discover a world of entertainment where every show, movie, and exclusive content takes you on a journey beyond the screen. ${SITENAME} offers endless options for every mood, helping you relax, escape, and imagine more. Stream your favorites, dream big, and repeat the experience, only with ${SITENAME}.`}
+        title={`${SITENAME} - Watch 4K UHD Movies & Series Online`}
+        description={`Stream and download latest 4K Ultra HD & 1080p Full HD movies, TV shows, and dual audio releases for free on ${SITENAME}.`}
         name={SITENAME}
         type="website"
-        keywords="watch movies online, watch hd movies, watch full movies, streaming movies online, free streaming movie, watch movies free, watch hd movies online, watch series online, watch hd series free, free tv series, free movies online, tv online, tv links, tv links movies, free tv shows, watch tv shows online, watch tv shows online free, free hd movies, New Movie Releases, Top Movies of the Year, Watch Movies Online, Streaming Services, Movie Reviews, Upcoming Films, Best Movie Scenes, Classic Movies, HD Movie Streaming, Film Trailers, Action Movies, Drama Films, Comedy Movies, Sci-Fi Films, Horror Movie Picks, Family-Friendly Movies, Award-Winning Films, Movie Recommendations, Cinematic Experiences, Behind-the-Scenes, Director Spotlights, Actor Interviews, Film Festivals, Cult Classics, Top Box Office Hits, Celebrity News, Movie Soundtracks, Oscar-Winning Movies, Movie Trivia, Exclusive Film Content, Best Cinematography, Must-Watch Movies, Film Industry News, Filmmaking Tips, Top Movie Blogs, Latest Movie Gossip, Interactive Movie Quizzes, Red Carpet Moments, IMDb Ratings, Movie Fan Communities, fmovies, fmovies.to, fmovies to, fmovies is, fmovie, free movies, online movie, movie online, free movies online, watch movies online free, free hd movies, watch movies online"
-        link={`https://${SITENAME}.com`}
-        schema={{
-          "@context": "https://schema.org",
-          "@type": "WebSite",
-          "name": SITENAME,
-          "url": `https://${SITENAME}.com`,
-          "description": `Discover a world of entertainment where every show, movie, and exclusive content takes you on a journey beyond the screen. ${SITENAME} offers endless options for every mood, helping you relax, escape, and imagine more.`,
-          "potentialAction": {
-            "@type": "SearchAction",
-            "target": {
-              "@type": "EntryPoint",
-              "urlTemplate": `https://${SITENAME}.com/search/{search_term_string}`
-            },
-            "query-input": "required name=search_term_string"
-          }
-        }}
+        keywords="watch movies online, watch hd movies, free 4k streaming, filmy4uhd, hindi dubbed movies, nextplayer"
+        link={`https://${SITENAME.toLowerCase()}.site`}
       />
 
-      {/* HEADER - Hero and boxoffice */}
-      <div className="col-span-1 lg:col-span-2">
-        <HeroSlider
-          movieData={heroPopularMovies}
-          isMovieDataLoading={isHeroLoading}
-          dataType="heroPopularMovies"
-          sliderTypePrev="slideHeroTrendingMovies-prev"
-          sliderTypeNext="slideHeroTrendingMovies-next"
-        />
-      </div>
+      {/* ── Screen 1: 1. Featured Blockbuster Hero ── */}
+      <HeroSlider
+        movieData={heroPopularMovies}
+        isMovieDataLoading={isHeroLoading}
+      />
 
-      {/* Ad Banner Below Hero */}
-      <AdBanner slot="7317709042" style={{ display: "inline-block", width: "728px", height: "90px" }} />
-
-      {/* Trending Movies Section */}
+      {/* ── Screen 1: 2. Trending Now Section ── */}
       <HomeSections
         movieData={trendingMovies}
         isMovieDataLoading={isTrendingMoviesLoading}
-        sectionTitle="Latest Movies"
-        sectionSeeMoreButtonLink="/Movies"
-        dataType="latestMovies"
+        sectionTitle="Trending Now"
+        sectionSeeMoreButtonLink="/movies"
       />
 
-      {/* Ad Banner Between Sections */}
+      {/* ── Screen 1: 3. Popular Categories ── */}
+      <PopularCategories />
+
+      {/* ── Screen 1: 4. Recently Added Drops ── */}
+      <HomeSections
+        movieData={recentlyAdded}
+        isMovieDataLoading={isRecentlyAddedLoading}
+        sectionTitle="Recently Added"
+        sectionSeeMoreButtonLink="/movies"
+      />
+
+      {/* Ad Banner */}
       <AdBanner slot="5754054742" />
 
-      {/* Trending TV SHOWS Section */}
+      {/* ── Screen 1: 5. Popular Series Section ── */}
       <HomeSections
         movieData={trendingTv}
         isMovieDataLoading={isTrendingTvLoading}
-        sectionTitle="Latest Series"
-        sectionSeeMoreButtonLink="/Series"
-        dataType="latestTv"
+        sectionTitle="Popular Series"
+        sectionSeeMoreButtonLink="/series"
       />
     </div>
   );

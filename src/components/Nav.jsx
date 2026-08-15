@@ -2,9 +2,20 @@ import React, { useState, useEffect, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { BiSearch, BiX } from "react-icons/bi";
-import { HiOutlineHome, HiOutlineFilm, HiOutlineTv, HiOutlineInformationCircle } from "react-icons/hi2";
+import {
+  HiOutlineHome,
+  HiHome,
+  HiOutlineFilm,
+  HiFilm,
+  HiOutlineTv,
+  HiTv,
+  HiOutlineArrowDownTray,
+  HiArrowDownTray,
+  HiOutlineBookmark,
+  HiBookmark,
+} from "react-icons/hi2";
+import { FiUser } from "react-icons/fi";
 import { RiSearchLine } from "react-icons/ri";
-import { MdOutlineEmail } from "react-icons/md";
 import posterPlaceholder from "../assets/images/poster-placeholder.png";
 import { BASE_URL as BASE } from "../config/api";
 import BrandLogo from "./BrandLogo";
@@ -36,6 +47,8 @@ export default function Nav() {
     if (path === "/") setNavStatus("Home");
     else if (path.startsWith("/mov")) setNavStatus("Movies");
     else if (path.startsWith("/ser")) setNavStatus("Series");
+    else if (path.startsWith("/download")) setNavStatus("Downloads");
+    else if (path.startsWith("/watchlist")) setNavStatus("Watchlist");
     else if (path.startsWith("/about")) setNavStatus("About");
     else if (path.startsWith("/contact")) setNavStatus("Contact");
     else if (path.startsWith("/search")) setNavStatus("Search");
@@ -48,7 +61,7 @@ export default function Nav() {
       return;
     }
     setIsLoading(true);
-    fetch(`${BASE}/api/search/?query=${debouncedVal}&page=1`)
+    fetch(`${BASE}/api/search/?query=${encodeURIComponent(debouncedVal)}&page=1`)
       .then((res) => res.json())
       .then((data) => {
         setSearchResult(data.results || []);
@@ -59,7 +72,7 @@ export default function Nav() {
 
   // Debounce
   useEffect(() => {
-    const timer = setTimeout(() => setDebouncedVal(query), 500);
+    const timer = setTimeout(() => setDebouncedVal(query), 400);
     return () => clearTimeout(timer);
   }, [query]);
 
@@ -77,64 +90,97 @@ export default function Nav() {
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  const navLinks = [
-    { name: "Home", icon: <HiOutlineHome />, path: "/" },
-    { name: "Movies", icon: <HiOutlineFilm />, path: "/movies" },
-    { name: "Series", icon: <HiOutlineTv />, path: "/series" },
-    { name: "About", icon: <HiOutlineInformationCircle />, path: "/about" },
-    { name: "Contact", icon: <MdOutlineEmail />, path: "/contact" },
+  const desktopNavLinks = [
+    { name: "Home", path: "/" },
+    { name: "Movies", path: "/movies" },
+    { name: "Series", path: "/series" },
+    { name: "About Us", path: "/about" },
+    { name: "Contact", path: "/contact" },
+  ];
+
+  const bottomNavItems = [
+    {
+      name: "Home",
+      path: "/",
+      icon: <HiOutlineHome className="text-xl" />,
+      activeIcon: <HiHome className="text-xl text-amber-400" />,
+    },
+    {
+      name: "Movies",
+      path: "/movies",
+      icon: <HiOutlineFilm className="text-xl" />,
+      activeIcon: <HiFilm className="text-xl text-amber-400" />,
+    },
+    {
+      name: "Series",
+      path: "/series",
+      icon: <HiOutlineTv className="text-xl" />,
+      activeIcon: <HiTv className="text-xl text-amber-400" />,
+    },
+    {
+      name: "Downloads",
+      path: "/movies",
+      icon: <HiOutlineArrowDownTray className="text-xl" />,
+      activeIcon: <HiArrowDownTray className="text-xl text-amber-400" />,
+    },
+    {
+      name: "Watchlist",
+      path: "/series",
+      icon: <HiOutlineBookmark className="text-xl" />,
+      activeIcon: <HiBookmark className="text-xl text-amber-400" />,
+    },
   ];
 
   return (
     <>
-      {/* ── Desktop / Tablet Header ────────────────────────────────────────── */}
+      {/* ── Top Header Bar ────────────────────────────────────────── */}
       <header
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           scrolled
             ? "bg-[#06080D]/95 backdrop-blur-2xl border-b border-amber-500/20 shadow-[0_10px_35px_rgba(0,0,0,0.9)]"
-            : "bg-gradient-to-b from-[#06080D]/95 to-transparent backdrop-blur-md"
+            : "bg-gradient-to-b from-[#06080D]/95 via-[#06080D]/80 to-transparent backdrop-blur-md"
         }`}
       >
         <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 h-16 flex items-center justify-between gap-4">
           {/* Brand Logo & Name */}
           <Link
             to="/"
-            className="flex items-center gap-3 shrink-0 group"
+            className="flex items-center gap-2.5 shrink-0 group"
             aria-label={`${SITENAME} Home`}
           >
-            <BrandLogo className="w-10 h-10" />
-            <span className="text-2xl font-black tracking-tight flex items-center">
+            <BrandLogo className="w-9 h-9" />
+            <span className="text-xl sm:text-2xl font-black tracking-tight flex items-center uppercase">
               <span className="gold-text">Filmy</span>
-              <span className="text-amber-400">4uhd</span>
+              <span className="text-amber-400">4UHD</span>
             </span>
           </Link>
 
           {/* Desktop Nav Links */}
-          <nav className="hidden md:flex items-center gap-1.5 bg-slate-900/80 p-1.5 rounded-full border border-white/10 backdrop-blur-md shadow-inner" aria-label="Main navigation">
-            {navLinks.map((link) => (
+          <nav className="hidden lg:flex items-center gap-1 bg-slate-900/80 p-1.5 rounded-full border border-white/10 backdrop-blur-md shadow-inner">
+            {desktopNavLinks.map((link) => (
               <Link
                 key={link.name}
                 to={link.path}
-                className={`relative flex items-center gap-2 px-4 py-1.5 rounded-full text-xs sm:text-sm font-extrabold transition-all duration-200 ${
-                  navStatus === link.name
-                    ? "text-amber-400 bg-gradient-to-r from-amber-500/20 to-amber-600/10 border border-amber-500/40 shadow-md"
+                className={`relative px-4 py-1.5 rounded-full text-xs font-extrabold transition-all duration-200 ${
+                  navStatus === link.name || (link.name === "Home" && navStatus === "Home")
+                    ? "text-slate-950 bg-gradient-to-r from-amber-400 to-amber-500 shadow-[0_0_15px_rgba(245,158,11,0.5)] scale-105"
                     : "text-slate-300 hover:text-white hover:bg-white/10"
                 }`}
               >
-                <span className="text-base text-amber-400">{link.icon}</span>
                 {link.name}
               </Link>
             ))}
           </nav>
 
-          {/* Search Bar */}
-          <div className="flex-1 max-w-sm hidden sm:block" ref={closeRef}>
-            <div className="relative">
+          {/* Right Header Actions: Search + Profile */}
+          <div className="flex items-center gap-3" ref={closeRef}>
+            {/* Desktop Search Input */}
+            <div className="relative hidden sm:block w-64 lg:w-80">
               <div className="flex items-center gap-2.5 bg-slate-900/90 border border-white/15 rounded-full px-4 py-2 transition-all duration-200 focus-within:border-amber-400 focus-within:shadow-[0_0_25px_rgba(245,158,11,0.4)] backdrop-blur-md">
                 {isLoading ? (
                   <div className="loader-search shrink-0" />
                 ) : (
-                  <RiSearchLine className="text-amber-400 shrink-0 text-lg" />
+                  <RiSearchLine className="text-amber-400 shrink-0 text-base" />
                 )}
                 <input
                   type="text"
@@ -142,7 +188,7 @@ export default function Nav() {
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="Search 4K movies, series…"
-                  className="bg-transparent text-slate-100 placeholder-slate-400 text-xs sm:text-sm w-full outline-none font-semibold"
+                  className="bg-transparent text-slate-100 placeholder-slate-400 text-xs w-full outline-none font-semibold"
                   aria-label="Search"
                   autoComplete="off"
                 />
@@ -197,19 +243,24 @@ export default function Nav() {
                 )}
               </AnimatePresence>
             </div>
-          </div>
 
-          {/* Mobile Search Toggle */}
-          <button
-            className="sm:hidden text-amber-400 p-2.5 rounded-xl bg-slate-900/80 border border-white/10 hover:bg-white/5 transition-colors"
-            onClick={() => setMobileSearchOpen((p) => !p)}
-            aria-label="Toggle search"
-          >
-            {mobileSearchOpen ? <BiX className="text-2xl" /> : <BiSearch className="text-xl" />}
-          </button>
+            {/* Mobile Search Toggle Icon */}
+            <button
+              className="sm:hidden text-amber-400 p-2.5 rounded-full bg-slate-900/90 border border-white/15 hover:border-amber-400 transition-colors"
+              onClick={() => setMobileSearchOpen((p) => !p)}
+              aria-label="Search toggle"
+            >
+              <BiSearch className="text-xl" />
+            </button>
+
+            {/* Profile Avatar Icon */}
+            <div className="w-10 h-10 rounded-full bg-slate-900/90 border border-white/20 hover:border-amber-400 flex items-center justify-center text-slate-300 hover:text-amber-400 transition-all cursor-pointer shadow-md">
+              <FiUser className="text-lg" />
+            </div>
+          </div>
         </div>
 
-        {/* Mobile Search Overlay */}
+        {/* Mobile Search Input Drawer */}
         <AnimatePresence>
           {mobileSearchOpen && (
             <motion.div
@@ -229,7 +280,7 @@ export default function Nav() {
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                     placeholder="Search movies, series…"
-                    className="bg-transparent text-slate-100 placeholder-slate-400 text-sm w-full outline-none"
+                    className="bg-transparent text-slate-100 placeholder-slate-400 text-sm w-full outline-none font-semibold"
                     aria-label="Mobile search"
                   />
                   {query && (
@@ -238,6 +289,7 @@ export default function Nav() {
                     </button>
                   )}
                 </div>
+
                 {/* Mobile Search Results */}
                 <AnimatePresence>
                   {searchResult.length > 0 && (
@@ -245,7 +297,7 @@ export default function Nav() {
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
-                      className="mt-3 rounded-xl overflow-hidden max-h-[50dvh] overflow-y-auto glass-card border border-white/10"
+                      className="mt-3 rounded-2xl overflow-hidden max-h-[50dvh] overflow-y-auto glass-card border border-white/10"
                     >
                       {searchResult.slice(0, 6).map((movie) => (
                         <Link
@@ -275,36 +327,29 @@ export default function Nav() {
         </AnimatePresence>
       </header>
 
-      {/* ── Mobile Bottom Navigation ──────────────────────────────────────── */}
+      {/* ── Mobile Bottom Navigation Bar (Matching 5 Tabs in Screenshot) ───────── */}
       <nav
-        className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#06080D]/95 backdrop-blur-2xl border-t border-white/10 flex items-center justify-around h-16 safe-area-pb shadow-[0_-10px_30px_rgba(0,0,0,0.8)]"
+        className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#06080D]/95 backdrop-blur-2xl border-t border-white/10 flex items-center justify-around h-16 safe-area-pb shadow-[0_-10px_30px_rgba(0,0,0,0.9)]"
         aria-label="Mobile bottom navigation"
       >
-        {navLinks.map((link) => (
-          <Link
-            key={link.name}
-            to={link.path}
-            className={`flex flex-col items-center gap-0.5 px-3 py-1 transition-all duration-200 ${
-              navStatus === link.name ? "text-amber-400" : "text-slate-400"
-            }`}
-            aria-label={link.name}
-          >
-            <span className={`text-xl transition-transform duration-200 ${navStatus === link.name ? "scale-110 text-amber-400" : ""}`}>
-              {link.icon}
-            </span>
-            <span className="text-[0.62rem] font-bold tracking-tight">{link.name}</span>
-          </Link>
-        ))}
-        <button
-          onClick={() => setMobileSearchOpen((p) => !p)}
-          className={`flex flex-col items-center gap-0.5 px-3 py-1 transition-all duration-200 ${
-            mobileSearchOpen ? "text-amber-400" : "text-slate-400"
-          }`}
-          aria-label="Search"
-        >
-          <BiSearch className="text-xl" />
-          <span className="text-[0.62rem] font-bold tracking-tight">Search</span>
-        </button>
+        {bottomNavItems.map((item) => {
+          const isActive = navStatus === item.name;
+          return (
+            <Link
+              key={item.name}
+              to={item.path}
+              className={`flex flex-col items-center justify-center gap-1 px-3 py-1 transition-all duration-200 ${
+                isActive ? "text-amber-400 font-extrabold" : "text-slate-400 font-semibold"
+              }`}
+              aria-label={item.name}
+            >
+              <span className={`transition-transform duration-200 ${isActive ? "scale-110" : ""}`}>
+                {isActive ? item.activeIcon : item.icon}
+              </span>
+              <span className="text-[0.62rem] tracking-tight">{item.name}</span>
+            </Link>
+          );
+        })}
       </nav>
     </>
   );
