@@ -29,24 +29,24 @@ import { BASE_URL as BASE } from "../config/api";
 
 const API_URL = import.meta.env.VITE_API_URL;
 const API_KEY = import.meta.env.VITE_API_KEY;
-const TG_USERNAME = import.meta.env.VITE_TG_USERNAME || "Filmy4uhdbot";
-const MPVEX_PLAY_LINK = "https://play.google.com/store/apps/details?id=com.nextplayer.pro";
+const TG_USERNAME = import.meta.env.VITE_TG_USERNAME || "Filmy4uhdBot";
+const NEXTPLAYER_PLAY_LINK = "https://play.google.com/store/apps/details?id=com.nextplayer.pro";
 
 const PLAYERS = [
   {
-    id: "mpvex",
-    name: "mpvEx Player",
+    id: "nextplayer",
+    name: "NextPlayer",
     packageName: "com.nextplayer.pro",
     icon: <MdSmartDisplay className="text-xl text-cyan-400" />,
-    desc: "Recommended for hardware acceleration, 4K & full AC3/EAC3 audio decoding.",
-    playStore: MPVEX_PLAY_LINK,
+    desc: "Recommended for hardware acceleration, 4K & full AC3/EAC3 Dolby audio decoding.",
+    playStore: NEXTPLAYER_PLAY_LINK,
   },
   {
     id: "mx",
     name: "MX Player",
     packageName: "com.mxtech.videoplayer.ad",
     icon: <MdOndemandVideo className="text-xl text-blue-400" />,
-    desc: "Supports multi-audio tracks, custom subtitles, and HW+ decoding.",
+    desc: "Supports multi-audio tracks, custom subtitles, gesture controls, and HW+ decoding.",
     playStore: "https://play.google.com/store/apps/details?id=com.mxtech.videoplayer.ad",
   },
   {
@@ -54,7 +54,7 @@ const PLAYERS = [
     name: "VLC Player",
     packageName: "org.videolan.vlc",
     icon: <SiVlcmediaplayer className="text-xl text-orange-400" />,
-    desc: "Open-source player with full AC3 / EAC3 audio codec compatibility.",
+    desc: "Open-source player with full AC3 / EAC3 / DTS surround audio codec compatibility.",
     playStore: "https://play.google.com/store/apps/details?id=org.videolan.vlc",
   },
 ];
@@ -255,7 +255,7 @@ export default function WatchPage() {
     let packageName = player?.packageName || "";
     let playStoreUrl = "";
 
-    if (playerId === "mpvex") {
+    if (playerId === "nextplayer" || playerId === "mpvex") {
       packageName = packageName || "com.nextplayer.pro";
       playStoreUrl = "https://play.google.com/store/apps/details?id=com.nextplayer.pro";
     } else if (playerId === "mx") {
@@ -281,7 +281,7 @@ export default function WatchPage() {
     } else {
       if (playerId === "vlc") {
         window.location.href = `vlc://${cleanUrl}`;
-      } else if (playerId === "mpvex" || playerId === "mpv") {
+      } else if (playerId === "nextplayer" || playerId === "mpvex" || playerId === "mpv") {
         window.location.href = `mpv://${cleanUrl}`;
       } else {
         window.open(videoUrl, "_blank", "noopener noreferrer");
@@ -304,8 +304,8 @@ export default function WatchPage() {
     <div className="mt-20 mb-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 text-white">
       <SEO
         title={`Watch ${title} Online | High Speed Stream & Download`}
-        description={`Stream ${title} online free in high quality. Open in mpvEx Player, MX Player, or VLC Player.`}
-        keywords={`${title}, watch ${title} online, stream mpvEx, MX player, VLC stream, free stream`}
+        description={`Stream ${title} online free in high quality. Open in NextPlayer, MX Player, or VLC Player.`}
+        keywords={`${title}, watch ${title} online, stream NextPlayer, NextPlayer Pro, MX player, VLC stream, free stream`}
       />
 
       {/* Top Navigation */}
@@ -334,7 +334,7 @@ export default function WatchPage() {
           Streaming: <span className="gold-text">{title}</span>
         </h1>
         <p className="text-xs sm:text-sm text-slate-400 mt-1">
-          Enjoy online web streaming below or open in mpvEx / MX / VLC Player for full Dolby audio output.
+          Enjoy online web streaming below or open in NextPlayer / MX / VLC Player for full Dolby audio output.
         </p>
       </div>
 
@@ -347,7 +347,7 @@ export default function WatchPage() {
           <div>
             <span className="font-bold text-white block text-sm">No Sound / Silent Audio in Web Browser?</span>
             <span className="text-slate-300">
-              Web browsers cannot decode Dolby AC3/EAC3 audio natively. Click <strong>mpvEx Player</strong>, <strong>MX Player</strong>, or <strong>VLC Player</strong> below to play with 100% sound!
+              Web browsers cannot decode Dolby AC3/EAC3 audio natively. Click <strong>NextPlayer</strong>, <strong>MX Player</strong>, or <strong>VLC Player</strong> below to play with 100% sound!
             </span>
           </div>
         </div>
@@ -356,7 +356,7 @@ export default function WatchPage() {
           className="shrink-0 bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold px-4 py-2 rounded-xl text-xs flex items-center gap-1.5 transition-all shadow-md"
         >
           <MdSmartDisplay className="text-base" />
-          <span>Open in mpvEx</span>
+          <span>Open in NextPlayer</span>
         </button>
       </div>
 
@@ -597,7 +597,7 @@ export default function WatchPage() {
           </h2>
         </div>
 
-        {/* Article 1: mpvEx Player Guide */}
+        {/* Article 1: NextPlayer Guide */}
         <article className="glass-card p-6 sm:p-8 space-y-4 border border-white/10 leading-relaxed text-sm">
           <div className="flex items-center gap-3">
             <span className="p-2 rounded-xl bg-cyan-500/10 text-cyan-400 text-xl border border-cyan-500/20">
@@ -605,14 +605,14 @@ export default function WatchPage() {
             </span>
             <div>
               <h3 className="text-lg font-bold text-white">
-                How to Resolve Silent Audio &amp; Watch with mpvEx Player
+                How to Resolve Silent Audio &amp; Watch with NextPlayer
               </h3>
-              <p className="text-xs text-slate-400">High-Performance Video Acceleration &amp; Dolby Audio Decoding</p>
+              <p className="text-xs text-slate-400">High-Performance Video Acceleration &amp; Dolby AC3/EAC3 Audio Decoding</p>
             </div>
           </div>
 
           <p className="text-slate-300">
-            <strong>mpvEx Player</strong> (package: <code className="text-amber-400 bg-white/5 px-1.5 py-0.5 rounded">com.nextplayer.pro</code>) is an advanced video player tailored for Android devices. Powered by libmpv, it provides native AC3 / EAC3 audio codec decoding and supports modern video formats including H.265 (HEVC), AV1, and 4K Ultra HD videos.
+            <strong>NextPlayer</strong> (package: <code className="text-amber-400 bg-white/5 px-1.5 py-0.5 rounded">com.nextplayer.pro</code>) is an advanced video player tailored for Android devices. Powered by libmpv, it provides native AC3 / EAC3 audio codec decoding and supports modern video formats including H.265 (HEVC), AV1, and 4K Ultra HD videos.
           </p>
 
           <div className="grid sm:grid-cols-2 gap-4 my-3">
@@ -621,7 +621,7 @@ export default function WatchPage() {
                 <FaBolt /> Hardware Decoding (HW+)
               </h4>
               <p className="text-xs text-slate-300">
-                mpvEx utilizes direct GPU hardware decoding, lowering battery consumption and eliminating stuttering on high bitrate 1080p and 4K streams.
+                NextPlayer utilizes direct GPU hardware decoding, lowering battery consumption and eliminating stuttering on high bitrate 1080p and 4K streams.
               </p>
             </div>
 
@@ -636,7 +636,7 @@ export default function WatchPage() {
           </div>
 
           <p className="text-slate-400 text-xs">
-            To use mpvEx Player: Install <strong>mpvEx Video Player</strong> from Google Play. Once installed, simply click the <strong>mpvEx Player</strong> button on our site to launch high-speed video streaming directly in the app.
+            To use NextPlayer: Install <strong>NextPlayer</strong> from Google Play Store. Once installed, simply click the <strong>NextPlayer</strong> button on our site to launch high-speed video streaming directly in the app.
           </p>
         </article>
 

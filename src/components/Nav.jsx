@@ -187,7 +187,7 @@ export default function Nav() {
                     ))}
                     {searchResult.length > 0 && (
                       <button
-                        onClick={() => { navigate(`/search/${query}`); setQuery(""); setDebouncedVal(""); }}
+                        onClick={() => { navigate(`/search/${encodeURIComponent(query)}`); setQuery(""); setDebouncedVal(""); }}
                         className="w-full text-center py-3 text-xs font-bold text-amber-400 hover:bg-amber-500/20 transition-colors border-t border-white/10"
                       >
                         See all results for "{query}" &rarr;

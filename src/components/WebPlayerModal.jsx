@@ -18,7 +18,7 @@ import { MdSmartDisplay, MdOndemandVideo } from "react-icons/md";
 import { SiVlcmediaplayer } from "react-icons/si";
 
 const PLAYERS = [
-  { id: "mpvex", name: "mpvEx Player", icon: <MdSmartDisplay /> },
+  { id: "nextplayer", name: "NextPlayer", icon: <MdSmartDisplay /> },
   { id: "mx", name: "MX Player", icon: <MdOndemandVideo /> },
   { id: "vlc", name: "VLC Player", icon: <SiVlcmediaplayer /> },
 ];

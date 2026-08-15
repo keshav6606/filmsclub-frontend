@@ -1,65 +1,52 @@
-import { React, useState } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 import MovieCard from "./MovieCard";
 import MovieCardSkeleton from "./MovieCardSkeleton";
+import { HiArrowRight, HiSparkles } from "react-icons/hi2";
 
-import "react-lazy-load-image-component/src/effects/black-and-white.css";
-import { BiArrowFromLeft } from "react-icons/bi";
-
-export default function HomeSection(props) {
-  // States
-  const [showPlayBtn, setShowPlayBtn] = useState(false);
-  const [openId, setOpenId] = useState();
-
-  // PLAY Button Show/hide Function
-  const showPlay = (i) => {
-    setOpenId(i);
-    setShowPlayBtn(true);
-  };
-  const hidePlay = (i) => {
-    setOpenId(i);
-    setShowPlayBtn(false);
-  };
+export default function Similars({ movieData, isMovieDataLoading, sectionTitle = "You May Also Like", seeMoreButtonLink }) {
+  if (!isMovieDataLoading && (!movieData || movieData.length === 0)) {
+    return null;
+  }
 
   return (
-    <>
-      {/* Title */}
-      <div className="mt-[2.5rem] flex items-center flex-wrap gap-5 text-primaryTextColor pb-[1.5rem] md:mt-[5rem]">
-        <div className="pl-[1rem]   border-l-2 border-otherColor ">
-          <p className="text-[0.8rem] uppercase font-bold sm:text-[1rem]">
-            {props.sectionTitle}
-          </p>
-        </div>
-        {/* See All Button */}
-        <Link
-          to={props.seeMoreButtonLink}
-          className="flex gap-3 items-center py-[0.5rem] px-[1rem] text-[0.7rem] rounded-sm transition-all duration-300 ease-in-out text-otherColor hover:bg-btnColor"
-          style={{ textDecoration: "none" }}
-        >
-          <p>See more</p>
-          <BiArrowFromLeft style={{ fontSize: "1rem" }} />
-        </Link>
-      </div>
-
-      {/* Similar Movies Section */}
-      <div className="">
-        {!props.isMovieDataLoading ? (
-          <div className="relative ">
-            <div className="grid  gap-x-2 gap-y-6 grid-cols-2 md:grid-cols-3 bsmmd:grid-cols-4  lg:grid-cols-5 blgxl:grid-cols-6 xl:grid-cols-7">
-              {props.movieData.map((movie, index) => {
-                return (
-                  <MovieCard key={index} movie={movie} />
-                );
-              })}
-            </div>
+    <section className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 mt-12 md:mt-16 mb-8">
+      {/* Section Header */}
+      <div className="flex items-center justify-between mb-6 pb-2 border-b border-white/5">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 shadow-md">
+            <HiSparkles className="text-lg" />
           </div>
-        ) : (
-          <>
-            <MovieCardSkeleton />
-          </>
+          <h2 className="section-title text-xl md:text-2xl">{sectionTitle}</h2>
+        </div>
+
+        {seeMoreButtonLink && (
+          <Link
+            to={seeMoreButtonLink}
+            className="flex items-center gap-2 text-xs sm:text-sm font-bold text-amber-400 hover:text-amber-300 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 px-4 py-2 rounded-full transition-all group shadow-md"
+            aria-label={`See all ${sectionTitle}`}
+          >
+            See all
+            <HiArrowRight className="text-base group-hover:translate-x-1 transition-transform" />
+          </Link>
         )}
       </div>
-    </>
+
+      {/* Cards Grid */}
+      {!isMovieDataLoading ? (
+        <div className="grid grid-cols-2 xs:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 blgxl:grid-cols-6 xl:grid-cols-7 gap-4 md:gap-5">
+          {movieData?.map((movie, index) => (
+            <MovieCard key={movie.tmdb_id || index} movie={movie} />
+          ))}
+        </div>
+      ) : (
+        <div className="grid grid-cols-2 xs:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 blgxl:grid-cols-6 xl:grid-cols-7 gap-4 md:gap-5">
+          {Array.from({ length: 7 }).map((_, i) => (
+            <MovieCardSkeleton key={i} />
+          ))}
+        </div>
+      )}
+    </section>
   );
 }
 
