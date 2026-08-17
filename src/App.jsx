@@ -8,6 +8,7 @@ import "react-toastify/dist/ReactToastify.css";
 import Nav from "./components/Nav";
 import Footer from "./components/Footer";
 import PageLoader from "./components/PageLoader";
+import TelegramBanner from "./components/TelegramBanner";
 
 // Lazy Loaded Pages
 const Home = lazy(() => import("./pages/Home"));
@@ -25,6 +26,7 @@ const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 const Terms = lazy(() => import("./pages/Terms"));
 const Contact = lazy(() => import("./pages/Contact"));
 const WatchPage = lazy(() => import("./pages/WatchPage"));
+const Watchlist = lazy(() => import("./pages/Watchlist"));
 
 function App() {
   ReactGa.initialize("G-JDFS7KRV40");
@@ -42,6 +44,7 @@ function App() {
             <Route path="/mov/:movieID" element={<MovieDetails />} />
             <Route path="/ser/:seriesID" element={<TvDetails />} />
             <Route path="/watch" element={<WatchPage />} />
+            <Route path="/watchlist" element={<Watchlist />} />
             <Route path="/movies" element={<Movies />} />
             <Route path="/Movies" element={<Movies />} />
             <Route path="/series" element={<Series />} />
@@ -58,6 +61,7 @@ function App() {
           </Routes>
         </Suspense>
       </div>
+      <TelegramBanner />
       <Footer />
     </BrowserRouter>
   );

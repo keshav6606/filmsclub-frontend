@@ -90,10 +90,27 @@ export default function Nav() {
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
+  const [watchlistCount, setWatchlistCount] = useState(0);
+
+  useEffect(() => {
+    const updateCount = () => {
+      try {
+        const list = JSON.parse(localStorage.getItem("filmy4uhd_watchlist") || "[]");
+        setWatchlistCount(list.length);
+      } catch {
+        setWatchlistCount(0);
+      }
+    };
+    updateCount();
+    window.addEventListener("watchlistUpdated", updateCount);
+    return () => window.removeEventListener("watchlistUpdated", updateCount);
+  }, []);
+
   const desktopNavLinks = [
     { name: "Home", path: "/" },
     { name: "Movies", path: "/movies" },
     { name: "Series", path: "/series" },
+    { name: "Watchlist", path: "/watchlist" },
     { name: "About Us", path: "/about" },
     { name: "Contact", path: "/contact" },
   ];
@@ -125,9 +142,27 @@ export default function Nav() {
     },
     {
       name: "Watchlist",
-      path: "/series",
-      icon: <HiOutlineBookmark className="text-xl" />,
-      activeIcon: <HiBookmark className="text-xl text-amber-400" />,
+      path: "/watchlist",
+      icon: (
+        <div className="relative">
+          <HiOutlineBookmark className="text-xl" />
+          {watchlistCount > 0 && (
+            <span className="absolute -top-1.5 -right-2 bg-amber-400 text-slate-950 text-[9px] font-black w-4 h-4 rounded-full flex items-center justify-center">
+              {watchlistCount > 9 ? "9+" : watchlistCount}
+            </span>
+          )}
+        </div>
+      ),
+      activeIcon: (
+        <div className="relative">
+          <HiBookmark className="text-xl text-amber-400" />
+          {watchlistCount > 0 && (
+            <span className="absolute -top-1.5 -right-2 bg-amber-400 text-slate-950 text-[9px] font-black w-4 h-4 rounded-full flex items-center justify-center">
+              {watchlistCount > 9 ? "9+" : watchlistCount}
+            </span>
+          )}
+        </div>
+      ),
     },
   ];
 

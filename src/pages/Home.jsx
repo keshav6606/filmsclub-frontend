@@ -3,6 +3,7 @@ import axios from "axios";
 import HeroSlider from "../components/HomeHero";
 import HomeSections from "../components/HomeSections";
 import PopularCategories from "../components/PopularCategories";
+import ContinueWatching from "../components/ContinueWatching";
 import SEO from "../components/SEO";
 import AdBanner from "../components/AdBanner";
 import { ToastContainer } from "react-toastify";
@@ -125,6 +126,9 @@ export default function Home() {
         movieData={heroPopularMovies}
         isMovieDataLoading={isHeroLoading}
       />
+
+      {/* ── Continue Watching (Persisted Playback Row) ── */}
+      <ContinueWatching />
 
       {/* ── Screen 1: 2. Trending Now Section ── */}
       <HomeSections

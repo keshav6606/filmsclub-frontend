@@ -26,6 +26,7 @@ import { SiVlcmediaplayer } from "react-icons/si";
 import { TbBrandTelegram } from "react-icons/tb";
 import SEO from "../components/SEO";
 import { BASE_URL as BASE } from "../config/api";
+import { saveContinueWatching } from "../utils/storage";
 
 const API_URL = import.meta.env.VITE_API_URL;
 const API_KEY = import.meta.env.VITE_API_KEY;
@@ -144,18 +145,46 @@ export default function WatchPage() {
     }
   };
 
+  const lastSavedRef = useRef(0);
+  const resumeTime = parseFloat(searchParams.get("resume") || "0");
+
   const handleTimeUpdate = () => {
     if (!videoRef.current) return;
-    setCurrentTime(videoRef.current.currentTime);
+    const cur = videoRef.current.currentTime;
+    const dur = videoRef.current.duration;
+    setCurrentTime(cur);
+
+    // Save progress every 5 seconds
+    if (Math.abs(cur - lastSavedRef.current) >= 5 && dur > 10) {
+      lastSavedRef.current = cur;
+      saveContinueWatching({
+        tmdb_id: tmdbId,
+        title,
+        media_type: mediaType,
+        quality,
+        currentTime: cur,
+        duration: dur,
+        fileId,
+        fileName,
+        videoUrl,
+      });
+    }
   };
 
   const handleLoadedMetadata = () => {
     if (!videoRef.current) return;
-    setDuration(videoRef.current.duration);
+    const dur = videoRef.current.duration;
+    setDuration(dur);
     setIsBuffering(false);
     // Explicitly set unmuted audio volume on load
     videoRef.current.muted = false;
     videoRef.current.volume = volume;
+
+    // Auto resume if specified
+    if (resumeTime > 0 && resumeTime < dur) {
+      videoRef.current.currentTime = resumeTime;
+      setCurrentTime(resumeTime);
+    }
   };
 
   const handleSeek = (e) => {

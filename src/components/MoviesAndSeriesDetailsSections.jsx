@@ -13,12 +13,15 @@ import {
 import { BsPlayFill, BsFillHeartFill, BsBookmarkCheckFill } from "react-icons/bs";
 import { PiStarFill } from "react-icons/pi";
 import { FiCheck } from "react-icons/fi";
+import { FaYoutube } from "react-icons/fa";
 import { toast } from "react-toastify";
 
 import PlayerButtons from "./PlayerButtons";
 import TelegramButton from "./TelegramButtons";
 import Watch from "./Watch";
 import AdBanner from "./AdBanner";
+import TrailerModal from "./TrailerModal";
+import { isInWatchlist, toggleWatchlist } from "../utils/storage";
 
 const langMap = {
   hi: "Hindi", en: "English", ta: "Tamil", te: "Telugu",
@@ -29,6 +32,7 @@ const langMap = {
 export default function MoviesAndSeriesDetailsSections(props) {
   const [isWatchMoviePopupOpen, setIsWatchMoviePopupOpen] = useState(false);
   const [isWatchEpisodePopupOpen, setIsWatchEpisodePopupOpen] = useState(false);
+  const [isTrailerOpen, setIsTrailerOpen] = useState(false);
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
@@ -36,6 +40,12 @@ export default function MoviesAndSeriesDetailsSections(props) {
 
   const movie = props.movieData;
   const loading = props.isMovieDataLoading;
+
+  React.useEffect(() => {
+    if (movie?.tmdb_id) {
+      setIsBookmarked(isInWatchlist(movie.tmdb_id));
+    }
+  }, [movie?.tmdb_id]);
 
   // Build audio tracks list
   const audioTracks = React.useMemo(() => {
@@ -59,8 +69,14 @@ export default function MoviesAndSeriesDetailsSections(props) {
   };
 
   const handleWatchlist = () => {
-    setIsBookmarked((p) => !p);
-    toast.info(!isBookmarked ? "Added to your Watchlist!" : "Removed from Watchlist.");
+    if (!movie) return;
+    const added = toggleWatchlist(movie);
+    setIsBookmarked(added);
+    if (added) {
+      toast.success(`"${movie.title}" added to your Watchlist!`);
+    } else {
+      toast.info(`"${movie.title}" removed from Watchlist.`);
+    }
   };
 
   const handleLike = () => {
@@ -187,6 +203,14 @@ export default function MoviesAndSeriesDetailsSections(props) {
                 </button>
 
                 <button
+                  onClick={() => setIsTrailerOpen(true)}
+                  className="flex items-center gap-2 text-xs sm:text-sm font-bold text-slate-300 hover:text-red-400 transition-colors"
+                >
+                  <FaYoutube className="text-xl text-red-500" />
+                  <span>Trailer</span>
+                </button>
+
+                <button
                   onClick={handleShare}
                   className="flex items-center gap-2 text-xs sm:text-sm font-bold text-slate-300 hover:text-cyan-400 transition-colors"
                 >
@@ -276,6 +300,15 @@ export default function MoviesAndSeriesDetailsSections(props) {
           episodeNumber={props.episodeNumber}
         />
       )}
+
+      {/* Official Trailer Modal */}
+      <TrailerModal
+        isOpen={isTrailerOpen}
+        onClose={() => setIsTrailerOpen(false)}
+        tmdbId={movie?.tmdb_id}
+        mediaType={props.detailType === "series" ? "tv" : "movie"}
+        title={movie?.title || ""}
+      />
     </div>
   );
 }

@@ -1,11 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import "react-lazy-load-image-component/src/effects/opacity.css";
 import { PiStarFill } from "react-icons/pi";
-import { BsPlayFill } from "react-icons/bs";
+import { BsPlayFill, BsBookmarkFill, BsBookmark } from "react-icons/bs";
+import { toast } from "react-toastify";
 import posterPlaceholder from "../assets/images/poster-placeholder.png";
+import { isInWatchlist, toggleWatchlist } from "../utils/storage";
 
 const langShort = {
   hi: "HINDI",
@@ -22,6 +24,13 @@ const langShort = {
 
 const MovieCard = ({ movie, badgeText }) => {
   const [hovered, setHovered] = useState(false);
+  const [bookmarked, setBookmarked] = useState(false);
+
+  useEffect(() => {
+    if (movie?.tmdb_id) {
+      setBookmarked(isInWatchlist(movie.tmdb_id));
+    }
+  }, [movie?.tmdb_id]);
 
   if (!movie) return null;
 
@@ -41,8 +50,20 @@ const MovieCard = ({ movie, badgeText }) => {
   const genreStr = movie.genres?.length > 0 ? movie.genres[0] : (movie.media_type === "movie" ? "Action" : `${movie.total_seasons || 1} Seasons`);
   const subtitle = `${movie.release_year || "2026"} • ${genreStr}`;
 
+  const handleBookmarkClick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const added = toggleWatchlist(movie);
+    setBookmarked(added);
+    if (added) {
+      toast.success(`Added "${movie.title}" to Watchlist!`, { autoClose: 2000 });
+    } else {
+      toast.info(`Removed "${movie.title}" from Watchlist.`, { autoClose: 2000 });
+    }
+  };
+
   return (
-    <Link to={to} aria-label={`View ${movie.title}`} className="block group select-none">
+    <Link to={to} aria-label={`View ${movie.title}`} className="block group select-none relative">
       <div
         className="movie-card relative rounded-2xl overflow-hidden bg-[#0F131C] border border-white/10 group-hover:border-amber-400/50 transition-all duration-300 shadow-[0_8px_25px_rgba(0,0,0,0.7)]"
         onMouseEnter={() => setHovered(true)}
@@ -66,13 +87,26 @@ const MovieCard = ({ movie, badgeText }) => {
           <div className="absolute top-2.5 left-2.5 z-10">
             <div className="flex items-center gap-1 bg-slate-950/85 backdrop-blur-md text-amber-400 border border-white/10 px-2 py-0.5 rounded-md text-[0.68rem] font-black shadow-lg">
               <PiStarFill className="text-amber-400 text-xs" />
-              <span>{movie.rating ? movie.rating.toFixed(1) : "7.8"}</span>
+              <span>{movie.rating ? Number(movie.rating).toFixed(1) : "7.8"}</span>
             </div>
           </div>
 
-          {/* ── Top Right: Quality / Custom Badge ── */}
-          {(badgeText || movie.rip) && (
-            <div className="absolute top-2.5 right-2.5 z-10">
+          {/* ── Top Right: Quality Badge & Bookmark Action ── */}
+          <div className="absolute top-2.5 right-2.5 z-10 flex items-center gap-1.5">
+            {/* Quick Watchlist Bookmark Button */}
+            <button
+              onClick={handleBookmarkClick}
+              title={bookmarked ? "Remove from Watchlist" : "Add to Watchlist"}
+              className={`p-1.5 rounded-md backdrop-blur-md transition-all duration-200 border ${
+                bookmarked
+                  ? "bg-amber-400 text-slate-950 border-amber-400 shadow-[0_0_10px_rgba(245,158,11,0.6)]"
+                  : "bg-slate-950/70 text-slate-300 border-white/10 hover:text-amber-400 hover:border-amber-400/40 opacity-80 group-hover:opacity-100"
+              }`}
+            >
+              {bookmarked ? <BsBookmarkFill className="text-[0.7rem]" /> : <BsBookmark className="text-[0.7rem]" />}
+            </button>
+
+            {(badgeText || movie.rip) && (
               <span className={`text-[0.6rem] font-black uppercase px-2 py-0.5 rounded-md shadow-md ${
                 badgeText === "New Ep"
                   ? "bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950"
@@ -82,8 +116,8 @@ const MovieCard = ({ movie, badgeText }) => {
               }`}>
                 {badgeText || movie.rip || "HD"}
               </span>
-            </div>
-          )}
+            )}
+          </div>
 
           {/* ── Center: Hover Play Button ── */}
           <AnimatePresence>
@@ -114,7 +148,7 @@ const MovieCard = ({ movie, badgeText }) => {
               {subtitle}
             </span>
 
-            {/* Audio Pill in Gold Background (Matching screenshot) */}
+            {/* Audio Pill in Gold Background */}
             <span className="shrink-0 text-[0.58rem] font-black uppercase tracking-wider bg-gradient-to-r from-amber-400/20 to-amber-500/20 text-amber-300 border border-amber-400/40 px-1.5 py-0.5 rounded">
               {langLabel}
             </span>
