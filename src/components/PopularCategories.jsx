@@ -46,6 +46,20 @@ const CATEGORIES = [
     shadow: "rgba(6,182,212,0.4)",
     query: "Horror",
   },
+  {
+    name: "Sci-Fi",
+    icon: <BiCameraMovie className="text-xl" />,
+    color: "from-blue-500 to-cyan-600",
+    shadow: "rgba(59,130,246,0.4)",
+    query: "Sci-Fi",
+  },
+  {
+    name: "Anime",
+    icon: <FaCrown className="text-xl" />,
+    color: "from-purple-500 to-pink-600",
+    shadow: "rgba(168,85,247,0.4)",
+    query: "Anime",
+  },
 ];
 
 export default function PopularCategories() {
@@ -58,7 +72,7 @@ export default function PopularCategories() {
       </div>
 
       {/* Circle Icon Cards Row */}
-      <div className="grid grid-cols-3 xs:grid-cols-6 gap-3 sm:gap-4">
+      <div className="grid grid-cols-2 xs:grid-cols-4 lg:grid-cols-8 gap-3 sm:gap-4">
         {CATEGORIES.map((cat) => (
           <Link
             key={cat.name}

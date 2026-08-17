@@ -405,3 +405,13 @@ body {
   box-shadow: 0 8px 25px rgba(245, 158, 11, 0.35);
   color: #FFF;
 }
+
+/* ─── No Scrollbar Utility ───────────────────────────────────────────────── */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+

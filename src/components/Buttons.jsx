@@ -181,7 +181,7 @@ const DownloadButton = ({ movieData, btnType }) => {
   return (
     <Popover placement="bottom" showArrow={true}>
       <PopoverTrigger>
-        <button className="flex justify-center items-center gap-2 uppercase text-otherColor max-w-full grow text-xs rounded-full border-2 border-otherColor py-1 px-3 lg:text-sm sm:px-5 sm:max-w-[15rem] sm:py-2">
+        <button className="btn-gold flex justify-center items-center gap-2 uppercase max-w-full grow text-xs rounded-full py-2 px-5 font-black shadow-[0_0_20px_rgba(245,158,11,0.4)] hover:scale-105 transition-all">
           {btnType === "Download" ? (
             <>
               <FaCloudDownloadAlt className="text-lg" /> Download
@@ -194,9 +194,9 @@ const DownloadButton = ({ movieData, btnType }) => {
         </button>
       </PopoverTrigger>
 
-      <PopoverContent className="bg-btnColor">
+      <PopoverContent className="bg-slate-900/95 backdrop-blur-2xl border border-amber-500/30 p-2 rounded-2xl shadow-[0_15px_40px_rgba(0,0,0,0.9)]">
         {movieData.media_type === "movie" ? (
-          <div className="px-1 py-2 flex gap-1 flex-wrap">
+          <div className="px-1 py-2 flex gap-1.5 flex-wrap">
             {renderMovieButtons()}
           </div>
         ) : (
