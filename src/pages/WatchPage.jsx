@@ -322,7 +322,8 @@ export default function WatchPage() {
     if (!videoUrl) return;
     triggerPopunder();
     setIsDownloadLoading(true);
-    const finalUrl = await shortenUrl(videoUrl);
+    const rawDownloadUrl = fileId && fileName ? `${BASE}/dl/${fileId}/${encodeURIComponent(fileName)}?dl=1` : (videoUrl.includes("?") ? `${videoUrl}&dl=1` : `${videoUrl}?dl=1`);
+    const finalUrl = await shortenUrl(rawDownloadUrl);
     setIsDownloadLoading(false);
     window.open(finalUrl, "_blank", "noopener noreferrer");
   };

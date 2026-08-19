@@ -145,18 +145,21 @@ const launchPlayer = (directStreamUrl, playerId, title = "Filmy4uhd Stream") => 
 const shortenUrl = async (url) => {
   if (!API_URL || !API_KEY) return url;
   try {
+    const endpoint = API_URL.startsWith("http") ? API_URL : `https://${API_URL}`;
+    const separator = endpoint.includes("?") ? "&" : "?";
     const res = await fetch(
-      `https://${API_URL}/api?api=${API_KEY}&url=${encodeURIComponent(url)}`
+      `${endpoint}${separator}api=${API_KEY}&url=${encodeURIComponent(url)}&format=json`
     );
     const data = await res.json();
-    return data.shortenedUrl || url;
-  } catch {
+    return data?.shortenedUrl || data?.short || data?.url || url;
+  } catch (err) {
+    console.warn("Shorten URL error:", err);
     return url;
   }
 };
 
 /**
- * Generate stream URL
+ * Generate stream URL for media players and web player
  */
 const generateVideoUrl = (id, name = "") => {
   const isDirectUrl = id?.startsWith("http://") || id?.startsWith("https://");
@@ -164,7 +167,19 @@ const generateVideoUrl = (id, name = "") => {
 
   const origin = BASE.replace(/\/$/, "");
   const encodedName = encodeURIComponent(name || "video.mp4");
-  return `${origin}/api/stream/${id}/${encodedName}`;
+  return `${origin}/dl/${id}/${encodedName}`;
+};
+
+/**
+ * Generate high-speed direct download URL with attachment header
+ */
+const generateDownloadUrl = (id, name = "") => {
+  const isDirectUrl = id?.startsWith("http://") || id?.startsWith("https://");
+  if (isDirectUrl) return id;
+
+  const origin = BASE.replace(/\/$/, "");
+  const encodedName = encodeURIComponent(name || "video.mp4");
+  return `${origin}/dl/${id}/${encodedName}?dl=1`;
 };
 
 // Language Helpers
@@ -331,6 +346,7 @@ const PlayerCard = ({ player, onClick, loading, disabled }) => {
 
 // ─── Screen 3: Movie Player Section (Stream or Download) ───────────────────
 const MoviePlayerSection = ({ telegram, movieData, onOpenWebPlayer }) => {
+  const navigate = useNavigate();
   const availableLangs = getUniqueLanguages(telegram, movieData);
   const [selectedLanguage, setSelectedLanguage] = useState(availableLangs[0] || "Hindi");
   const [selectedQuality, setSelectedQuality] = useState("");
@@ -357,6 +373,16 @@ const MoviePlayerSection = ({ telegram, movieData, onOpenWebPlayer }) => {
         tmdbId: movieData?.tmdb_id,
         mediaType: movieData?.media_type || "movie",
       });
+      const params = new URLSearchParams({
+        id: selectedItem.id || "",
+        name: selectedItem.name || "",
+        title: title,
+        quality: selectedItem.quality || "HD",
+        lang: selectedLanguage || "Hindi",
+        tmdb_id: movieData?.tmdb_id || "",
+        media_type: movieData?.media_type || "movie",
+      });
+      navigate(`/watch?${params.toString()}`);
     } else {
       launchPlayer(rawUrl, player.id, title);
     }
@@ -366,7 +392,7 @@ const MoviePlayerSection = ({ telegram, movieData, onOpenWebPlayer }) => {
     if (!selectedItem) return;
     triggerPopunder();
     setLoading((p) => ({ ...p, download: true }));
-    const rawUrl = generateVideoUrl(selectedItem.id, selectedItem.name);
+    const rawUrl = generateDownloadUrl(selectedItem.id, selectedItem.name);
     const finalUrl = await shortenUrl(rawUrl);
     setLoading((p) => ({ ...p, download: false }));
     window.open(finalUrl, "_blank", "noopener noreferrer");
@@ -458,6 +484,7 @@ const MoviePlayerSection = ({ telegram, movieData, onOpenWebPlayer }) => {
 
 // ─── Screen 6: Episode Item Card ──────────────────────────────────────────
 const EpisodeCard = ({ ep, isSelected, onToggle, movieData, seasonNumber, onOpenWebPlayer }) => {
+  const navigate = useNavigate();
   const rawQualities = ep?.telegram || [];
   const availableLangs = getUniqueLanguages(rawQualities, movieData);
   const [selectedLanguage, setSelectedLanguage] = useState(availableLangs[0] || "Hindi");
@@ -485,6 +512,16 @@ const EpisodeCard = ({ ep, isSelected, onToggle, movieData, seasonNumber, onOpen
         tmdbId: movieData?.tmdb_id,
         mediaType: "tv",
       });
+      const params = new URLSearchParams({
+        id: currentQualityItem.id || "",
+        name: currentQualityItem.name || "",
+        title: title,
+        quality: currentQualityItem.quality || "HD",
+        lang: selectedLanguage || "Hindi",
+        tmdb_id: movieData?.tmdb_id || "",
+        media_type: "tv",
+      });
+      navigate(`/watch?${params.toString()}`);
     } else {
       launchPlayer(rawUrl, player.id, title);
     }
@@ -494,7 +531,7 @@ const EpisodeCard = ({ ep, isSelected, onToggle, movieData, seasonNumber, onOpen
     if (!currentQualityItem) return;
     triggerPopunder();
     setLoading((p) => ({ ...p, download: true }));
-    const rawUrl = generateVideoUrl(currentQualityItem.id, currentQualityItem.name);
+    const rawUrl = generateDownloadUrl(currentQualityItem.id, currentQualityItem.name);
     const finalUrl = await shortenUrl(rawUrl);
     setLoading((p) => ({ ...p, download: false }));
     window.open(finalUrl, "_blank", "noopener noreferrer");
