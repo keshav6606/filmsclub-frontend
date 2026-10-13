@@ -15,6 +15,7 @@ export default function Footer() {
     { name: "Home", path: "/", icon: <HiOutlineHome /> },
     { name: "Movies", path: "/movies", icon: <HiOutlineFilm /> },
     { name: "Series", path: "/series", icon: <HiOutlineTv /> },
+    { name: "Yupflix Hub", path: "/yupflix", icon: <HiOutlineFilm /> },
   ];
 
   const legalLinks = [

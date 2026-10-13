@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Yupflix — Watch &amp; Download Movies, Web Series &amp; Anime in HD</title>
+<meta name="description" content="Yupflix is your all-in-one library for movies, web series and anime — Hollywood, Bollywood and more, in crisp HD with fast, ad-light streaming and downloads across every device.">
+<meta name="keywords" content="yupflix, watch movies online, download web series, anime online, hollywood movies, bollywood movies, hd streaming, dual audio">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<meta name="theme-color" content="#0a0c10">
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Yupflix">
+<meta property="og:title" content="Yupflix — Movies, Web Series &amp; Anime in HD">
+<meta property="og:description" content="Thousands of movies, series and anime across Hollywood, Bollywood and beyond — HD quality, multiple languages, every device.">
+<meta property="og:url" content="/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Yupflix — Movies, Web Series &amp; Anime in HD">
+<meta name="twitter:description" content="Your all-in-one HD library for movies, series and anime.">
+<link rel="icon" href="/icon.svg" type="image/svg+xml">
+<style>
+  :root{--bg:#0a0c10;--card:#12151c;--line:#ffffff14;--red:#e50914;--muted:#9aa4b2}
+  *{box-sizing:border-box}
+  [hidden]{display:none!important}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:#fff;font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;line-height:1.6}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+  header{position:sticky;top:0;z-index:10;background:#0a0c10cc;backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  header .wrap{display:flex;align-items:center;justify-content:space-between;height:64px}
+  .logo{font-weight:800;font-size:22px;letter-spacing:-.02em}
+  .logo b{color:var(--red)}
+  .btn{display:inline-flex;align-items:center;gap:8px;background:var(--red);color:#fff;font-weight:800;padding:12px 22px;border-radius:999px;font-size:15px;transition:.2s;border:none;cursor:pointer}
+  .btn:hover{background:#ff141f;transform:translateY(-1px)}
+  .btn.lg{padding:15px 30px;font-size:17px}
+  .btn.ghost{background:#ffffff14;border:1px solid var(--line)}
+  /* hero */
+  .hero{position:relative;text-align:center;padding:90px 0 70px;overflow:hidden}
+  .hero::before{content:"";position:absolute;inset:-20% -20% auto;height:520px;background:radial-gradient(60% 60% at 50% 0,rgba(229,9,20,.22),transparent 70%);pointer-events:none}
+  .hero h1{position:relative;font-size:clamp(34px,6vw,60px);line-height:1.05;font-weight:900;letter-spacing:-.03em;margin:0 0 18px}
+  .hero p{position:relative;color:var(--muted);font-size:clamp(16px,2.4vw,20px);max-width:640px;margin:0 auto 30px}
+  .hero .cta{position:relative;display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+  .pass{position:relative;margin-top:22px;color:var(--muted);font-size:13px}
+  .pass b{color:#fff}
+  /* strip */
+  .chips{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:34px;position:relative}
+  .chip{background:var(--card);border:1px solid var(--line);border-radius:999px;padding:8px 16px;font-size:14px;color:#d7dde5}
+  /* sections */
+  section{padding:64px 0;border-top:1px solid var(--line)}
+  h2{font-size:clamp(24px,4vw,34px);font-weight:800;letter-spacing:-.02em;margin:0 0 10px;text-align:center}
+  .sub{color:var(--muted);text-align:center;max-width:620px;margin:0 auto 40px}
+  .grid{display:grid;gap:18px;grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+  .feature{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px}
+  .feature .ic{width:44px;height:44px;border-radius:12px;background:#e5091422;color:var(--red);display:grid;place-items:center;font-size:22px;margin-bottom:14px}
+  .feature h3{margin:0 0 6px;font-size:18px}
+  .feature p{margin:0;color:var(--muted);font-size:14.5px}
+  .steps{counter-reset:s}
+  .step{display:flex;gap:16px;align-items:flex-start;padding:16px 0}
+  .step .n{flex:none;width:40px;height:40px;border-radius:50%;background:var(--red);display:grid;place-items:center;font-weight:800}
+  .step h3{margin:0 0 4px;font-size:18px}
+  .step p{margin:0;color:var(--muted)}
+  details{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:4px 18px;margin-bottom:10px}
+  summary{cursor:pointer;font-weight:700;padding:14px 0;list-style:none}
+  summary::-webkit-details-marker{display:none}
+  details p{color:var(--muted);margin:0 0 14px}
+  .final{text-align:center;background:linear-gradient(180deg,#12151c,#0a0c10);border-radius:20px;padding:50px 24px;margin:20px 0;border:1px solid var(--line)}
+  footer{border-top:1px solid var(--line);padding:34px 0;color:var(--muted);font-size:13px;text-align:center}
+  footer a{color:#c7ced6}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <div class="logo">Yup<b>flix</b></div>
+  <a class="btn" href="#enter">Enter Yupflix →</a>
+</div></header>
+
+<main>
+  <section class="hero"><div class="wrap">
+    <h1>Movies, Web Series &amp; Anime — all in one place.</h1>
+    <p>Yupflix brings you a huge, hand-organised library of Hollywood, Bollywood, regional and anime titles in crisp HD — fast, clean and ready on any device.</p>
+    <div id="enter" class="cta" style="flex-direction:column;align-items:center;gap:18px">
+      <div id="startRow" style="display:flex;gap:14px;flex-wrap:wrap;justify-content:center">
+        <button id="enterBtn" class="btn lg" type="button">▶ Enter &amp; Start Watching</button>
+        <a class="btn lg ghost" href="#how">How it works</a>
+      </div>
+      <div id="timer" hidden style="font-size:17px;color:var(--muted)">🔒 Preparing secure access… <b id="count" style="color:#fff;font-size:22px">5</b></div>
+      <form id="enterForm" action="/enter" method="POST" style="display:flex;flex-direction:column;align-items:center;gap:16px">
+        <div id="ts"></div>
+        <div id="okMsg" hidden style="font-size:22px;font-weight:800;color:#22c55e">✓ You're Verified!</div>
+        <button id="goBtn" class="btn lg" type="submit" hidden style="background:#17a34a;min-width:200px">Go →</button>
+      </form>
+    </div>
+    <div class="pass">🔒 Secure access — one verification gives you <b>24 hours</b> of full entry.</div>
+    <div class="chips">
+      <span class="chip">🎬 Movies</span><span class="chip">📺 Web Series</span><span class="chip">🌸 Anime</span>
+      <span class="chip">🇮🇳 Bollywood</span><span class="chip">🌎 Hollywood</span><span class="chip">🗣️ Dual Audio</span>
+    </div>
+  </div></section>
+
+  <section><div class="wrap">
+    <h2>Why Yupflix</h2>
+    <p class="sub">Built to be blazing fast, beautifully organised and effortless to browse.</p>
+    <div class="grid">
+      <div class="feature"><div class="ic">⚡</div><h3>Ultra fast</h3><p>Edge-cached and optimised so pages open instantly, even on mobile data.</p></div>
+      <div class="feature"><div class="ic">🎞️</div><h3>Up to 4K HD</h3><p>Multiple resolutions per title — pick 480p to 2160p to match your connection.</p></div>
+      <div class="feature"><div class="ic">🗣️</div><h3>Multi-language</h3><p>Dual-audio and regional language options across a wide catalogue.</p></div>
+      <div class="feature"><div class="ic">🔎</div><h3>Smart search</h3><p>Typo-tolerant search and rich filters by genre, year, language and provider.</p></div>
+      <div class="feature"><div class="ic">📱</div><h3>Every device</h3><p>Works right in your browser — phone, tablet, laptop or TV. No install.</p></div>
+      <div class="feature"><div class="ic">🛡️</div><h3>Private &amp; secure</h3><p>Hardened, encrypted access with no clutter and no shady pop-ups.</p></div>
+    </div>
+  </div></section>
+
+  <section id="how"><div class="wrap" style="max-width:720px">
+    <h2>How it works</h2>
+    <p class="sub">Three quick steps to get in.</p>
+    <div class="steps">
+      <div class="step"><div class="n">1</div><div><h3>Verify once</h3><p>Tap “Enter Yupflix” — a quick secure check confirms you’re human.</p></div></div>
+      <div class="step"><div class="n">2</div><div><h3>Get 24-hour access</h3><p>You’re handed a secure pass that keeps you in for a full 24 hours.</p></div></div>
+      <div class="step"><div class="n">3</div><div><h3>Browse &amp; watch</h3><p>Explore the full library and stream or download in your chosen quality.</p></div></div>
+    </div>
+  </div></section>
+
+  <section><div class="wrap" style="max-width:760px">
+    <h2>Frequently asked</h2>
+    <div style="margin-top:30px">
+      <details open><summary>What is Yupflix?</summary><p>Yupflix is an online library where you can discover and watch movies, web series and anime in HD — spanning Hollywood, Bollywood, regional and anime titles.</p></details>
+      <details><summary>Is Yupflix free?</summary><p>Yes — it’s free to browse and watch, with a fast, clean, ad-light experience.</p></details>
+      <details><summary>Why do I need to verify?</summary><p>A one-time verification keeps the experience clean and secure. It grants you 24 hours of full access; after that you simply verify again.</p></details>
+      <details><summary>Which devices are supported?</summary><p>Any modern browser on phone, tablet, laptop or smart TV — nothing to install.</p></details>
+    </div>
+  </div></section>
+
+  <section><div class="wrap">
+    <div class="final">
+      <h2>Ready to dive in?</h2>
+      <p class="sub" style="margin-bottom:26px">Your next binge is one tap away.</p>
+      <a class="btn lg" href="#enter">▶ Enter Yupflix</a>
+    </div>
+  </div></section>
+</main>
+
+<footer><div class="wrap">
+  © <span id="y"></span> Yupflix · Movies, Web Series &amp; Anime · <a href="#enter">Enter</a>
+  <script>document.getElementById('y').textContent=new Date().getFullYear()</script>
+  <script>
+  (function(){
+    var enterBtn=document.getElementById('enterBtn'),
+        seen=document.cookie.indexOf('yf_seen=1')>-1,done=false;
+    if(seen){enterBtn.textContent='Continue →';}
+    function midSecs(){var now=Date.now(),IST=19800000,d=new Date(now+IST);return Math.max(60,Math.floor((Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate()+1,0,0,0)-IST-now)/1000));}
+    enterBtn.addEventListener('click',function(){
+      if(done)return;done=true;
+      enterBtn.textContent='Opening…';
+      try{document.cookie='yf_seen=1; Max-Age='+midSecs()+'; Path=/; SameSite=Lax';}catch(e){}
+      document.getElementById('enterForm').submit();
+    });
+  })();
+  </script>
+</div></footer>
+</body>
+</html>

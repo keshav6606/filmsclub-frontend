@@ -27,6 +27,7 @@ const Terms = lazy(() => import("./pages/Terms"));
 const Contact = lazy(() => import("./pages/Contact"));
 const WatchPage = lazy(() => import("./pages/WatchPage"));
 const Watchlist = lazy(() => import("./pages/Watchlist"));
+const YupflixModule = lazy(() => import("./yupflix"));
 
 function App() {
   ReactGa.initialize("G-JDFS7KRV40");
@@ -41,6 +42,7 @@ function App() {
         <Suspense fallback={<PageLoader />}>
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/yupflix/*" element={<YupflixModule />} />
             <Route path="/mov/:movieID" element={<MovieDetails />} />
             <Route path="/ser/:seriesID" element={<TvDetails />} />
             <Route path="/watch" element={<WatchPage />} />

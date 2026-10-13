@@ -7,7 +7,9 @@
     "dev": "vite",
     "build": "node generate-sitemap.js && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "yupflix:server": "node yupflix/server.js",
+    "yupflix:scrape": "node yupflix/scraper.js"
   },
   "dependencies": {
     "@nextui-org/avatar": "^2.0.32",

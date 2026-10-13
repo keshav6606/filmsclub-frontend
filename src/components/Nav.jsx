@@ -45,6 +45,7 @@ export default function Nav() {
   useEffect(() => {
     const path = location.pathname.toLowerCase();
     if (path === "/") setNavStatus("Home");
+    else if (path.startsWith("/yupflix")) setNavStatus("Yupflix");
     else if (path.startsWith("/mov")) setNavStatus("Movies");
     else if (path.startsWith("/ser")) setNavStatus("Series");
     else if (path.startsWith("/download")) setNavStatus("Downloads");
@@ -110,6 +111,7 @@ export default function Nav() {
     { name: "Home", path: "/" },
     { name: "Movies", path: "/movies" },
     { name: "Series", path: "/series" },
+    { name: "Yupflix", path: "/yupflix" },
     { name: "Watchlist", path: "/watchlist" },
     { name: "About Us", path: "/about" },
     { name: "Contact", path: "/contact" },
@@ -127,6 +129,12 @@ export default function Nav() {
       path: "/movies",
       icon: <HiOutlineFilm className="text-xl" />,
       activeIcon: <HiFilm className="text-xl text-amber-400" />,
+    },
+    {
+      name: "Yupflix",
+      path: "/yupflix",
+      icon: <span className="text-[10px] font-black tracking-tighter text-red-500 bg-red-500/10 px-1.5 py-0.5 rounded border border-red-500/30">YUP</span>,
+      activeIcon: <span className="text-[10px] font-black tracking-tighter text-white bg-red-600 px-1.5 py-0.5 rounded shadow-[0_0_10px_rgba(229,9,20,0.8)]">YUP</span>,
     },
     {
       name: "Series",
@@ -166,46 +174,56 @@ export default function Nav() {
     },
   ];
 
+  const isYupflix = location.pathname.toLowerCase().startsWith("/yupflix");
+
   return (
     <>
-      {/* ── Top Header Bar ────────────────────────────────────────── */}
-      <header
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-          scrolled
-            ? "bg-[#06080D]/95 backdrop-blur-2xl border-b border-amber-500/20 shadow-[0_10px_35px_rgba(0,0,0,0.9)]"
-            : "bg-gradient-to-b from-[#06080D]/95 via-[#06080D]/80 to-transparent backdrop-blur-md"
-        }`}
-      >
-        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 h-16 flex items-center justify-between gap-4">
-          {/* Brand Logo & Name */}
-          <Link
-            to="/"
-            className="flex items-center gap-2.5 shrink-0 group"
-            aria-label={`${SITENAME} Home`}
-          >
-            <BrandLogo className="w-9 h-9" />
-            <span className="text-xl sm:text-2xl font-black tracking-tight flex items-center uppercase">
-              <span className="gold-text">Filmy</span>
-              <span className="text-amber-400">4UHD</span>
-            </span>
-          </Link>
+      {/* ── Top Header Bar (Hidden on Yupflix since Yupflix has its own dedicated header) ── */}
+      {!isYupflix && (
+        <header
+          className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+            scrolled
+              ? "bg-[#06080D]/95 backdrop-blur-2xl border-b border-amber-500/20 shadow-[0_10px_35px_rgba(0,0,0,0.9)]"
+              : "bg-gradient-to-b from-[#06080D]/95 via-[#06080D]/80 to-transparent backdrop-blur-md"
+          }`}
+        >
+          <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 h-16 flex items-center justify-between gap-4">
+            {/* Brand Logo & Name */}
+            <Link
+              to="/"
+              className="flex items-center gap-2.5 shrink-0 group"
+              aria-label={`${SITENAME} Home`}
+            >
+              <BrandLogo className="w-9 h-9" />
+              <span className="text-xl sm:text-2xl font-black tracking-tight flex items-center uppercase">
+                <span className="gold-text">Filmy</span>
+                <span className="text-amber-400">4UHD</span>
+              </span>
+            </Link>
 
-          {/* Desktop Nav Links */}
-          <nav className="hidden lg:flex items-center gap-1 bg-slate-900/80 p-1.5 rounded-full border border-white/10 backdrop-blur-md shadow-inner">
-            {desktopNavLinks.map((link) => (
-              <Link
-                key={link.name}
-                to={link.path}
-                className={`relative px-4 py-1.5 rounded-full text-xs font-extrabold transition-all duration-200 ${
-                  navStatus === link.name || (link.name === "Home" && navStatus === "Home")
-                    ? "text-slate-950 bg-gradient-to-r from-amber-400 to-amber-500 shadow-[0_0_15px_rgba(245,158,11,0.5)] scale-105"
-                    : "text-slate-300 hover:text-white hover:bg-white/10"
-                }`}
-              >
-                {link.name}
-              </Link>
-            ))}
-          </nav>
+            {/* Desktop Nav Links */}
+            <nav className="hidden lg:flex items-center gap-1 bg-slate-900/80 p-1.5 rounded-full border border-white/10 backdrop-blur-md shadow-inner">
+              {desktopNavLinks.map((link) => (
+                <Link
+                  key={link.name}
+                  to={link.path}
+                  className={`relative px-4 py-1.5 rounded-full text-xs font-extrabold transition-all duration-200 ${
+                    navStatus === link.name || (link.name === "Home" && navStatus === "Home")
+                      ? "text-slate-950 bg-gradient-to-r from-amber-400 to-amber-500 shadow-[0_0_15px_rgba(245,158,11,0.5)] scale-105"
+                      : link.name === "Yupflix"
+                      ? "text-red-400 hover:text-white hover:bg-red-500/20 border border-red-500/30"
+                      : "text-slate-300 hover:text-white hover:bg-white/10"
+                  }`}
+                >
+                  {link.name}
+                  {link.name === "Yupflix" && (
+                    <span className="ml-1 px-1 py-0.5 text-[9px] bg-red-600 text-white rounded font-black tracking-wider shadow-[0_0_8px_rgba(239,68,68,0.8)]">
+                      LIVE
+                    </span>
+                  )}
+                </Link>
+              ))}
+            </nav>
 
           {/* Right Header Actions: Search + Profile */}
           <div className="flex items-center gap-3" ref={closeRef}>
@@ -360,7 +378,8 @@ export default function Nav() {
             </motion.div>
           )}
         </AnimatePresence>
-      </header>
+        </header>
+      )}
 
       {/* ── Mobile Bottom Navigation Bar (Matching 5 Tabs in Screenshot) ───────── */}
       <nav
