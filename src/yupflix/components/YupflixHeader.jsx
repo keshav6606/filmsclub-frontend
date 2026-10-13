@@ -3,12 +3,13 @@ import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { yupflixApi } from '../services/yupflixApi';
 import { loadSearchIndex, searchTitles } from '../services/yupflixSearch';
 import { cleanTitle, cleanEpisodeLabel, TYPE_LABELS } from '../utils/yupflixHelpers';
+import FilmsClubLogo from '../../components/FilmsClubLogo';
 
 const NAV_ITEMS = [
-  ['/yupflix', 'Home'],
-  ['/yupflix/browse/movie', 'Movies'],
-  ['/yupflix/browse/series', 'Series'],
-  ['/yupflix/browse/anime', 'Anime']
+  ['/filmsclub', 'Home'],
+  ['/filmsclub/browse/movie', 'Movies'],
+  ['/filmsclub/browse/series', 'Series'],
+  ['/filmsclub/browse/anime', 'Anime']
 ];
 
 const SearchIcon = () => (
@@ -17,23 +18,6 @@ const SearchIcon = () => (
     <path d="m20 20-3.5-3.5" />
   </svg>
 );
-
-export function YupflixLogo() {
-  return (
-    <Link to="/yupflix" className="logo play" aria-label="Yupflix home">
-      <svg className="mk" viewBox="0 0 32 32" aria-hidden="true">
-        <circle className="ring" cx="16" cy="16" r="13" />
-        <path className="yy" d="M10 9.5l6 7.5 6-7.5M16 17v6.5" />
-        <circle className="pip" cx="16" cy="17" r="2.3" />
-      </svg>
-      <span className="wm" aria-hidden="true">
-        {[...'yupflix'].map((ch, i) => (
-          <span key={i} style={{ '--i': i }}>{ch}</span>
-        ))}
-      </span>
-    </Link>
-  );
-}
 
 export function YupflixHeader({ searchInputRef, isSearching, onSearchingChange }) {
   const [query, setQuery] = useState('');
@@ -108,7 +92,7 @@ export function YupflixHeader({ searchInputRef, isSearching, onSearchingChange }
   const selectItem = (item) => {
     closeDropdown();
     setQuery('');
-    navigate(`/yupflix/t/${item.code}`, { state: { card: item } });
+    navigate(`/filmsclub/t/${item.code}`, { state: { card: item } });
   };
 
   const hasQuery = !!query.trim();
@@ -118,11 +102,14 @@ export function YupflixHeader({ searchInputRef, isSearching, onSearchingChange }
     e.preventDefault();
     if (hasQuery) {
       closeDropdown();
-      navigate(`/yupflix/search?q=${encodeURIComponent(query.trim())}`);
+      navigate(`/filmsclub/search?q=${encodeURIComponent(query.trim())}`);
     }
   };
 
-  const isActive = (path) => path === '/yupflix' ? location.pathname === '/yupflix' : location.pathname.startsWith(path);
+  const isActive = (path) =>
+    path === '/filmsclub'
+      ? location.pathname === '/filmsclub' || location.pathname === '/filmsclub/'
+      : location.pathname.startsWith(path);
 
   return (
     <header className={'top stuck' + (isSearching ? ' searching' : '')}>
@@ -139,13 +126,13 @@ export function YupflixHeader({ searchInputRef, isSearching, onSearchingChange }
           <span className="text-amber-400 font-extrabold text-xs hidden sm:inline">Filmy4UHD</span>
           <span className="sm:hidden text-amber-400 font-bold text-xs">Home</span>
         </Link>
-        <YupflixLogo />
+        <FilmsClubLogo to="/filmsclub" />
         <nav className="nav">
           {NAV_ITEMS.map(([path, label]) => (
             <NavLink
               key={path}
               to={path}
-              end={path === '/yupflix'}
+              end={path === '/filmsclub'}
               className={isActive(path) ? 'on' : ''}
             >
               {label}
@@ -161,7 +148,7 @@ export function YupflixHeader({ searchInputRef, isSearching, onSearchingChange }
               value={query}
               onChange={e => handleChange(e.target.value)}
               onFocus={() => setActive(true)}
-              placeholder="Search movies, series, anime"
+              placeholder="Search movies, series, anime in FilmsClub..."
               aria-label="Search titles"
               autoComplete="off"
             />
@@ -204,7 +191,7 @@ export function YupflixHeader({ searchInputRef, isSearching, onSearchingChange }
                   className="sall"
                   onClick={() => {
                     closeDropdown();
-                    navigate(`/yupflix/search?q=${encodeURIComponent(query.trim())}`);
+                    navigate(`/filmsclub/search?q=${encodeURIComponent(query.trim())}`);
                   }}
                 >
                   See all results for "{query.trim()}"

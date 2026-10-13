@@ -54,7 +54,7 @@ export function YupflixDetail() {
   if (!titleInfo && error) {
     return (
       <div className="center text-center py-20 text-gray-300">
-        Title not found. <Link to="/yupflix" className="text-red-500 font-bold ml-2 underline">Go to Yupflix Home</Link>
+        Title not found. <Link to="/filmsclub" className="text-amber-400 font-bold ml-2 underline">Go to FilmsClub Home</Link>
       </div>
     );
   }
@@ -62,7 +62,7 @@ export function YupflixDetail() {
   if (!titleInfo) {
     return (
       <div className="center flex items-center justify-center py-24">
-        <div className="spin w-10 h-10 border-4 border-red-500 border-t-transparent rounded-full animate-spin" />
+        <div className="spin w-10 h-10 border-4 border-amber-400 border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -164,7 +164,7 @@ export function YupflixDetail() {
       <button
         type="button"
         className="back"
-        onClick={() => window.history.length > 1 ? navigate(-1) : navigate('/yupflix')}
+        onClick={() => window.history.length > 1 ? navigate(-1) : navigate('/filmsclub')}
       >
         <FaArrowLeft className="mr-2 inline" />
         Back

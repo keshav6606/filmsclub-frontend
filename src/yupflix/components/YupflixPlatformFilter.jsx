@@ -109,7 +109,7 @@ export function RankedRail({ title, items = [] }) {
         return (
           <Link
             key={item.code}
-            to={`/yupflix/t/${item.code}`}
+            to={`/filmsclub/t/${item.code}`}
             state={{ card: item }}
             title={titleText}
           >

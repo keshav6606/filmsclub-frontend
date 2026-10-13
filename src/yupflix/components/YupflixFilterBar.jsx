@@ -2,10 +2,10 @@ import React from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 
 const TYPE_TABS = [
-  ['', 'All', '/yupflix'],
-  ['movie', 'Movies', '/yupflix/browse/movie'],
-  ['series', 'Series', '/yupflix/browse/series'],
-  ['anime', 'Anime', '/yupflix/browse/anime']
+  ['', 'All', '/filmsclub'],
+  ['movie', 'Movies', '/filmsclub/browse/movie'],
+  ['series', 'Series', '/filmsclub/browse/series'],
+  ['anime', 'Anime', '/filmsclub/browse/anime']
 ];
 
 const LANGUAGES = [

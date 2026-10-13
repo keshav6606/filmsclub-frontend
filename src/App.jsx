@@ -1,5 +1,5 @@
 import React, { lazy, Suspense, useEffect } from "react";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
 import ReactGa from "react-ga";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -29,20 +29,35 @@ const WatchPage = lazy(() => import("./pages/WatchPage"));
 const Watchlist = lazy(() => import("./pages/Watchlist"));
 const YupflixModule = lazy(() => import("./yupflix"));
 
-function App() {
-  ReactGa.initialize("G-JDFS7KRV40");
+function AppContent() {
+  const location = useLocation();
+
   useEffect(() => {
-    ReactGa.pageview(window.location.pathname + window.location.search);
-  }, []);
+    ReactGa.initialize("G-JDFS7KRV40");
+    ReactGa.pageview(location.pathname + location.search);
+  }, [location]);
+
+  const isStreamingHub =
+    location.pathname.toLowerCase().startsWith("/filmsclub") ||
+    location.pathname.toLowerCase().startsWith("/yupflix");
 
   return (
-    <BrowserRouter>
+    <>
       <Nav />
-      <div className="p-3 md:p-10">
+      <div className={isStreamingHub ? "w-full min-h-screen" : "p-3 md:p-10 min-h-screen"}>
         <Suspense fallback={<PageLoader />}>
           <Routes>
             <Route path="/" element={<Home />} />
+
+            {/* FilmsClub VIP Streaming Hub & Aliases */}
+            <Route path="/filmsclub/*" element={<YupflixModule />} />
+            <Route path="/filmsclub" element={<YupflixModule />} />
+            <Route path="/FilmsClub/*" element={<YupflixModule />} />
+            <Route path="/FilmsClub" element={<YupflixModule />} />
             <Route path="/yupflix/*" element={<YupflixModule />} />
+            <Route path="/yupflix" element={<YupflixModule />} />
+
+            {/* Filmy4UHD Core Routes */}
             <Route path="/mov/:movieID" element={<MovieDetails />} />
             <Route path="/ser/:seriesID" element={<TvDetails />} />
             <Route path="/watch" element={<WatchPage />} />
@@ -63,8 +78,16 @@ function App() {
           </Routes>
         </Suspense>
       </div>
-      <TelegramBanner />
-      <Footer />
+      {!isStreamingHub && <TelegramBanner />}
+      {!isStreamingHub && <Footer />}
+    </>
+  );
+}
+
+function App() {
+  return (
+    <BrowserRouter>
+      <AppContent />
     </BrowserRouter>
   );
 }

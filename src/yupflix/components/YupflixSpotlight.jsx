@@ -58,7 +58,7 @@ export function YupflixSpotlight({ items = [] }) {
                   </div>
                   <Link
                     className="primary"
-                    to={`/yupflix/t/${item.code}`}
+                    to={`/filmsclub/t/${item.code}`}
                     state={{ card: item }}
                     tabIndex={isActive ? 0 : -1}
                   >
@@ -68,7 +68,7 @@ export function YupflixSpotlight({ items = [] }) {
 
                 <Link
                   className="ph"
-                  to={`/yupflix/t/${item.code}`}
+                  to={`/filmsclub/t/${item.code}`}
                   state={{ card: item }}
                   tabIndex={-1}
                   aria-hidden="true"

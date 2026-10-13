@@ -45,7 +45,7 @@ export default function Nav() {
   useEffect(() => {
     const path = location.pathname.toLowerCase();
     if (path === "/") setNavStatus("Home");
-    else if (path.startsWith("/yupflix")) setNavStatus("Yupflix");
+    else if (path.startsWith("/filmsclub") || path.startsWith("/yupflix")) setNavStatus("FilmsClub");
     else if (path.startsWith("/mov")) setNavStatus("Movies");
     else if (path.startsWith("/ser")) setNavStatus("Series");
     else if (path.startsWith("/download")) setNavStatus("Downloads");
@@ -111,7 +111,7 @@ export default function Nav() {
     { name: "Home", path: "/" },
     { name: "Movies", path: "/movies" },
     { name: "Series", path: "/series" },
-    { name: "Yupflix", path: "/yupflix" },
+    { name: "FilmsClub", path: "/filmsclub" },
     { name: "Watchlist", path: "/watchlist" },
     { name: "About Us", path: "/about" },
     { name: "Contact", path: "/contact" },
@@ -131,10 +131,18 @@ export default function Nav() {
       activeIcon: <HiFilm className="text-xl text-amber-400" />,
     },
     {
-      name: "Yupflix",
-      path: "/yupflix",
-      icon: <span className="text-[10px] font-black tracking-tighter text-red-500 bg-red-500/10 px-1.5 py-0.5 rounded border border-red-500/30">YUP</span>,
-      activeIcon: <span className="text-[10px] font-black tracking-tighter text-white bg-red-600 px-1.5 py-0.5 rounded shadow-[0_0_10px_rgba(229,9,20,0.8)]">YUP</span>,
+      name: "FilmsClub",
+      path: "/filmsclub",
+      icon: (
+        <span className="text-[10px] font-black tracking-tighter text-amber-400 bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-400/30">
+          VIP
+        </span>
+      ),
+      activeIcon: (
+        <span className="text-[10px] font-black tracking-tighter text-slate-950 bg-gradient-to-r from-amber-400 to-amber-500 px-1.5 py-0.5 rounded shadow-[0_0_10px_rgba(245,158,11,0.8)]">
+          VIP
+        </span>
+      ),
     },
     {
       name: "Series",
@@ -174,17 +182,19 @@ export default function Nav() {
     },
   ];
 
-  const isYupflix = location.pathname.toLowerCase().startsWith("/yupflix");
+  const isStreamingHub =
+    location.pathname.toLowerCase().startsWith("/filmsclub") ||
+    location.pathname.toLowerCase().startsWith("/yupflix");
 
   return (
     <>
-      {/* ── Top Header Bar (Hidden on Yupflix since Yupflix has its own dedicated header) ── */}
-      {!isYupflix && (
+      {/* ── Top Header Bar (Hidden on FilmsClub since it has its own dedicated VIP header) ── */}
+      {!isStreamingHub && (
         <header
           className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
             scrolled
-              ? "bg-[#06080D]/95 backdrop-blur-2xl border-b border-amber-500/20 shadow-[0_10px_35px_rgba(0,0,0,0.9)]"
-              : "bg-gradient-to-b from-[#06080D]/95 via-[#06080D]/80 to-transparent backdrop-blur-md"
+              ? "bg-[#0a0c10]/95 backdrop-blur-2xl border-b border-white/10 shadow-[0_10px_35px_rgba(0,0,0,0.9)]"
+              : "bg-gradient-to-b from-[#0a0c10]/95 via-[#0a0c10]/80 to-transparent backdrop-blur-md"
           }`}
         >
           <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 h-16 flex items-center justify-between gap-4">
@@ -202,7 +212,7 @@ export default function Nav() {
             </Link>
 
             {/* Desktop Nav Links */}
-            <nav className="hidden lg:flex items-center gap-1 bg-slate-900/80 p-1.5 rounded-full border border-white/10 backdrop-blur-md shadow-inner">
+            <nav className="hidden lg:flex items-center gap-1 bg-[#17181b]/90 p-1.5 rounded-full border border-white/10 backdrop-blur-md shadow-inner">
               {desktopNavLinks.map((link) => (
                 <Link
                   key={link.name}
@@ -210,15 +220,15 @@ export default function Nav() {
                   className={`relative px-4 py-1.5 rounded-full text-xs font-extrabold transition-all duration-200 ${
                     navStatus === link.name || (link.name === "Home" && navStatus === "Home")
                       ? "text-slate-950 bg-gradient-to-r from-amber-400 to-amber-500 shadow-[0_0_15px_rgba(245,158,11,0.5)] scale-105"
-                      : link.name === "Yupflix"
-                      ? "text-red-400 hover:text-white hover:bg-red-500/20 border border-red-500/30"
+                      : link.name === "FilmsClub"
+                      ? "text-amber-400 hover:text-white hover:bg-amber-500/20 border border-amber-500/30 shadow-[0_0_10px_rgba(245,158,11,0.2)]"
                       : "text-slate-300 hover:text-white hover:bg-white/10"
                   }`}
                 >
                   {link.name}
-                  {link.name === "Yupflix" && (
-                    <span className="ml-1 px-1 py-0.5 text-[9px] bg-red-600 text-white rounded font-black tracking-wider shadow-[0_0_8px_rgba(239,68,68,0.8)]">
-                      LIVE
+                  {link.name === "FilmsClub" && (
+                    <span className="ml-1.5 px-1.5 py-0.5 text-[9px] bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 rounded font-black tracking-wider shadow-[0_0_8px_rgba(245,158,11,0.7)]">
+                      VIP
                     </span>
                   )}
                 </Link>
@@ -381,30 +391,32 @@ export default function Nav() {
         </header>
       )}
 
-      {/* ── Mobile Bottom Navigation Bar (Matching 5 Tabs in Screenshot) ───────── */}
-      <nav
-        className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#06080D]/95 backdrop-blur-2xl border-t border-white/10 flex items-center justify-around h-16 safe-area-pb shadow-[0_-10px_30px_rgba(0,0,0,0.9)]"
-        aria-label="Mobile bottom navigation"
-      >
-        {bottomNavItems.map((item) => {
-          const isActive = navStatus === item.name;
-          return (
-            <Link
-              key={item.name}
-              to={item.path}
-              className={`flex flex-col items-center justify-center gap-1 px-3 py-1 transition-all duration-200 ${
-                isActive ? "text-amber-400 font-extrabold" : "text-slate-400 font-semibold"
-              }`}
-              aria-label={item.name}
-            >
-              <span className={`transition-transform duration-200 ${isActive ? "scale-110" : ""}`}>
-                {isActive ? item.activeIcon : item.icon}
-              </span>
-              <span className="text-[0.62rem] tracking-tight">{item.name}</span>
-            </Link>
-          );
-        })}
-      </nav>
+      {/* ── Mobile Bottom Navigation Bar (Hidden on FilmsClub VIP hub) ───────── */}
+      {!isStreamingHub && (
+        <nav
+          className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#0a0c10]/95 backdrop-blur-2xl border-t border-white/10 flex items-center justify-around h-16 safe-area-pb shadow-[0_-10px_30px_rgba(0,0,0,0.9)]"
+          aria-label="Mobile bottom navigation"
+        >
+          {bottomNavItems.map((item) => {
+            const isActive = navStatus === item.name;
+            return (
+              <Link
+                key={item.name}
+                to={item.path}
+                className={`flex flex-col items-center justify-center gap-1 px-3 py-1 transition-all duration-200 ${
+                  isActive ? "text-amber-400 font-extrabold" : "text-slate-400 font-semibold"
+                }`}
+                aria-label={item.name}
+              >
+                <span className={`transition-transform duration-200 ${isActive ? "scale-110" : ""}`}>
+                  {isActive ? item.activeIcon : item.icon}
+                </span>
+                <span className="text-[0.62rem] tracking-tight">{item.name}</span>
+              </Link>
+            );
+          })}
+        </nav>
+      )}
     </>
   );
 }

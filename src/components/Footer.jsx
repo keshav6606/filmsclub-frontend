@@ -15,7 +15,7 @@ export default function Footer() {
     { name: "Home", path: "/", icon: <HiOutlineHome /> },
     { name: "Movies", path: "/movies", icon: <HiOutlineFilm /> },
     { name: "Series", path: "/series", icon: <HiOutlineTv /> },
-    { name: "Yupflix Hub", path: "/yupflix", icon: <HiOutlineFilm /> },
+    { name: "FilmsClub VIP", path: "/filmsclub", icon: <HiOutlineFilm /> },
   ];
 
   const legalLinks = [
@@ -27,7 +27,7 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="relative border-t border-amber-500/20 bg-[#040609] mt-20 pb-20 md:pb-0 overflow-hidden">
+    <footer className="relative border-t border-white/[0.08] bg-[#0a0c10] mt-20 pb-20 md:pb-0 overflow-hidden">
       {/* Top ambient glowing bar */}
       <div className="h-0.5 w-full bg-gradient-to-r from-transparent via-amber-500 to-transparent shadow-[0_0_20px_rgba(245,158,11,0.9)]" />
       <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-[600px] h-48 bg-amber-500/10 blur-[120px] rounded-full pointer-events-none" />

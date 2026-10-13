@@ -65,12 +65,12 @@ const MovieCard = ({ movie, badgeText }) => {
   return (
     <Link to={to} aria-label={`View ${movie.title}`} className="block group select-none relative">
       <div
-        className="movie-card relative rounded-2xl overflow-hidden bg-[#0F131C] border border-white/10 group-hover:border-amber-400/50 transition-all duration-300 shadow-[0_8px_25px_rgba(0,0,0,0.7)]"
+        className="movie-card relative rounded-2xl overflow-hidden bg-[#17181b] border border-white/[0.08] group-hover:border-amber-400/50 transition-all duration-300 shadow-[0_8px_25px_rgba(0,0,0,0.7)]"
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
       >
         {/* Poster Image Container */}
-        <div className="relative aspect-[2/3] w-full bg-[#090C14] overflow-hidden">
+        <div className="relative aspect-[2/3] w-full bg-[#101114] overflow-hidden">
           <LazyLoadImage
             src={movie.poster || posterPlaceholder}
             alt={movie.title}
@@ -81,7 +81,7 @@ const MovieCard = ({ movie, badgeText }) => {
           />
 
           {/* Vignette Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-[#06080D] via-transparent to-black/30 pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0a0c10] via-transparent to-black/30 pointer-events-none" />
 
           {/* ── Top Left: Rating Badge ── */}
           <div className="absolute top-2.5 left-2.5 z-10">
@@ -138,7 +138,7 @@ const MovieCard = ({ movie, badgeText }) => {
         </div>
 
         {/* ── Title & Meta Details Bar ── */}
-        <div className="p-3 bg-[#0D1017] border-t border-white/5 space-y-1">
+        <div className="p-3 bg-[#131417] border-t border-white/5 space-y-1">
           <h3 className="text-white font-extrabold text-xs sm:text-sm line-clamp-1 group-hover:text-amber-400 transition-colors">
             {movie.title}
           </h3>

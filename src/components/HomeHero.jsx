@@ -25,7 +25,7 @@ export default function HeroSlider({ movieData, isMovieDataLoading }) {
     arr?.map((l) => langMap[l] || l.toUpperCase()).slice(0, 2).join(" • ") || "Hindi • Dual Audio";
 
   return (
-    <section className="relative w-full min-h-[80dvh] md:min-h-[88dvh] pt-16 overflow-hidden bg-[#06080D]" aria-label="Featured movies slider">
+    <section className="relative w-full min-h-[80dvh] md:min-h-[88dvh] pt-16 overflow-hidden bg-[#0a0c10]" aria-label="Featured movies slider">
       {!isMovieDataLoading ? (
         <>
           <Swiper
@@ -43,10 +43,10 @@ export default function HeroSlider({ movieData, isMovieDataLoading }) {
               const genreStr = movie.genres?.length > 0 ? movie.genres.slice(0, 2).join(" • ") : "Action • Drama";
 
               return (
-                <SwiperSlide key={movie.tmdb_id || movie.title} className="bg-[#06080D]">
+                <SwiperSlide key={movie.tmdb_id || movie.title} className="bg-[#0a0c10]">
                   <div className="relative w-full min-h-[80dvh] md:min-h-[88dvh] flex items-end overflow-hidden">
                     {/* Full-Screen Edge-to-Edge Backdrop Image */}
-                    <div className="absolute inset-0 bg-[#06080D]">
+                    <div className="absolute inset-0 bg-[#0a0c10]">
                       <LazyLoadImage
                         src={movie.backdrop || movie.poster}
                         alt={movie.title}
@@ -56,8 +56,8 @@ export default function HeroSlider({ movieData, isMovieDataLoading }) {
                       />
 
                       {/* Cinematic Gradient Overlays */}
-                      <div className="absolute inset-0 bg-gradient-to-r from-[#06080D] via-[#06080D]/80 to-transparent" />
-                      <div className="absolute inset-0 bg-gradient-to-t from-[#06080D] via-[#06080D]/50 to-transparent" />
+                      <div className="absolute inset-0 bg-gradient-to-r from-[#0a0c10] via-[#0a0c10]/80 to-transparent" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#0a0c10] via-[#0a0c10]/50 to-transparent" />
                       <div className="absolute top-1/4 left-10 w-[500px] h-[500px] bg-amber-500/10 blur-[160px] rounded-full pointer-events-none" />
                     </div>
 

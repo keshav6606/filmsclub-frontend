@@ -77,7 +77,7 @@ export default function PopularCategories() {
           <Link
             key={cat.name}
             to={`/movies?genre=${cat.query}`}
-            className="group flex flex-col items-center justify-center p-3.5 sm:p-4 rounded-2xl bg-slate-900/60 hover:bg-slate-900 border border-white/10 hover:border-amber-400/40 transition-all duration-300 hover:scale-105 shadow-md"
+            className="group flex flex-col items-center justify-center p-3.5 sm:p-4 rounded-2xl bg-[#17181b] hover:bg-[#1f2024] border border-white/[0.08] hover:border-amber-400/40 transition-all duration-300 hover:scale-105 shadow-md"
           >
             <div
               className={`w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-gradient-to-br ${cat.color} text-slate-950 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300`}

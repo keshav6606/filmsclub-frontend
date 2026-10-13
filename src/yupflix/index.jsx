@@ -11,7 +11,7 @@ export function YupflixModule() {
   const searchInputRef = useRef(null);
 
   return (
-    <div className="yupflix-module min-h-screen text-white bg-[#0a0c10] -mx-3 -mt-3 md:-mx-10 md:-mt-10 pb-16">
+    <div className="yupflix-module min-h-screen text-white bg-[#0a0c10] pb-16">
       <YupflixHeader
         searchInputRef={searchInputRef}
         isSearching={isSearching}

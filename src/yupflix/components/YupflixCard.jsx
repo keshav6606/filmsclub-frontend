@@ -31,7 +31,7 @@ export function YupflixCard({ item }) {
 
   return (
     <Link
-      to={`/yupflix/t/${item.code}`}
+      to={`/filmsclub/t/${item.code}`}
       state={{ card: item }}
       className="c"
     >

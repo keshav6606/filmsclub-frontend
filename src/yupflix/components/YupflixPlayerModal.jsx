@@ -59,11 +59,11 @@ export function YupflixPlayerModal({ title, source, onClose }) {
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/85 backdrop-blur-md p-4 animate-fadeIn">
-      <div className="relative w-full max-w-4xl bg-[#12151c] border border-white/10 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+      <div className="relative w-full max-w-4xl bg-[#17181b] border border-white/10 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
         {/* Modal Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-white/10 bg-[#0a0c10]">
           <div className="flex items-center gap-3">
-            <span className="w-8 h-8 rounded-full bg-red-600/20 text-red-500 flex items-center justify-center font-bold text-sm">
+            <span className="w-8 h-8 rounded-full bg-amber-400/20 text-amber-400 flex items-center justify-center font-bold text-sm">
               <FaPlay className="ml-0.5" />
             </span>
             <div>
@@ -88,7 +88,7 @@ export function YupflixPlayerModal({ title, source, onClose }) {
         <div className="relative w-full aspect-video bg-black flex items-center justify-center">
           {loading ? (
             <div className="flex flex-col items-center gap-3">
-              <div className="w-10 h-10 border-4 border-red-500 border-t-transparent rounded-full animate-spin" />
+              <div className="w-10 h-10 border-4 border-amber-400 border-t-transparent rounded-full animate-spin" />
               <span className="text-gray-400 text-sm">Resolving high-speed stream link...</span>
             </div>
           ) : streamUrl ? (
@@ -106,7 +106,7 @@ export function YupflixPlayerModal({ title, source, onClose }) {
                 href={`http://localhost:3000${source?.url}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white font-bold px-5 py-2.5 rounded-full text-sm"
+                className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 font-extrabold px-5 py-2.5 rounded-full text-sm shadow-[0_0_15px_rgba(245,158,11,0.5)]"
               >
                 <FaDownload /> Download Directly
               </a>

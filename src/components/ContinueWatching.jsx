@@ -49,7 +49,7 @@ export default function ContinueWatching() {
           return (
             <div
               key={item.tmdb_id}
-              className="group relative rounded-2xl overflow-hidden bg-[#0F131C] border border-white/10 hover:border-amber-400/50 transition-all duration-300 shadow-md"
+              className="group relative rounded-2xl overflow-hidden bg-[#17181b] border border-white/[0.08] hover:border-amber-400/50 transition-all duration-300 shadow-md"
             >
               {/* Thumbnail Container */}
               <Link to={watchUrl} className="block relative aspect-video w-full overflow-hidden bg-slate-950">

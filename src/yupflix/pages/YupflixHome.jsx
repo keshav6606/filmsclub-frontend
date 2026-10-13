@@ -136,8 +136,8 @@ export function YupflixCatalogView({ type = '' }) {
 
       {showFeaturedRails && (
         <>
-          <YupflixRail title="New episodes" to="/yupflix/browse/series" items={newSeries} />
-          <YupflixRail title="Latest movies" to="/yupflix/browse/movie" items={latestMovies} />
+          <YupflixRail title="New episodes" to="/filmsclub/browse/series" items={newSeries} />
+          <YupflixRail title="Latest movies" to="/filmsclub/browse/movie" items={latestMovies} />
         </>
       )}
 
