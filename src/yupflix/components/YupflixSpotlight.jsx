@@ -35,7 +35,7 @@ export function YupflixSpotlight({ items = [] }) {
         {items.map((item, idx) => (
           item.poster ? (
             <img
-              key={item.code}
+              key={item.code || item.tmdb_id || idx}
               src={item.poster}
               alt=""
               className={`absolute inset-0 w-full h-full object-cover filter blur-3xl scale-125 transition-opacity duration-1000 ${
@@ -170,7 +170,7 @@ export function YupflixSpotlight({ items = [] }) {
               const isSel = idx === activeIdx;
               return (
                 <button
-                  key={item.code}
+                  key={item.code || item.tmdb_id || idx}
                   type="button"
                   onClick={() => setCurrentIdx(idx)}
                   className={`relative flex items-center gap-2.5 px-3 py-1.5 rounded-xl border text-left transition-all ${

@@ -3,7 +3,7 @@ import SEO from "../components/SEO";
 import { YupflixCatalogView } from "../yupflix/pages/YupflixHome";
 
 export default function Home() {
-  const SITENAME = import.meta.env.VITE_SITENAME || "FilmsClub";
+  const SITENAME = import.meta.env.VITE_SITENAME || "Filmy4UHD";
 
   return (
     <div className="w-full bg-[#07080c] min-h-screen text-white">

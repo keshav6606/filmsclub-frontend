@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import MovieCard from "../components/MovieCard";
 import { YupflixCard } from "../yupflix/components/YupflixCard";
 import SEO from "../components/SEO";
+import AdBanner from "../components/AdBanner";
 import { getWatchlist, clearWatchlist } from "../utils/storage";
 import { HiBookmark, HiTrash } from "react-icons/hi2";
 import { BiCameraMovie } from "react-icons/bi";
@@ -10,7 +11,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 export default function Watchlist() {
-  const SITENAME = import.meta.env.VITE_SITENAME || "FilmsClub";
+  const SITENAME = import.meta.env.VITE_SITENAME || "Filmy4UHD";
   const [watchlist, setWatchlist] = useState([]);
 
   const loadList = () => {
@@ -73,6 +74,9 @@ export default function Watchlist() {
             </button>
           )}
         </div>
+
+        {/* Ad Banner In Watchlist */}
+        <AdBanner slot="5754054742" className="my-6" />
 
         {/* Watchlist Grid or Empty State */}
         {watchlist.length > 0 ? (

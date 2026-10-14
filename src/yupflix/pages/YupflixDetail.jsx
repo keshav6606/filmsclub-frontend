@@ -13,6 +13,7 @@ import {
   TYPE_LABELS
 } from '../utils/yupflixHelpers';
 import { YupflixRail } from '../components/YupflixPlatformFilter';
+import AdBanner from '../../components/AdBanner';
 import {
   launchNextPlayer,
   triggerDirectDownload,
@@ -96,10 +97,10 @@ export function YupflixDetail() {
         <h2 className="text-2xl font-bold font-outfit text-white mb-2">Title Not Found</h2>
         <p className="text-zinc-400 text-sm mb-6">The requested movie or series could not be loaded.</p>
         <Link
-          to="/filmsclub"
+          to="/"
           className="px-6 py-2.5 rounded-full bg-red-600 hover:bg-red-500 text-white font-bold text-sm shadow-[0_0_20px_rgba(229,9,20,0.5)] transition-all"
         >
-          Return to FilmsClub Home
+          Return to Filmy4UHD Home
         </Link>
       </div>
     );
@@ -239,7 +240,7 @@ export function YupflixDetail() {
             {titleInfo.poster ? (
               <img src={titleInfo.poster} alt={cleanTitleName} className="w-full h-full object-cover" />
             ) : (
-              <div className="w-full h-full flex items-center justify-center text-zinc-500 font-bold">FilmsClub</div>
+              <div className="w-full h-full flex items-center justify-center text-zinc-500 font-bold">Filmy4UHD</div>
             )}
             <div className="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-full bg-red-600/90 text-white font-black text-[10px] tracking-wider uppercase font-mono shadow-md">
               {qualitiesBadges[0] || '1080p'}
@@ -389,8 +390,11 @@ export function YupflixDetail() {
         </div>
       </div>
 
+      {/* Ad Banner Above Stream Links */}
+      <AdBanner slot="5754054742" className="my-8" />
+
       {/* Stream & Downloads / Series Section */}
-      <section className="mt-10">
+      <section className="mt-8">
         {/* Movies Quality Links */}
         {movieSources.length > 0 && (
           <div className="space-y-4">
@@ -574,9 +578,12 @@ export function YupflixDetail() {
         </section>
       )}
 
+      {/* Ad Banner Above Recommended */}
+      <AdBanner slot="7317709042" className="mt-12 mb-4" />
+
       {/* Recommended / Similar Titles Rail */}
       {data?.similar && data.similar.length > 0 && (
-        <div className="mt-12">
+        <div className="mt-8">
           <YupflixRail title="Recommended For You" items={data.similar} />
         </div>
       )}

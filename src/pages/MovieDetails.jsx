@@ -73,7 +73,7 @@ export default function MovieDetails() {
     "dateCreated": movieDetail.release_year ? `${movieDetail.release_year}-01-01` : undefined,
     "aggregateRating": movieDetail.rating ? {
       "@type": "AggregateRating",
-      "ratingValue": movieDetail.rating.toFixed(1),
+      "ratingValue": Number(movieDetail.rating).toFixed(1),
       "bestRating": "10",
       "worstRating": "1",
       "ratingCount": "100"

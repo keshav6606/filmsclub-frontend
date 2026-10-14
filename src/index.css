@@ -517,3 +517,8 @@ body.cinema-mode-active {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* ─── Mobile Safe Area Bottom Inset ───────────────────────────────────────── */
+.safe-area-pb {
+  padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
+}

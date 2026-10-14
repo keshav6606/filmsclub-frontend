@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 
 /**
  * AdBanner component to dynamically render ads in React pages.
@@ -6,26 +6,35 @@ import React, { useEffect } from "react";
  *   - Google AdSense Display Ads (using slot prop)
  *   - Generic script / iframe / banner codes via VITE_AD_BANNER_CODE in .env
  */
-export default function AdBanner({ slot, style = { display: "block" }, format = "auto" }) {
+export default function AdBanner({
+  slot = "5754054742",
+  className = "my-6",
+  style = { display: "block" },
+  format = "auto",
+}) {
   const client = import.meta.env.VITE_ADSENSE_CLIENT || "ca-pub-9543073887536718";
   const customAdCode = import.meta.env.VITE_AD_BANNER_CODE;
+  const adRef = useRef(null);
 
   useEffect(() => {
-    // If using AdSense, push the adsbygoogle array
-    if (!customAdCode && slot) {
-      try {
-        (window.adsbygoogle = window.adsbygoogle || []).push({});
-      } catch (e) {
-        console.warn("Google AdSense adsbygoogle push failed:", e);
+    // If using AdSense, safely push the adsbygoogle array once per element
+    if (!customAdCode && slot && adRef.current) {
+      const isAlreadyLoaded = adRef.current.getAttribute("data-adsbygoogle-status");
+      if (!isAlreadyLoaded) {
+        try {
+          (window.adsbygoogle = window.adsbygoogle || []).push({});
+        } catch (e) {
+          // Gracefully caught - adblocker active or already pushed
+        }
       }
     }
   }, [slot, customAdCode]);
 
-  // If the user has configured custom ad HTML (like Adsterra / Hilltop / Monetag scripts or iframe), render it
+  // If custom ad HTML is configured (e.g. Adsterra / Hilltop / Monetag scripts or iframe), render it
   if (customAdCode) {
     return (
-      <div 
-        className="w-full flex justify-center my-6 overflow-hidden max-w-full"
+      <div
+        className={`w-full flex justify-center overflow-hidden max-w-full ${className}`}
         dangerouslySetInnerHTML={{ __html: customAdCode }}
       />
     );
@@ -34,13 +43,16 @@ export default function AdBanner({ slot, style = { display: "block" }, format = 
   // Fallback to Google AdSense Display ad
   const safeStyle = {
     display: "block",
+    minHeight: "90px",
+    width: "100%",
     ...style,
     maxWidth: "100%",
   };
 
   return (
-    <div className="w-full flex justify-center my-6 overflow-hidden max-w-full">
+    <div className={`w-full flex justify-center items-center overflow-hidden max-w-full rounded-2xl bg-white/[0.02] border border-white/5 ${className}`}>
       <ins
+        ref={adRef}
         className="adsbygoogle"
         style={safeStyle}
         data-ad-client={client}

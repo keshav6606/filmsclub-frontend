@@ -5,6 +5,7 @@ import { YupflixSpotlight } from '../components/YupflixSpotlight';
 import { YupflixPlatformFilter, RankedRail, YupflixRail } from '../components/YupflixPlatformFilter';
 import { YupflixFilterBar } from '../components/YupflixFilterBar';
 import { YupflixCard } from '../components/YupflixCard';
+import AdBanner from '../../components/AdBanner';
 import { PROVIDERS_MAP } from '../utils/yupflixHelpers';
 import { FaFilm, FaTv, FaBolt, FaSyncAlt } from 'react-icons/fa';
 
@@ -202,6 +203,9 @@ export function YupflixCatalogView({ type = '' }) {
         </div>
         <YupflixPlatformFilter />
       </section>
+
+      {/* Responsive In-Feed Ad Banner */}
+      <AdBanner slot="5754054742" className="my-8" />
 
       {/* 3. Top 10 Ranked Rail */}
       {isDefaultFilter && trending.length > 0 && (

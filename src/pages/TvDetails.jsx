@@ -108,7 +108,7 @@ export default function MovieDetails() {
     "numberOfEpisodes": seriesDetail.total_episodes,
     "aggregateRating": seriesDetail.rating ? {
       "@type": "AggregateRating",
-      "ratingValue": seriesDetail.rating.toFixed(1),
+      "ratingValue": Number(seriesDetail.rating).toFixed(1),
       "bestRating": "10",
       "worstRating": "1",
       "ratingCount": "100"

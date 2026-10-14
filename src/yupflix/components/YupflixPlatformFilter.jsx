@@ -142,7 +142,7 @@ export function RankedRail({ title, items = [] }) {
         const titleText = cleanTitle(item.title);
         return (
           <Link
-            key={item.code}
+            key={item.code || item.tmdb_id || idx}
             to={`/filmsclub/t/${item.code}`}
             state={{ card: item }}
             className="group relative flex items-end shrink-0 select-none"
@@ -187,8 +187,8 @@ export function YupflixRail({ title, to, items = [] }) {
         ) : undefined
       }
     >
-      {items.map((item) => (
-        <div key={item.code} className="w-36 sm:w-44 lg:w-48 shrink-0">
+      {items.map((item, idx) => (
+        <div key={item.code || item.tmdb_id || item._id || idx} className="w-36 sm:w-44 lg:w-48 shrink-0">
           <YupflixCard item={item} />
         </div>
       ))}

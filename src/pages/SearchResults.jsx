@@ -6,11 +6,12 @@ import { BASE_URL as BASE } from "../config/api";
 import { loadSearchIndex, searchTitles } from "../yupflix/services/yupflixSearch";
 import { YupflixCard } from "../yupflix/components/YupflixCard";
 import MovieCard from "../components/MovieCard";
+import AdBanner from "../components/AdBanner";
 import { RiMovie2Fill, RiSearchEyeLine } from "react-icons/ri";
 import { HiSparkles, HiOutlineFilm, HiOutlineTv } from "react-icons/hi2";
 
 export default function SearchResults() {
-  const SITENAME = import.meta.env.VITE_SITENAME || "FilmsClub";
+  const SITENAME = import.meta.env.VITE_SITENAME || "Filmy4UHD";
   const { searchResult = "" } = useParams();
 
   // States
@@ -178,16 +179,24 @@ export default function SearchResults() {
         </div>
       </div>
 
+      {/* Ad Banner Above Search Results */}
+      <AdBanner slot="5754054742" className="my-6" />
+
       {/* Results Grid */}
       {filteredResults.length > 0 ? (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-7 gap-4 sm:gap-6">
-          {filteredResults.map((item) => (
-            <YupflixCard
-              key={item.code ? `scraped-${item.code}` : `db-${item.tmdb_id}`}
-              item={item}
-            />
-          ))}
-        </div>
+        <>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-7 gap-4 sm:gap-6">
+            {filteredResults.map((item) => (
+              <YupflixCard
+                key={item.code ? `scraped-${item.code}` : `db-${item.tmdb_id}`}
+                item={item}
+              />
+            ))}
+          </div>
+
+          {/* Ad Banner Below Search Results */}
+          <AdBanner slot="7317709042" className="my-10" />
+        </>
       ) : isLoading ? (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
           {Array.from({ length: 12 }).map((_, i) => (

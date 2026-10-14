@@ -7,7 +7,7 @@ import FilmsClubLogo from "./FilmsClubLogo";
 
 export default function Footer() {
   const TG_URL = import.meta.env.VITE_TG_URL || "https://t.me/filmy4uhd";
-  const SITENAME = import.meta.env.VITE_SITENAME || "FilmsClub";
+  const SITENAME = import.meta.env.VITE_SITENAME || "Filmy4UHD";
 
   const categories = [
     { name: "4K UHD Cinema", path: "/movies?genre=4k" },
@@ -130,7 +130,7 @@ export default function Footer() {
 
         {/* Bottom Status & Copyright */}
         <div className="mt-12 pt-6 border-t border-white/[0.08] flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400 font-mono">
-          <p>© {new Date().getFullYear()} FilmsClub Cinema. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} Filmy4UHD Cinema. All rights reserved.</p>
           <div className="flex items-center gap-2 text-emerald-400">
             <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_#00f5a0] animate-pulse" />
             <span>All Edge Clusters Operational • 100% Ultra Speed</span>

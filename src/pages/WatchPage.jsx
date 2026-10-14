@@ -12,6 +12,7 @@ import {
 import { MdSmartDisplay, MdOndemandVideo, MdOutlineHighQuality } from "react-icons/md";
 import { SiVlcmediaplayer } from "react-icons/si";
 import SEO from "../components/SEO";
+import AdBanner from "../components/AdBanner";
 import { BASE_URL as BASE } from "../config/api";
 import {
   launchNextPlayer,
@@ -189,6 +190,9 @@ export default function WatchPage() {
         </div>
       </div>
 
+      {/* Ad Banner In Watch Cockpit */}
+      <AdBanner slot="5754054742" className="my-6" />
+
       {/* Alternative Players Grid */}
       <div className="space-y-3">
         <div className="flex items-center justify-between px-1">
@@ -281,6 +285,9 @@ export default function WatchPage() {
           </div>
         </div>
       )}
+
+      {/* Ad Banner Before Specs */}
+      <AdBanner slot="7317709042" className="my-6" />
 
       {/* Why NextPlayer Information Card */}
       <div className="p-5 rounded-2xl bg-[#0E131F]/70 border border-white/[0.08] space-y-3 text-xs text-slate-300 shadow-md">

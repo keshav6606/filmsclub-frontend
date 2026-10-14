@@ -163,7 +163,7 @@ export default function MoviesAndSeriesDetailsSections(props) {
                   </span>
                   {movie.rating && (
                     <span className="inline-flex items-center gap-1 bg-amber-400 text-slate-950 font-black px-3 py-1 rounded-xl text-xs shadow font-mono">
-                      <PiStarFill className="text-xs" /> {movie.rating.toFixed(1)}/10 IMDb
+                      <PiStarFill className="text-xs" /> {Number(movie.rating).toFixed(1)}/10 IMDb
                     </span>
                   )}
                   <span className="spec-badge spec-badge-atmos">

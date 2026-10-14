@@ -9,6 +9,7 @@ import { YupflixHeader } from "./yupflix/components/YupflixHeader";
 import Footer from "./components/Footer";
 import PageLoader from "./components/PageLoader";
 import TelegramBanner from "./components/TelegramBanner";
+import MobileBottomNav from "./components/MobileBottomNav";
 
 // Lazy Loaded Pages
 const Home = lazy(() => import("./pages/Home"));
@@ -117,6 +118,7 @@ function AppContent() {
 
       <TelegramBanner />
       <Footer />
+      <MobileBottomNav />
     </div>
   );
 }

@@ -109,9 +109,9 @@ export function YupflixHeader({ searchInputRef, isSearching, onSearchingChange }
 
   return (
     <header className="sticky top-0 z-50 transition-all duration-300 bg-[#0a0c12]/95 backdrop-blur-2xl border-b border-white/10 shadow-[0_10px_35px_rgba(0,0,0,0.85)]">
-      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between gap-4">
+      <div className="max-w-[1440px] mx-auto px-3 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between gap-2.5 sm:gap-4">
         {/* Left: Brand Identity */}
-        <div className="flex items-center gap-3 shrink-0">
+        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
           <FilmsClubLogo to="/" />
         </div>
 
@@ -136,7 +136,7 @@ export function YupflixHeader({ searchInputRef, isSearching, onSearchingChange }
         </nav>
 
         {/* Right: Live Search Box */}
-        <div className="relative flex-1 md:flex-initial max-w-xs lg:max-w-sm" ref={wrapRef}>
+        <div className="relative flex-1 md:flex-initial max-w-[210px] sm:max-w-xs lg:max-w-sm" ref={wrapRef}>
           <form
             onSubmit={handleSubmit}
             className={`relative flex items-center h-10 sm:h-11 px-3.5 rounded-2xl border transition-all duration-300 ${
