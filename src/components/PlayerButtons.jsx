@@ -320,7 +320,6 @@ const MoviePlayerSection = ({ telegram, movieData }) => {
 
   const handleDownload = () => {
     if (!selectedItem) return;
-    triggerPopunder();
     const rawUrl = generateDownloadUrl(selectedItem.id, selectedItem.name);
     const fileName = selectedItem.name || `${movieData?.title || "movie"}_${selectedItem.quality || "HD"}.mp4`;
     triggerDirectDownload(rawUrl, fileName);
@@ -422,7 +421,6 @@ const MoviePlayerSection = ({ telegram, movieData }) => {
             href={`https://t.me/${TG_USERNAME}?start=file_${selectedItem.id || movieData?.tmdb_id}_${selectedItem.quality || "HD"}`}
             target="_blank"
             rel="noopener noreferrer"
-            onClick={triggerPopunder}
             className="flex items-center gap-2 bg-[#0088cc] hover:bg-[#0077b5] text-white font-bold px-6 py-2.5 rounded-full text-xs transition-all shadow-md hover:scale-105"
           >
             <TbBrandTelegram className="text-base" />
@@ -462,7 +460,6 @@ const EpisodeCard = ({ ep, isSelected, onToggle, movieData, seasonNumber }) => {
 
   const handleDownload = () => {
     if (!currentQualityItem) return;
-    triggerPopunder();
     const rawUrl = generateDownloadUrl(currentQualityItem.id, currentQualityItem.name);
     const fileName = currentQualityItem.name || `${movieData?.title || "series"}_S${seasonNumber}E${ep.episode_number}_${currentQualityItem.quality || "HD"}.mp4`;
     triggerDirectDownload(rawUrl, fileName);

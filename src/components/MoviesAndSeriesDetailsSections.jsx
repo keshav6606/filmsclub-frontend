@@ -265,7 +265,7 @@ export default function MoviesAndSeriesDetailsSections(props) {
           />
 
           {/* Ad Banner Below Player */}
-          <AdBanner slot="7317709042" style={{ display: "inline-block", width: "728px", height: "90px" }} />
+          <AdBanner slot="7317709042" />
         </motion.div>
       ) : (
         /* Loading Skeleton */

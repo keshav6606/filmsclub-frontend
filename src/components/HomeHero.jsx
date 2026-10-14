@@ -70,7 +70,7 @@ export default function HeroSlider({ movieData, isMovieDataLoading }) {
                         </div>
 
                         {/* Title */}
-                        <h1 className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-white leading-tight drop-shadow-[0_10px_25px_rgba(0,0,0,0.9)]">
+                        <h1 className="text-2xl sm:text-4xl md:text-6xl font-black tracking-tight text-white leading-tight drop-shadow-[0_10px_25px_rgba(0,0,0,0.9)] break-words line-clamp-2">
                           {movie.title}
                         </h1>
 

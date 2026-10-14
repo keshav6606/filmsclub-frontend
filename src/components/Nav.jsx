@@ -171,12 +171,6 @@ export default function Nav() {
       activeIcon: <HiTv className="text-xl text-amber-400" />,
     },
     {
-      name: "Downloads",
-      path: "/movies",
-      icon: <HiOutlineArrowDownTray className="text-xl" />,
-      activeIcon: <HiArrowDownTray className="text-xl text-amber-400" />,
-    },
-    {
       name: "Watchlist",
       path: "/watchlist",
       icon: (
@@ -354,10 +348,20 @@ export default function Nav() {
               <BiSearch className="text-xl" />
             </button>
 
-            {/* Profile Avatar Icon */}
-            <div className="w-10 h-10 rounded-full bg-slate-900/90 border border-white/20 hover:border-amber-400 flex items-center justify-center text-slate-300 hover:text-amber-400 transition-all cursor-pointer shadow-md">
-              <FiUser className="text-lg" />
-            </div>
+            {/* Watchlist Quick-Access (Real Functional Button) */}
+            <Link
+              to="/watchlist"
+              className="relative w-10 h-10 rounded-full bg-slate-900/90 border border-white/20 hover:border-amber-400 flex items-center justify-center text-slate-300 hover:text-amber-400 transition-all shadow-md group"
+              aria-label="My Watchlist"
+              title="My Watchlist"
+            >
+              <HiBookmark className="text-lg text-amber-400 group-hover:scale-110 transition-transform" />
+              {watchlistCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 text-[10px] font-black w-4 h-4 rounded-full flex items-center justify-center shadow-[0_0_10px_rgba(245,158,11,0.6)]">
+                  {watchlistCount > 9 ? "9+" : watchlistCount}
+                </span>
+              )}
+            </Link>
           </div>
         </div>
 

@@ -32,11 +32,17 @@ export default function AdBanner({ slot, style = { display: "block" }, format = 
   }
 
   // Fallback to Google AdSense Display ad
+  const safeStyle = {
+    display: "block",
+    ...style,
+    maxWidth: "100%",
+  };
+
   return (
     <div className="w-full flex justify-center my-6 overflow-hidden max-w-full">
       <ins
         className="adsbygoogle"
-        style={style}
+        style={safeStyle}
         data-ad-client={client}
         data-ad-slot={slot}
         data-ad-format={format}

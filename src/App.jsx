@@ -59,7 +59,7 @@ function AppContent() {
   return (
     <>
       <Nav />
-      <div className={isStreamingHub ? "w-full min-h-screen" : "p-3 md:p-10 min-h-screen"}>
+      <div className="w-full min-h-screen overflow-x-hidden">
         <Suspense fallback={<PageLoader />}>
           <Routes>
             <Route path="/" element={<Home />} />
