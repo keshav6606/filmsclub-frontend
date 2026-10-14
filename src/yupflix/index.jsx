@@ -11,14 +11,14 @@ export function YupflixModule() {
   const searchInputRef = useRef(null);
 
   return (
-    <div className="yupflix-module min-h-screen text-white bg-[#0a0c10] pb-16">
+    <div className="filmsclub-module min-h-screen text-white bg-[#07080c] pb-24 selection:bg-red-600 selection:text-white font-sans">
       <YupflixHeader
         searchInputRef={searchInputRef}
         isSearching={isSearching}
         onSearchingChange={setIsSearching}
       />
 
-      <div className="wrap pt-4">
+      <main className="w-full">
         <Routes>
           <Route index element={<YupflixHome />} />
           <Route path="browse/:type" element={<YupflixBrowse />} />
@@ -26,7 +26,7 @@ export function YupflixModule() {
           <Route path="search" element={<YupflixSearch />} />
           <Route path="*" element={<YupflixHome />} />
         </Routes>
-      </div>
+      </main>
     </div>
   );
 }

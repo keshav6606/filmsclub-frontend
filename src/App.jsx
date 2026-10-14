@@ -29,6 +29,21 @@ const WatchPage = lazy(() => import("./pages/WatchPage"));
 const Watchlist = lazy(() => import("./pages/Watchlist"));
 const YupflixModule = lazy(() => import("./yupflix"));
 
+function ApiCatchHandler() {
+  const location = useLocation();
+  useEffect(() => {
+    window.location.href = location.pathname + location.search;
+  }, [location]);
+  return (
+    <div className="flex items-center justify-center min-h-[50vh] text-center p-6 text-white">
+      <div className="flex flex-col items-center gap-3">
+        <div className="w-8 h-8 border-3 border-red-500 border-t-transparent rounded-full animate-spin" />
+        <p className="text-gray-300 text-sm">Connecting to FilmsClub Stream Link...</p>
+      </div>
+    </div>
+  );
+}
+
 function AppContent() {
   const location = useLocation();
 
@@ -74,6 +89,7 @@ function AppContent() {
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/terms" element={<Terms />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="/api/*" element={<ApiCatchHandler />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </Suspense>

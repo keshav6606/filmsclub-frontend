@@ -5,19 +5,20 @@ import { YupflixSpotlight } from '../components/YupflixSpotlight';
 import { YupflixPlatformFilter, RankedRail, YupflixRail } from '../components/YupflixPlatformFilter';
 import { YupflixFilterBar } from '../components/YupflixFilterBar';
 import { YupflixCard } from '../components/YupflixCard';
+import { FaFilm, FaTv, FaBolt, FaSyncAlt } from 'react-icons/fa';
 
 const FILTER_KEYS = ['prov', 'genre', 'year', 'lang', 'industry'];
 
 const SECTION_TITLES = {
-  movie: 'Trending movies',
-  series: 'Trending series',
-  anime: 'Trending anime'
+  movie: 'Trending Movies Today',
+  series: 'Trending Web Series',
+  anime: 'Trending Anime & Animation'
 };
 
 const BROWSE_ALL_TITLES = {
-  movie: 'All movies',
-  series: 'All series',
-  anime: 'All anime'
+  movie: 'All Movies Catalog',
+  series: 'All Web Series Collection',
+  anime: 'Anime Library'
 };
 
 export function YupflixCatalogView({ type = '' }) {
@@ -34,10 +35,11 @@ export function YupflixCatalogView({ type = '' }) {
   }, [type, searchParams]);
 
   const industry = searchParams.get('industry') || '';
-  const isDefaultFilter = !['prov', 'genre', 'year', 'lang'].some(k => searchParams.get(k)) &&
+  const isDefaultFilter =
+    !['prov', 'genre', 'year', 'lang'].some((k) => searchParams.get(k)) &&
     (searchParams.get('sort') || 'new') === 'new';
 
-  const trendingTitle = SECTION_TITLES[type] || 'Trending now';
+  const trendingTitle = SECTION_TITLES[type] || 'Trending on FilmsClub';
   const showFeaturedRails = type === '' && isDefaultFilter && !industry;
 
   const [items, setItems] = useState([]);
@@ -54,7 +56,7 @@ export function YupflixCatalogView({ type = '' }) {
 
   useEffect(() => {
     const ctrl = new AbortController();
-    yupflixApi.genres(type, ctrl.signal).then(d => setGenres(d.genres || [])).catch(() => {});
+    yupflixApi.genres(type, ctrl.signal).then((d) => setGenres(d.genres || [])).catch(() => {});
     return () => ctrl.abort();
   }, [type]);
 
@@ -64,7 +66,7 @@ export function YupflixCatalogView({ type = '' }) {
       return;
     }
     const ctrl = new AbortController();
-    yupflixApi.trending(type, industry, ctrl.signal).then(d => setTrending(d.trending || [])).catch(() => {});
+    yupflixApi.trending(type, industry, ctrl.signal).then((d) => setTrending(d.trending || [])).catch(() => {});
     return () => ctrl.abort();
   }, [isDefaultFilter, type, industry]);
 
@@ -75,8 +77,8 @@ export function YupflixCatalogView({ type = '' }) {
       return;
     }
     const ctrl = new AbortController();
-    yupflixApi.browse('type=series&page=1&limit=14', ctrl.signal).then(d => setNewSeries(d.items || [])).catch(() => {});
-    yupflixApi.browse('type=movie&page=1&limit=14', ctrl.signal).then(d => setLatestMovies(d.items || [])).catch(() => {});
+    yupflixApi.browse('type=series&page=1&limit=14', ctrl.signal).then((d) => setNewSeries(d.items || [])).catch(() => {});
+    yupflixApi.browse('type=movie&page=1&limit=14', ctrl.signal).then((d) => setLatestMovies(d.items || [])).catch(() => {});
     return () => ctrl.abort();
   }, [showFeaturedRails]);
 
@@ -88,8 +90,9 @@ export function YupflixCatalogView({ type = '' }) {
     p.set('page', '1');
     p.set('limit', '42');
 
-    yupflixApi.browse(p.toString(), ctrl.signal)
-      .then(d => {
+    yupflixApi
+      .browse(p.toString(), ctrl.signal)
+      .then((d) => {
         setItems(d.items || []);
         setTotalCount(d.total || (d.items?.length || 0));
         setHasMore(!!d.hasMore);
@@ -109,7 +112,7 @@ export function YupflixCatalogView({ type = '' }) {
 
     try {
       const res = await yupflixApi.browse(p.toString());
-      setItems(prev => [...prev, ...(res.items || [])]);
+      setItems((prev) => [...prev, ...(res.items || [])]);
       setPage(nextPage);
       setHasMore(!!res.hasMore);
     } finally {
@@ -120,63 +123,105 @@ export function YupflixCatalogView({ type = '' }) {
   const spotlightItems = isDefaultFilter ? trending.slice(0, 5) : [];
 
   return (
-    <div className="catalog">
+    <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
+      {/* 1. Cinematic Spotlight Billboard */}
       {spotlightItems.length > 0 && <YupflixSpotlight items={spotlightItems} />}
 
-      <section className="sec platforms">
-        <header>
-          <h2>Browse by platform</h2>
-        </header>
+      {/* 2. OTT Platform Filter Rail */}
+      <section className="mb-10">
+        <div className="flex items-center justify-between mb-3 px-1">
+          <h3 className="font-outfit font-black text-lg sm:text-xl text-white">
+            Browse By OTT Network
+          </h3>
+          <span className="text-xs text-zinc-400">Direct CDN Access</span>
+        </div>
         <YupflixPlatformFilter />
       </section>
 
+      {/* 3. Top 10 Ranked Rail */}
       {isDefaultFilter && trending.length > 0 && (
         <RankedRail title={trendingTitle} items={trending} />
       )}
 
+      {/* 4. Curated Featured Rails for Series & Movies */}
       {showFeaturedRails && (
         <>
-          <YupflixRail title="New episodes" to="/filmsclub/browse/series" items={newSeries} />
-          <YupflixRail title="Latest movies" to="/filmsclub/browse/movie" items={latestMovies} />
+          <YupflixRail
+            title="Fresh Episodes & Web Series"
+            to="/filmsclub/browse/series"
+            items={newSeries}
+          />
+          <YupflixRail
+            title="Latest Blockbuster Releases"
+            to="/filmsclub/browse/movie"
+            items={latestMovies}
+          />
         </>
       )}
 
-      <section className="sec" id="browse">
-        <header>
-          <h2>{BROWSE_ALL_TITLES[type] || 'Browse all'}</h2>
-          {!loading && <span className="sub">{totalCount.toLocaleString()} titles</span>}
-        </header>
+      {/* 5. Main Catalog Grid & Filters */}
+      <section className="mt-12" id="catalog-section">
+        <div className="flex items-baseline justify-between mb-4 px-1">
+          <div className="flex items-center gap-3">
+            <h2 className="font-outfit font-black text-2xl sm:text-3xl text-white tracking-tight">
+              {BROWSE_ALL_TITLES[type] || 'Browse Full Library'}
+            </h2>
+            {!loading && totalCount > 0 && (
+              <span className="text-xs font-bold text-red-400 bg-red-600/15 px-2.5 py-0.5 rounded-full border border-red-500/30">
+                {totalCount.toLocaleString()} Titles
+              </span>
+            )}
+          </div>
+        </div>
 
+        {/* Filter Bar */}
         <YupflixFilterBar type={type} genres={genres} />
 
+        {/* Media Grid */}
         {loading ? (
-          <div className="grid">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-7 gap-4 sm:gap-6">
             {Array.from({ length: 14 }).map((_, idx) => (
-              <div key={idx} className="sk" style={{ aspectRatio: '2/3' }} />
+              <div
+                key={idx}
+                className="aspect-[2/3] rounded-2xl bg-white/5 animate-pulse border border-white/5"
+              />
             ))}
           </div>
         ) : items.length === 0 ? (
-          <div className="empty">
-            <b>No titles match these filters</b>
-            Try removing a filter to see more.
+          <div className="flex flex-col items-center justify-center p-12 text-center bg-[#12141c]/50 rounded-3xl border border-white/10 my-8">
+            <span className="text-4xl mb-3">🔍</span>
+            <h4 className="font-outfit font-bold text-lg text-white mb-1">
+              No Titles Match Active Filters
+            </h4>
+            <p className="text-zinc-400 text-xs sm:text-sm max-w-sm mb-4">
+              Try resetting selected genres or industries to view more titles.
+            </p>
           </div>
         ) : (
-          <div className="grid">
-            {items.map(item => (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-7 gap-4 sm:gap-6">
+            {items.map((item) => (
               <YupflixCard key={item.code} item={item} />
             ))}
           </div>
         )}
 
+        {/* Load More Button */}
         {hasMore && !loading && (
-          <div className="more">
+          <div className="flex justify-center mt-12 mb-8">
             <button
               type="button"
-              className="ghost"
               onClick={handleLoadMore}
               disabled={loadingMore}
+              className="inline-flex items-center gap-2 px-8 py-3.5 rounded-2xl bg-white/5 hover:bg-white/10 text-white font-outfit font-bold text-sm border border-white/10 hover:border-white/20 transition-all shadow-lg hover:scale-105 disabled:opacity-50"
             >
-              {loadingMore ? 'Loading…' : 'Show more'}
+              {loadingMore ? (
+                <>
+                  <FaSyncAlt className="animate-spin text-xs" />
+                  Loading More Cinema...
+                </>
+              ) : (
+                'Load More Titles'
+              )}
             </button>
           </div>
         )}
@@ -194,3 +239,5 @@ export function YupflixBrowse() {
   const normalizedType = type === 'all' ? '' : type;
   return <YupflixCatalogView key={normalizedType} type={normalizedType} />;
 }
+
+export default YupflixHome;

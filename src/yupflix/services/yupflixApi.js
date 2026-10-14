@@ -1,5 +1,5 @@
 /**
- * Yupflix API Service for filmsclub-frontend
+ * Yupflix / FilmsClub API Service
  * Uses live backend/proxy when available, and automatically falls back to bundled JSON datasets.
  */
 
@@ -17,11 +17,12 @@ const inFlight = new Map();
 
 export const getYupflixServer = () => {
   if (typeof window !== 'undefined') {
-    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-      return import.meta.env.VITE_YUPFLIX_SERVER || 'http://localhost:3000';
+    // If VITE_YUPFLIX_SERVER is explicitly set, use it
+    if (import.meta.env.VITE_YUPFLIX_SERVER) {
+      return import.meta.env.VITE_YUPFLIX_SERVER;
     }
   }
-  return import.meta.env.VITE_YUPFLIX_SERVER || '';
+  return '';
 };
 
 export const YUPFLIX_SERVER = getYupflixServer();
@@ -36,7 +37,7 @@ export function getYupflixDownloadUrl(url) {
 async function safeFetch(endpoint, fallbackData) {
   try {
     const server = getYupflixServer();
-    const url = server ? `${server}${endpoint}` : `/yupflix-api${endpoint.replace(/^\/api/, '')}`;
+    const url = server ? `${server}${endpoint}` : endpoint;
     const res = await fetch(url);
     if (res.ok) {
       return await res.json();
@@ -61,7 +62,7 @@ export function cachedFetch(endpoint, fallbackData, signal) {
         inFlight.delete(endpoint);
         return data;
       })
-      .catch(err => {
+      .catch(() => {
         inFlight.delete(endpoint);
         return fallbackData;
       });
@@ -93,8 +94,9 @@ export const yupflixApi = {
     return cachedFetch(`/api/browse?${queryString}`, fb, signal);
   },
   title: async (code, signal) => {
+    const server = getYupflixServer();
     try {
-      const res = await fetch(`${YUPFLIX_SERVER}/api/t/${code}`, { signal });
+      const res = await fetch(`${server}/api/t/${code}`, { signal });
       if (res.ok) return await res.json();
     } catch {}
 
@@ -105,21 +107,119 @@ export const yupflixApi = {
     } catch {}
 
     // Search in home/trending items
-    const allItems = [...(homeFallback.trending || []), ...(browseMovieFallback.items || []), ...(browseSeriesFallback.items || [])];
+    const allItems = [
+      ...(homeFallback.trending || []),
+      ...(browseMovieFallback.items || []),
+      ...(browseSeriesFallback.items || [])
+    ];
     const match = allItems.find(it => it.code === code || it.slug === code);
     if (match) {
       return { title: match, similar: allItems.filter(it => it.code !== code).slice(0, 10) };
     }
     throw new Error('Title not found');
   },
-  resolveStreamUrl: async (token) => {
-    try {
-      const res = await fetch(`${YUPFLIX_SERVER}/api/dl?t=${encodeURIComponent(token)}`, {
-        redirect: 'follow'
-      });
-      return res.url;
-    } catch {
-      return null;
+  resolveStream: async (tokenOrUrl) => {
+    let token = tokenOrUrl;
+    if (tokenOrUrl && tokenOrUrl.includes('t=')) {
+      try {
+        const u = new URL(tokenOrUrl, 'http://localhost');
+        token = u.searchParams.get('t') || tokenOrUrl;
+      } catch {}
     }
+
+    if (!token) {
+      throw new Error('No token found to resolve');
+    }
+
+    const server = getYupflixServer();
+    const apiUrl = `${server}/api/resolve-stream?t=${encodeURIComponent(token)}`;
+
+    try {
+      const res = await fetch(apiUrl);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.ok) return data;
+      }
+    } catch (e) {
+      console.warn('[yupflixApi] resolveStream API call failed:', e.message);
+    }
+
+    // Secondary attempt via /api/dl?format=json
+    try {
+      const dlRes = await fetch(`${server}/api/dl?t=${encodeURIComponent(token)}&format=json`);
+      if (dlRes.ok) {
+        const data = await dlRes.json();
+        if (data.ok) return data;
+      }
+    } catch {}
+
+    // Fallback: direct download route
+    const dlUrl = getYupflixDownloadUrl(`/api/dl?t=${encodeURIComponent(token)}`);
+    return {
+      ok: true,
+      directStreamUrl: dlUrl,
+      downloadUrl: dlUrl,
+      servers: []
+    };
+  },
+  findTmdbId: async (titleText, year = '', type = 'movie') => {
+    if (!titleText) return null;
+    const clean = titleText.replace(/\s*\(\d{4}\)/, '').trim();
+    const cacheKey = `fc_tmdb_${clean}_${year}`;
+    try {
+      const cached = localStorage.getItem(cacheKey);
+      if (cached) return JSON.parse(cached);
+    } catch {}
+
+    const TMDB_API_KEY = 'f19e3265d68fadce804778d6f4c09f38';
+
+    // 1. Try api.tmdb.org multi-search
+    try {
+      const u = `https://api.tmdb.org/3/search/multi?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(clean)}`;
+      const res = await fetch(u, { signal: AbortSignal.timeout(4500) });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.results && data.results.length > 0) {
+          let match = data.results[0];
+          if (year) {
+            const yrMatch = data.results.find(it => {
+              const rYr = (it.release_date || it.first_air_date || '').slice(0, 4);
+              return rYr === String(year);
+            });
+            if (yrMatch) match = yrMatch;
+          }
+          const info = {
+            id: match.id,
+            title: match.title || match.name,
+            mediaType: match.media_type || (type === 'series' ? 'tv' : 'movie')
+          };
+          try { localStorage.setItem(cacheKey, JSON.stringify(info)); } catch {}
+          return info;
+        }
+      }
+    } catch (e) {
+      console.warn('[yupflixApi] TMDB direct search error:', e.message);
+    }
+
+    // 2. Try Koyeb backend search
+    try {
+      const kUrl = `https://screeching-cherye-filmy4uhd-b60bef55.koyeb.app/api/search/?query=${encodeURIComponent(clean)}`;
+      const kRes = await fetch(kUrl, { signal: AbortSignal.timeout(4500) });
+      if (kRes.ok) {
+        const kData = await kRes.json();
+        const first = kData.results?.[0];
+        if (first?.tmdb_id) {
+          const info = {
+            id: first.tmdb_id,
+            title: first.title,
+            mediaType: first.media_type || (type === 'series' ? 'tv' : 'movie')
+          };
+          try { localStorage.setItem(cacheKey, JSON.stringify(info)); } catch {}
+          return info;
+        }
+      }
+    } catch {}
+
+    return null;
   }
 };

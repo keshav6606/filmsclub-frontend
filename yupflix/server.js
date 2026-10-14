@@ -354,7 +354,72 @@ const server = http.createServer(async (req, res) => {
     return sendJson(req, res, 200, { items: results });
   }
 
-  // 10. Direct Download Resolver (/api/dl?t=...)
+  // 10. Stream Resolver Endpoint (/api/resolve-stream?t=...)
+  if (pathname === '/api/resolve-stream') {
+    const t = searchParams.get('t');
+    if (!t) {
+      return sendJson(req, res, 400, { ok: false, error: 'Missing token t' });
+    }
+
+    try {
+      const dlRes = await fetchUpstream(`/api/dl?t=${encodeURIComponent(t)}`, { redirect: 'manual' });
+      const workerLocation = dlRes.headers.get('location');
+      if (!workerLocation) {
+        return sendJson(req, res, 502, { ok: false, error: 'Could not resolve upstream worker' });
+      }
+
+      const workerUrl = new URL(workerLocation);
+      const vcloud = workerUrl.searchParams.get('vcloud');
+      if (!vcloud) {
+        return sendJson(req, res, 200, {
+          ok: true,
+          directStreamUrl: workerLocation,
+          downloadUrl: workerLocation,
+          workerLocation,
+          servers: []
+        });
+      }
+
+      const linksRes = await fetch(`${workerUrl.origin}/api/links?vcloud=${encodeURIComponent(vcloud)}`, {
+        headers: { 'User-Agent': 'Mozilla/5.0' }
+      });
+      const linksData = await linksRes.json();
+      const tokens = linksData.tokens || {};
+      const servers = [];
+
+      for (const [type, tokenObj] of Object.entries(tokens)) {
+        const goUrl = `${workerUrl.origin}/go?type=${type}&vcloud=${encodeURIComponent(vcloud)}&ts=${tokenObj.ts}&sig=${tokenObj.sig}`;
+        const watchUrl = `${workerUrl.origin}/watch?type=${type}&vcloud=${encodeURIComponent(vcloud)}&ts=${tokenObj.ts}&sig=${tokenObj.sig}`;
+        servers.push({ type, name: type, goUrl, watchUrl });
+      }
+
+      let directStreamUrl = null;
+      if (servers.length > 0) {
+        try {
+          const goRes = await fetch(servers[0].goUrl, { method: 'GET', redirect: 'manual', headers: { 'User-Agent': 'Mozilla/5.0' } });
+          directStreamUrl = goRes.headers.get('location') || servers[0].goUrl;
+        } catch {
+          directStreamUrl = servers[0].goUrl;
+        }
+      }
+
+      return sendJson(req, res, 200, {
+        ok: true,
+        title: linksData.title || '',
+        size: linksData.size || '',
+        watchable: linksData.watchable !== false,
+        directStreamUrl: directStreamUrl || workerLocation,
+        downloadUrl: directStreamUrl || servers[0]?.goUrl || workerLocation,
+        workerLocation,
+        vcloud,
+        servers
+      });
+    } catch (e) {
+      return sendJson(req, res, 500, { ok: false, error: e.message });
+    }
+  }
+
+  // 11. Direct Download Resolver (/api/dl?t=...)
   if (pathname === '/api/dl') {
     const t = searchParams.get('t');
     if (!t) {
