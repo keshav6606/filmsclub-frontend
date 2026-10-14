@@ -32,27 +32,26 @@ const API_URL = import.meta.env.VITE_API_URL;
 const API_KEY = import.meta.env.VITE_API_KEY;
 const TG_USERNAME = import.meta.env.VITE_TG_USERNAME || "Filmy4uhdBot";
 
-// Google Play Store link for NextPlayer
-const NEXTPLAYER_PLAY_LINK = "https://play.google.com/store/apps/details?id=com.nextplayer.pro";
+import {
+  launchNextPlayer,
+  launchMxPlayer,
+  launchVlcPlayer,
+  triggerDirectDownload,
+  NEXTPLAYER_PLAY_LINK,
+  MX_PLAY_LINK,
+  VLC_PLAY_LINK,
+} from "../utils/playerLauncher";
 
 const PLAYERS = [
-  {
-    id: "web",
-    name: "Web Player",
-    tag: "Instant Play",
-    desc: "Stream instantly in browser",
-    icon: <FaPlay className="text-xs text-amber-400" />,
-    isWeb: true,
-    accent: "amber",
-  },
   {
     id: "nextplayer",
     name: "NextPlayer",
     tag: "Recommended",
-    desc: "Full AC3/Dolby Audio + HW acceleration",
+    desc: "Full AC3/Dolby Audio + HW acceleration (Auto Play Store fallback)",
     icon: <MdSmartDisplay className="text-xl text-cyan-400" />,
     accent: "cyan",
     playStore: NEXTPLAYER_PLAY_LINK,
+    launcher: launchNextPlayer,
   },
   {
     id: "mx",
@@ -61,7 +60,8 @@ const PLAYERS = [
     desc: "Gesture controls & multi-audio",
     icon: <MdOndemandVideo className="text-xl text-blue-400" />,
     accent: "blue",
-    playStore: "https://play.google.com/store/apps/details?id=com.mxtech.videoplayer.ad",
+    playStore: MX_PLAY_LINK,
+    launcher: launchMxPlayer,
   },
   {
     id: "vlc",
@@ -70,73 +70,22 @@ const PLAYERS = [
     desc: "Surround sound & subtitle support",
     icon: <SiVlcmediaplayer className="text-xl text-orange-400" />,
     accent: "orange",
-    playStore: "https://play.google.com/store/apps/details?id=org.videolan.vlc",
+    playStore: VLC_PLAY_LINK,
+    launcher: launchVlcPlayer,
   },
 ];
 
-const triggerPopunder = () => {
-  const popunderUrl = import.meta.env.VITE_POPUNDER_URL;
-  if (popunderUrl) {
-    try {
-      window.open(popunderUrl, "_blank", "noopener noreferrer");
-    } catch (e) {
-      console.warn("Popunder block warning:", e);
-    }
-  }
-};
-
-/**
- * Launch external video player apps or direct stream link
- */
 const launchPlayer = (directStreamUrl, playerId, title = "Filmy4uhd Stream") => {
   if (!directStreamUrl) return;
-  triggerPopunder();
-  const isAndroid = /Android/i.test(navigator.userAgent);
-  const encodedTitle = encodeURIComponent(title);
-
-  const isHttps = directStreamUrl.startsWith("https");
-  const scheme = isHttps ? "https" : "http";
-  const cleanUrl = directStreamUrl.replace(/^https?:\/\//, "");
-
-  let packageName = "";
-  let playStoreUrl = "";
-
-  if (playerId === "nextplayer" || playerId === "mpvex") {
-    packageName = "com.nextplayer.pro";
-    playStoreUrl = NEXTPLAYER_PLAY_LINK;
+  if (playerId === "nextplayer") {
+    launchNextPlayer(directStreamUrl, title);
   } else if (playerId === "mx") {
-    packageName = "com.mxtech.videoplayer.ad";
-    playStoreUrl = "https://play.google.com/store/apps/details?id=com.mxtech.videoplayer.ad";
+    launchMxPlayer(directStreamUrl, title);
   } else if (playerId === "vlc") {
-    packageName = "org.videolan.vlc";
-    playStoreUrl = "https://play.google.com/store/apps/details?id=org.videolan.vlc";
+    launchVlcPlayer(directStreamUrl, title);
+  } else {
+    launchNextPlayer(directStreamUrl, title);
   }
-
-  if (isAndroid && packageName) {
-    const encodedFallback = encodeURIComponent(playStoreUrl);
-    const intentUrl = `intent://${cleanUrl}#Intent;scheme=${scheme};action=android.intent.action.VIEW;type=video/*;package=${packageName};S.title=${encodedTitle};S.browser_fallback_url=${encodedFallback};end`;
-
-    const start = Date.now();
-    setTimeout(() => {
-      if (Date.now() - start < 2500 && !document.hidden && playStoreUrl) {
-        window.location.href = playStoreUrl;
-      }
-    }, 1500);
-
-    window.location.href = intentUrl;
-    return;
-  }
-
-  // Windows / Mac / Desktop Fallback
-  if (playerId === "vlc") {
-    window.location.href = `vlc://${directStreamUrl}`;
-    setTimeout(() => {
-      window.open(directStreamUrl, "_blank");
-    }, 1200);
-    return;
-  }
-
-  window.open(directStreamUrl, "_blank");
 };
 
 /**
@@ -322,7 +271,7 @@ const PlayerCard = ({ player, onClick, loading, disabled }) => {
           ) : (
             <>
               <FaPlay className="text-[9px]" />
-              <span>{player.isWeb ? "Play in Browser" : "Launch Player"}</span>
+              <span>Launch Player</span>
             </>
           )}
         </button>
@@ -345,8 +294,7 @@ const PlayerCard = ({ player, onClick, loading, disabled }) => {
 };
 
 // ─── Screen 3: Movie Player Section (Stream or Download) ───────────────────
-const MoviePlayerSection = ({ telegram, movieData, onOpenWebPlayer }) => {
-  const navigate = useNavigate();
+const MoviePlayerSection = ({ telegram, movieData }) => {
   const availableLangs = getUniqueLanguages(telegram, movieData);
   const [selectedLanguage, setSelectedLanguage] = useState(availableLangs[0] || "Hindi");
   const [selectedQuality, setSelectedQuality] = useState("");
@@ -356,55 +304,40 @@ const MoviePlayerSection = ({ telegram, movieData, onOpenWebPlayer }) => {
   const availableQualities = filteredItems.length > 0 ? filteredItems : (telegram || []);
   const selectedItem = availableQualities.find((t) => t.quality === selectedQuality) || availableQualities[0];
 
-  const handlePlayer = async (player) => {
+  const handleNextPlayerStream = () => {
     if (!selectedItem) return;
-    setLoading((p) => ({ ...p, [player.id]: true }));
     const rawUrl = generateVideoUrl(selectedItem.id, selectedItem.name);
     const title = `${movieData?.title || "Movie"} (${selectedItem.quality || ""})`;
-    setLoading((p) => ({ ...p, [player.id]: false }));
-
-    if (player.id === "web") {
-      onOpenWebPlayer?.({
-        id: selectedItem.id,
-        name: selectedItem.name,
-        title,
-        quality: selectedItem.quality,
-        language: selectedLanguage,
-        tmdbId: movieData?.tmdb_id,
-        mediaType: movieData?.media_type || "movie",
-      });
-      const params = new URLSearchParams({
-        id: selectedItem.id || "",
-        name: selectedItem.name || "",
-        title: title,
-        quality: selectedItem.quality || "HD",
-        lang: selectedLanguage || "Hindi",
-        tmdb_id: movieData?.tmdb_id || "",
-        media_type: movieData?.media_type || "movie",
-      });
-      navigate(`/watch?${params.toString()}`);
-    } else {
-      launchPlayer(rawUrl, player.id, title);
-    }
+    launchNextPlayer(rawUrl, title);
   };
 
-  const handleDownload = async () => {
+  const handlePlayer = (player) => {
+    if (!selectedItem) return;
+    const rawUrl = generateVideoUrl(selectedItem.id, selectedItem.name);
+    const title = `${movieData?.title || "Movie"} (${selectedItem.quality || ""})`;
+    launchPlayer(rawUrl, player.id, title);
+  };
+
+  const handleDownload = () => {
     if (!selectedItem) return;
     triggerPopunder();
-    setLoading((p) => ({ ...p, download: true }));
     const rawUrl = generateDownloadUrl(selectedItem.id, selectedItem.name);
-    const finalUrl = await shortenUrl(rawUrl);
-    setLoading((p) => ({ ...p, download: false }));
-    window.open(finalUrl, "_blank", "noopener noreferrer");
+    const fileName = selectedItem.name || `${movieData?.title || "movie"}_${selectedItem.quality || "HD"}.mp4`;
+    triggerDirectDownload(rawUrl, fileName);
   };
 
   return (
     <div className="space-y-6">
       {/* ── Screen 3: Stream or Download Section ── */}
       <div className="space-y-4">
-        <h3 className="text-xs font-black uppercase tracking-wider text-slate-300">
-          Stream or Download
-        </h3>
+        <div className="flex items-center justify-between">
+          <h3 className="text-xs font-black uppercase tracking-wider text-slate-300">
+            Stream or Download
+          </h3>
+          <span className="text-[11px] font-bold text-cyan-400 bg-cyan-950/40 px-2.5 py-0.5 rounded-full border border-cyan-500/30">
+            ✨ Streaming in NextPlayer with Dolby Sound
+          </span>
+        </div>
 
         {/* Resolution Selector Cards (Screen 3: 480p, 720p, 1080p, 4K UHD) */}
         <div className="flex items-center gap-2.5 sm:gap-3 flex-wrap">
@@ -418,29 +351,48 @@ const MoviePlayerSection = ({ telegram, movieData, onOpenWebPlayer }) => {
           ))}
         </div>
 
-        {/* Big Prominent "Watch Now" Gold CTA Button (Matching Screen 3) */}
+        {/* Big Prominent "Stream in NextPlayer" Cyan/Amber CTA Button */}
         <button
-          onClick={() => handlePlayer(PLAYERS[0])}
+          onClick={handleNextPlayerStream}
           disabled={!selectedItem}
-          className="btn-gold w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl text-sm font-black shadow-[0_0_30px_rgba(245,158,11,0.5)] hover:scale-[1.01]"
+          className="w-full flex items-center justify-center gap-3 py-4 rounded-2xl text-sm sm:text-base font-black bg-gradient-to-r from-cyan-500 via-cyan-400 to-amber-400 hover:from-cyan-400 hover:to-amber-300 text-slate-950 shadow-[0_0_30px_rgba(6,182,212,0.5)] hover:scale-[1.01] transition-all duration-300 disabled:opacity-40"
         >
-          <BsPlayFill className="text-2xl" />
-          <span>Watch Now</span>
+          <MdSmartDisplay className="text-2xl" />
+          <span>Stream in NextPlayer</span>
+          <span className="text-[10px] font-black uppercase tracking-wider bg-slate-950/80 text-cyan-300 px-2.5 py-0.5 rounded-full border border-cyan-400/30">
+            Dolby Sound
+          </span>
         </button>
+
+        {/* NextPlayer Google Play Store Notice & Direct Fallback */}
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-2 px-3.5 py-2.5 rounded-2xl bg-cyan-950/30 border border-cyan-500/20 text-xs">
+          <div className="flex items-center gap-2 text-slate-300">
+            <FaAndroid className="text-green-400 text-sm shrink-0" />
+            <span>Don't have <strong>NextPlayer</strong> installed on your device?</span>
+          </div>
+          <a
+            href={NEXTPLAYER_PLAY_LINK}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-cyan-400 hover:text-cyan-300 font-bold underline flex items-center gap-1 shrink-0"
+          >
+            Install from Google Play Store
+          </a>
+        </div>
       </div>
 
       {/* External Player Decks */}
       <div className="space-y-3 pt-2">
         <div className="flex items-center justify-between">
           <span className="text-xs font-black uppercase tracking-wider text-slate-400">
-            External Video Players
+            Alternative Players
           </span>
-          <span className="text-[0.68rem] text-cyan-400 font-bold">
-            ✨ NextPlayer Recommended
+          <span className="text-[0.68rem] text-slate-400">
+            MX Player · VLC Player
           </span>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           {PLAYERS.map((player) => (
             <PlayerCard
               key={player.id}
@@ -457,11 +409,11 @@ const MoviePlayerSection = ({ telegram, movieData, onOpenWebPlayer }) => {
       <div className="flex flex-wrap items-center gap-3 pt-2 border-t border-white/10">
         <button
           onClick={handleDownload}
-          disabled={loading.download || !selectedItem}
-          className="flex items-center gap-2 btn-outline-gold px-6 py-2.5 text-xs font-bold disabled:opacity-40"
+          disabled={!selectedItem}
+          className="flex items-center gap-2 btn-gold px-6 py-2.5 text-xs font-black disabled:opacity-40 shadow-lg"
           aria-label="Direct Download Movie"
         >
-          {loading.download ? <Spinner /> : <FaDownload />}
+          <FaDownload />
           <span>Direct Download ({selectedItem?.quality || "HD"})</span>
         </button>
 
@@ -483,8 +435,7 @@ const MoviePlayerSection = ({ telegram, movieData, onOpenWebPlayer }) => {
 };
 
 // ─── Screen 6: Episode Item Card ──────────────────────────────────────────
-const EpisodeCard = ({ ep, isSelected, onToggle, movieData, seasonNumber, onOpenWebPlayer }) => {
-  const navigate = useNavigate();
+const EpisodeCard = ({ ep, isSelected, onToggle, movieData, seasonNumber }) => {
   const rawQualities = ep?.telegram || [];
   const availableLangs = getUniqueLanguages(rawQualities, movieData);
   const [selectedLanguage, setSelectedLanguage] = useState(availableLangs[0] || "Hindi");
@@ -495,46 +446,26 @@ const EpisodeCard = ({ ep, isSelected, onToggle, movieData, seasonNumber, onOpen
   const qualities = filteredQualities.length > 0 ? filteredQualities : rawQualities;
   const currentQualityItem = qualities.find((q) => q.quality === selectedQuality) || qualities[0];
 
-  const handlePlayer = async (player) => {
+  const handleNextPlayerStream = () => {
     if (!currentQualityItem) return;
-    setLoading((p) => ({ ...p, [player.id]: true }));
     const rawUrl = generateVideoUrl(currentQualityItem.id, currentQualityItem.name);
     const title = `${movieData?.title || "Series"} - S${seasonNumber}E${ep.episode_number} (${currentQualityItem.quality || ""})`;
-    setLoading((p) => ({ ...p, [player.id]: false }));
-
-    if (player.id === "web") {
-      onOpenWebPlayer?.({
-        id: currentQualityItem.id,
-        name: currentQualityItem.name,
-        title,
-        quality: currentQualityItem.quality,
-        language: selectedLanguage,
-        tmdbId: movieData?.tmdb_id,
-        mediaType: "tv",
-      });
-      const params = new URLSearchParams({
-        id: currentQualityItem.id || "",
-        name: currentQualityItem.name || "",
-        title: title,
-        quality: currentQualityItem.quality || "HD",
-        lang: selectedLanguage || "Hindi",
-        tmdb_id: movieData?.tmdb_id || "",
-        media_type: "tv",
-      });
-      navigate(`/watch?${params.toString()}`);
-    } else {
-      launchPlayer(rawUrl, player.id, title);
-    }
+    launchNextPlayer(rawUrl, title);
   };
 
-  const handleDownload = async () => {
+  const handlePlayer = (player) => {
+    if (!currentQualityItem) return;
+    const rawUrl = generateVideoUrl(currentQualityItem.id, currentQualityItem.name);
+    const title = `${movieData?.title || "Series"} - S${seasonNumber}E${ep.episode_number} (${currentQualityItem.quality || ""})`;
+    launchPlayer(rawUrl, player.id, title);
+  };
+
+  const handleDownload = () => {
     if (!currentQualityItem) return;
     triggerPopunder();
-    setLoading((p) => ({ ...p, download: true }));
     const rawUrl = generateDownloadUrl(currentQualityItem.id, currentQualityItem.name);
-    const finalUrl = await shortenUrl(rawUrl);
-    setLoading((p) => ({ ...p, download: false }));
-    window.open(finalUrl, "_blank", "noopener noreferrer");
+    const fileName = currentQualityItem.name || `${movieData?.title || "series"}_S${seasonNumber}E${ep.episode_number}_${currentQualityItem.quality || "HD"}.mp4`;
+    triggerDirectDownload(rawUrl, fileName);
   };
 
   return (
@@ -745,7 +676,7 @@ export default function PlayerButtons(props) {
   const isMovie = props.movieData?.media_type === "movie";
 
   return (
-    <section className="glass-card p-5 sm:p-7 rounded-3xl border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.8)]">
+    <section id="player-section" className="glass-card p-5 sm:p-7 rounded-3xl border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.8)]">
       {isMovie ? (
         <MoviePlayerSection
           telegram={props.movieData?.telegram || []}

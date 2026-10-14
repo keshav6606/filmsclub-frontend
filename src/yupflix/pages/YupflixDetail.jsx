@@ -13,7 +13,11 @@ import {
   TYPE_LABELS
 } from '../utils/yupflixHelpers';
 import { YupflixRail } from '../components/YupflixPlatformFilter';
-import { YupflixPlayerModal } from '../components/YupflixPlayerModal';
+import {
+  launchNextPlayer,
+  triggerDirectDownload,
+  NEXTPLAYER_PLAY_LINK
+} from '../../utils/playerLauncher';
 import {
   FaPlay,
   FaDownload,
@@ -21,11 +25,11 @@ import {
   FaStar,
   FaBookmark,
   FaCheck,
-  FaLayerGroup,
+  FaAndroid,
   FaTv,
-  FaFilm,
-  FaSlidersH
+  FaFilm
 } from 'react-icons/fa';
+import { MdSmartDisplay } from 'react-icons/md';
 
 export function YupflixDetail() {
   const { code = '' } = useParams();
@@ -41,10 +45,8 @@ export function YupflixDetail() {
   const [preferredQuality, setPreferredQuality] = useState('1080p');
   const [isSaved, setIsSaved] = useState(false);
 
-  // Video Player Modal State
-  const [playingSource, setPlayingSource] = useState(null);
-  const [playingTitle, setPlayingTitle] = useState('');
-  const [playingEpMeta, setPlayingEpMeta] = useState(null);
+  // NextPlayer Launch State
+  const [resolvingToken, setResolvingToken] = useState(false);
 
   useEffect(() => {
     const ctrl = new AbortController();
@@ -184,29 +186,32 @@ export function YupflixDetail() {
     genresList.length ? ['Genres', genresList.join(', ')] : null
   ].filter(Boolean);
 
-  const openPlayer = (src, titleSuffix = '', epMeta = null) => {
-    setPlayingSource(src);
-    setPlayingTitle(`${cleanTitleName} ${titleSuffix}`);
-    setPlayingEpMeta(epMeta);
+  const handleStreamInNextPlayer = async (src, label = '') => {
+    if (!src) return;
+    setResolvingToken(true);
+    try {
+      const res = await yupflixApi.resolveStream(src.url);
+      const targetUrl = res.directStreamUrl || res.downloadUrl || getYupflixDownloadUrl(src.url);
+      const streamTitle = `${cleanTitleName} ${label || formatQuality(src.quality)}`;
+      launchNextPlayer(targetUrl, streamTitle);
+    } catch (err) {
+      console.warn('NextPlayer resolve stream warning:', err);
+      const fallbackUrl = getYupflixDownloadUrl(src.url);
+      launchNextPlayer(fallbackUrl, `${cleanTitleName} ${label}`);
+    } finally {
+      setResolvingToken(false);
+    }
+  };
+
+  const handleDirectDownload = (src) => {
+    if (!src) return;
+    const downloadUrl = getYupflixDownloadUrl(src.url);
+    const filename = `${cleanTitleName}_${src.quality || 'HD'}.mkv`;
+    triggerDirectDownload(downloadUrl, filename);
   };
 
   return (
     <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-20">
-      {/* Active Cinema Video Player Modal */}
-      {playingSource && (
-        <YupflixPlayerModal
-          title={playingTitle}
-          source={playingSource}
-          item={rawTitle || titleInfo}
-          season={playingEpMeta?.season || activeSeason || 1}
-          episode={playingEpMeta?.episode || (latestParsed?.ep || 1)}
-          onClose={() => {
-            setPlayingSource(null);
-            setPlayingEpMeta(null);
-          }}
-        />
-      )}
-
       {/* Dynamic Ambient Blur Backdrop */}
       {titleInfo.poster && (
         <div className="absolute top-0 inset-x-0 h-96 -z-10 overflow-hidden pointer-events-none opacity-25 filter blur-3xl">
@@ -305,47 +310,66 @@ export function YupflixDetail() {
             </div>
           )}
 
+          {/* NextPlayer Info & Play Store Banner */}
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-3.5 rounded-2xl bg-cyan-950/40 border border-cyan-500/30 text-xs">
+            <div className="flex items-center gap-2.5 text-slate-200">
+              <MdSmartDisplay className="text-2xl text-cyan-400 shrink-0" />
+              <span>
+                Stream instantly in <strong>NextPlayer</strong> with full Dolby Atmos / AC3 audio and hardware acceleration.
+              </span>
+            </div>
+            <a
+              href={NEXTPLAYER_PLAY_LINK}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 font-bold border border-cyan-400/30 shrink-0 transition-colors"
+            >
+              <FaAndroid className="text-green-400" />
+              Install NextPlayer
+            </a>
+          </div>
+
           {/* Prominent Action CTAs */}
-          <div className="flex flex-wrap items-center gap-3.5 pt-3">
+          <div className="flex flex-wrap items-center gap-3.5 pt-1">
             {bestMovieSource ? (
               <>
                 <button
                   type="button"
-                  onClick={() => openPlayer(bestMovieSource, `(${formatQuality(bestMovieSource.quality)})`, { season: 1, episode: 1 })}
-                  className="inline-flex items-center gap-2.5 px-6 sm:px-8 py-3.5 rounded-2xl bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white font-outfit font-black text-sm sm:text-base tracking-wide shadow-[0_0_25px_rgba(229,9,20,0.5)] hover:shadow-[0_0_35px_rgba(229,9,20,0.8)] hover:scale-105 transition-all duration-300"
+                  onClick={() => handleStreamInNextPlayer(bestMovieSource, `(${formatQuality(bestMovieSource.quality)})`)}
+                  disabled={resolvingToken}
+                  className="inline-flex items-center gap-2.5 px-6 sm:px-8 py-3.5 rounded-2xl bg-gradient-to-r from-cyan-500 via-cyan-400 to-amber-400 hover:from-cyan-400 hover:to-amber-300 text-slate-950 font-outfit font-black text-sm sm:text-base tracking-wide shadow-[0_0_25px_rgba(6,182,212,0.4)] hover:shadow-[0_0_35px_rgba(6,182,212,0.7)] hover:scale-105 transition-all duration-300 disabled:opacity-50"
                 >
-                  <FaPlay className="text-xs" />
-                  Stream Now ({formatQuality(bestMovieSource.quality)})
+                  <MdSmartDisplay className="text-xl" />
+                  {resolvingToken ? 'Opening NextPlayer...' : `Stream in NextPlayer (${formatQuality(bestMovieSource.quality)})`}
                 </button>
-                <a
-                  href={getYupflixDownloadUrl(bestMovieSource.url)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-5 py-3.5 rounded-2xl bg-white/10 hover:bg-white/15 text-white font-bold text-sm border border-white/10 hover:border-white/20 transition-all"
+                <button
+                  type="button"
+                  onClick={() => handleDirectDownload(bestMovieSource)}
+                  className="inline-flex items-center gap-2 px-5 py-3.5 rounded-2xl bg-white/10 hover:bg-white/15 text-white font-bold text-sm border border-white/10 hover:border-white/20 transition-all cursor-pointer"
                 >
-                  <FaDownload className="text-xs text-zinc-400" />
+                  <FaDownload className="text-xs text-amber-400" />
                   Direct Download
-                </a>
+                </button>
               </>
             ) : bestLatestEp ? (
               <>
                 <button
                   type="button"
-                  onClick={() => openPlayer(bestLatestEp, `Episode ${latestParsed?.ep || 1}`, { season: defaultSeason, episode: latestParsed?.ep || 1 })}
-                  className="inline-flex items-center gap-2.5 px-6 sm:px-8 py-3.5 rounded-2xl bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white font-outfit font-black text-sm sm:text-base tracking-wide shadow-[0_0_25px_rgba(229,9,20,0.5)] hover:shadow-[0_0_35px_rgba(229,9,20,0.8)] hover:scale-105 transition-all duration-300"
+                  onClick={() => handleStreamInNextPlayer(bestLatestEp, `Episode ${latestParsed?.ep || 1}`)}
+                  disabled={resolvingToken}
+                  className="inline-flex items-center gap-2.5 px-6 sm:px-8 py-3.5 rounded-2xl bg-gradient-to-r from-cyan-500 via-cyan-400 to-amber-400 hover:from-cyan-400 hover:to-amber-300 text-slate-950 font-outfit font-black text-sm sm:text-base tracking-wide shadow-[0_0_25px_rgba(6,182,212,0.4)] hover:shadow-[0_0_35px_rgba(6,182,212,0.7)] hover:scale-105 transition-all duration-300 disabled:opacity-50"
                 >
-                  <FaPlay className="text-xs" />
-                  Play Latest (Ep {latestParsed?.ep || 1})
+                  <MdSmartDisplay className="text-xl" />
+                  {resolvingToken ? 'Opening NextPlayer...' : `Stream Latest in NextPlayer (Ep ${latestParsed?.ep || 1})`}
                 </button>
-                <a
-                  href={getYupflixDownloadUrl(bestLatestEp.url)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-5 py-3.5 rounded-2xl bg-white/10 hover:bg-white/15 text-white font-bold text-sm border border-white/10 hover:border-white/20 transition-all"
+                <button
+                  type="button"
+                  onClick={() => handleDirectDownload(bestLatestEp)}
+                  className="inline-flex items-center gap-2 px-5 py-3.5 rounded-2xl bg-white/10 hover:bg-white/15 text-white font-bold text-sm border border-white/10 hover:border-white/20 transition-all cursor-pointer"
                 >
-                  <FaDownload className="text-xs text-zinc-400" />
+                  <FaDownload className="text-xs text-amber-400" />
                   Download Ep {latestParsed?.ep || 1}
-                </a>
+                </button>
               </>
             ) : null}
 
@@ -410,19 +434,18 @@ export function YupflixDetail() {
                     <div className="flex items-center gap-2.5 self-end sm:self-auto shrink-0">
                       <button
                         type="button"
-                        onClick={() => openPlayer(src, `(${formatQuality(src.quality)})`, { season: 1, episode: 1 })}
-                        className="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-[0_0_15px_rgba(229,9,20,0.4)] transition-all"
+                        onClick={() => handleStreamInNextPlayer(src, `(${formatQuality(src.quality)})`)}
+                        className="px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-400 hover:to-cyan-500 text-slate-950 font-bold text-xs flex items-center gap-1.5 shadow-[0_0_15px_rgba(6,182,212,0.4)] transition-all cursor-pointer"
                       >
-                        <FaPlay className="text-[10px]" /> Play Online
+                        <MdSmartDisplay className="text-sm" /> Stream NextPlayer
                       </button>
-                      <a
-                        href={getYupflixDownloadUrl(src.url)}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-white font-bold text-xs flex items-center gap-1.5 border border-white/10 transition-colors"
+                      <button
+                        type="button"
+                        onClick={() => handleDirectDownload(src)}
+                        className="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-white font-bold text-xs flex items-center gap-1.5 border border-white/10 transition-colors cursor-pointer"
                       >
-                        <FaDownload className="text-[10px]" /> Download
-                      </a>
+                        <FaDownload className="text-[10px] text-amber-400" /> Direct Download
+                      </button>
                     </div>
                   </div>
                 );
@@ -500,19 +523,18 @@ export function YupflixDetail() {
                         <>
                           <button
                             type="button"
-                            onClick={() => openPlayer(epBest, ep.label, { season: activeSeason, episode: ep.num || 1 })}
-                            className="px-3.5 py-1.5 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-md shadow-red-600/30 transition-all"
+                            onClick={() => handleStreamInNextPlayer(epBest, ep.label)}
+                            className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-400 hover:to-cyan-500 text-slate-950 font-bold text-xs flex items-center gap-1.5 shadow-md shadow-cyan-500/30 transition-all cursor-pointer"
                           >
-                            <FaPlay className="text-[9px]" /> Play ({formatQuality(epBest.quality)})
+                            <MdSmartDisplay className="text-xs" /> NextPlayer ({formatQuality(epBest.quality)})
                           </button>
-                          <a
-                            href={getYupflixDownloadUrl(epBest.url)}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="px-3.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/15 text-white font-bold text-xs flex items-center gap-1.5 border border-white/10 transition-colors"
+                          <button
+                            type="button"
+                            onClick={() => handleDirectDownload(epBest)}
+                            className="px-3.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/15 text-white font-bold text-xs flex items-center gap-1.5 border border-white/10 transition-colors cursor-pointer"
                           >
-                            <FaDownload className="text-[9px]" /> Download
-                          </a>
+                            <FaDownload className="text-[9px] text-amber-400" /> Download
+                          </button>
                         </>
                       )}
                     </div>

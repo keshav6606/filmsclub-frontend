@@ -19,6 +19,7 @@ import { RiSearchLine } from "react-icons/ri";
 import posterPlaceholder from "../assets/images/poster-placeholder.png";
 import { BASE_URL as BASE } from "../config/api";
 import BrandLogo from "./BrandLogo";
+import { loadSearchIndex, searchTitles } from "../yupflix/services/yupflixSearch";
 
 const SITENAME = import.meta.env.VITE_SITENAME || "Filmy4uhd";
 
@@ -33,6 +34,11 @@ export default function Nav() {
   const [isLoading, setIsLoading] = useState(false);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+
+  // Pre-load scraped search index in background
+  useEffect(() => {
+    loadSearchIndex().catch(() => {});
+  }, []);
 
   // Scroll detection for nav shadow
   useEffect(() => {
@@ -55,20 +61,34 @@ export default function Nav() {
     else if (path.startsWith("/search")) setNavStatus("Search");
   }, [location.pathname]);
 
-  // Query Data Fetcher
+  // Unified Query Data Fetcher (Database + Scraped Catalog)
   useEffect(() => {
     if (!debouncedVal) {
       setSearchResult([]);
       return;
     }
     setIsLoading(true);
-    fetch(`${BASE}/api/search/?query=${encodeURIComponent(debouncedVal)}&page=1`)
+
+    const fetchDb = fetch(`${BASE}/api/search/?query=${encodeURIComponent(debouncedVal)}&page=1`)
       .then((res) => res.json())
-      .then((data) => {
-        setSearchResult(data.results || []);
-        setIsLoading(false);
-      })
-      .catch(() => setIsLoading(false));
+      .then((data) => (data.results || []).map((item) => ({ ...item, source: "db" })))
+      .catch(() => []);
+
+    const scrapedMatches = searchTitles(debouncedVal, 8).map((item) => ({
+      tmdb_id: item.code,
+      code: item.code,
+      title: item.title,
+      poster: item.poster,
+      release_year: item.year,
+      rip: item.latestLabel || "VIP",
+      media_type: item.type || "movie",
+      source: "scraped",
+    }));
+
+    fetchDb.then((dbResults) => {
+      setSearchResult([...dbResults, ...scrapedMatches]);
+      setIsLoading(false);
+    });
   }, [debouncedVal]);
 
   // Debounce
@@ -272,28 +292,46 @@ export default function Nav() {
                     transition={{ duration: 0.2 }}
                     className="absolute top-full mt-2 left-0 right-0 glass-card border border-white/15 overflow-hidden z-50 max-h-[60dvh] overflow-y-auto shadow-[0_20px_50px_rgba(0,0,0,0.9)]"
                   >
-                    {searchResult.slice(0, 8).map((movie) => (
-                      <Link
-                        key={movie.tmdb_id}
-                        to={movie.media_type === "movie" ? `/mov/${movie.tmdb_id}` : `/ser/${movie.tmdb_id}`}
-                        onClick={() => { setQuery(""); setDebouncedVal(""); }}
-                        className="flex items-center gap-3 px-4 py-3 hover:bg-amber-500/10 transition-colors duration-150 border-b border-white/5 last:border-0"
-                      >
-                        <img
-                          src={movie.poster || posterPlaceholder}
-                          alt={movie.title}
-                          className="w-10 h-14 object-cover rounded-lg shrink-0 bg-slate-900 border border-white/10 shadow-md"
-                          onError={(e) => { e.target.src = posterPlaceholder; }}
-                        />
-                        <div className="min-w-0">
-                          <p className="text-slate-100 text-sm font-bold line-clamp-1 hover:text-amber-400">{movie.title}</p>
-                          <div className="flex items-center gap-2 mt-1">
-                            <span className="text-xs text-slate-400 font-semibold">{movie.release_year}</span>
-                            <span className="quality-badge">{movie.rip || "HD"}</span>
+                    {searchResult.slice(0, 8).map((movie) => {
+                      const isScraped = movie.source === "scraped";
+                      const itemLink = isScraped
+                        ? `/filmsclub/t/${movie.code}`
+                        : movie.media_type === "movie"
+                        ? `/mov/${movie.tmdb_id}`
+                        : `/ser/${movie.tmdb_id}`;
+
+                      return (
+                        <Link
+                          key={isScraped ? `scraped-${movie.code}` : `db-${movie.tmdb_id}`}
+                          to={itemLink}
+                          onClick={() => { setQuery(""); setDebouncedVal(""); }}
+                          className="flex items-center gap-3 px-4 py-3 hover:bg-amber-500/10 transition-colors duration-150 border-b border-white/5 last:border-0"
+                        >
+                          <img
+                            src={movie.poster || posterPlaceholder}
+                            alt={movie.title}
+                            className="w-10 h-14 object-cover rounded-lg shrink-0 bg-slate-900 border border-white/10 shadow-md"
+                            onError={(e) => { e.target.src = posterPlaceholder; }}
+                          />
+                          <div className="min-w-0 flex-1">
+                            <p className="text-slate-100 text-sm font-bold line-clamp-1 hover:text-amber-400">{movie.title}</p>
+                            <div className="flex items-center gap-2 mt-1 flex-wrap">
+                              {movie.release_year && <span className="text-xs text-slate-400 font-semibold">{movie.release_year}</span>}
+                              <span className="quality-badge">{movie.rip || "HD"}</span>
+                              {isScraped ? (
+                                <span className="text-[9px] font-black uppercase tracking-wider text-red-400 bg-red-600/20 px-1.5 py-0.5 rounded border border-red-500/30">
+                                  FilmsClub VIP
+                                </span>
+                              ) : (
+                                <span className="text-[9px] font-black uppercase tracking-wider text-amber-400 bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/30">
+                                  Database
+                                </span>
+                              )}
+                            </div>
                           </div>
-                        </div>
-                      </Link>
-                    ))}
+                        </Link>
+                      );
+                    })}
                     {searchResult.length > 0 && (
                       <button
                         onClick={() => { navigate(`/search/${encodeURIComponent(query)}`); setQuery(""); setDebouncedVal(""); }}
@@ -362,25 +400,43 @@ export default function Nav() {
                       exit={{ opacity: 0 }}
                       className="mt-3 rounded-2xl overflow-hidden max-h-[50dvh] overflow-y-auto glass-card border border-white/10"
                     >
-                      {searchResult.slice(0, 6).map((movie) => (
-                        <Link
-                          key={movie.tmdb_id}
-                          to={movie.media_type === "movie" ? `/mov/${movie.tmdb_id}` : `/ser/${movie.tmdb_id}`}
-                          onClick={() => { setQuery(""); setDebouncedVal(""); setMobileSearchOpen(false); }}
-                          className="flex items-center gap-3 px-3 py-2.5 border-b border-white/5 last:border-0 hover:bg-amber-500/10 transition-colors"
-                        >
-                          <img
-                            src={movie.poster || posterPlaceholder}
-                            alt={movie.title}
-                            className="w-10 h-14 object-cover rounded-lg shrink-0 bg-slate-900"
-                            onError={(e) => { e.target.src = posterPlaceholder; }}
-                          />
-                          <div>
-                            <p className="text-slate-100 text-sm font-bold line-clamp-1">{movie.title}</p>
-                            <p className="text-slate-400 text-xs mt-0.5">{movie.release_year} • {movie.rip || "HD"}</p>
-                          </div>
-                        </Link>
-                      ))}
+                      {searchResult.slice(0, 6).map((movie) => {
+                        const isScraped = movie.source === "scraped";
+                        const itemLink = isScraped
+                          ? `/filmsclub/t/${movie.code}`
+                          : movie.media_type === "movie"
+                          ? `/mov/${movie.tmdb_id}`
+                          : `/ser/${movie.tmdb_id}`;
+
+                        return (
+                          <Link
+                            key={isScraped ? `m-scraped-${movie.code}` : `m-db-${movie.tmdb_id}`}
+                            to={itemLink}
+                            onClick={() => { setQuery(""); setDebouncedVal(""); setMobileSearchOpen(false); }}
+                            className="flex items-center gap-3 px-3 py-2.5 border-b border-white/5 last:border-0 hover:bg-amber-500/10 transition-colors"
+                          >
+                            <img
+                              src={movie.poster || posterPlaceholder}
+                              alt={movie.title}
+                              className="w-10 h-14 object-cover rounded-lg shrink-0 bg-slate-900 border border-white/10"
+                              onError={(e) => { e.target.src = posterPlaceholder; }}
+                            />
+                            <div>
+                              <p className="text-slate-100 text-sm font-bold line-clamp-1">{movie.title}</p>
+                              <div className="flex items-center gap-1.5 text-slate-400 text-xs mt-0.5">
+                                <span>{movie.release_year}</span>
+                                <span>•</span>
+                                <span>{movie.rip || "HD"}</span>
+                                {isScraped && (
+                                  <span className="text-[9px] font-black uppercase text-red-400 bg-red-600/20 px-1 rounded ml-1">
+                                    VIP
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </Link>
+                        );
+                      })}
                     </motion.div>
                   )}
                 </AnimatePresence>
