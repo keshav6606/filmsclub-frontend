@@ -132,7 +132,7 @@ export function YupflixSearch() {
         <div className="flex flex-col items-center justify-center p-16 text-center text-zinc-400">
           <BiSearch className="text-5xl text-zinc-600 mb-3" />
           <h4 className="font-outfit font-bold text-lg text-white mb-1">
-            Search FilmsClub VIP Cinema
+            Search OTT Streaming Universe
           </h4>
           <p className="text-xs sm:text-sm max-w-sm">
             Type any movie, web series, or anime in the search bar above to begin.

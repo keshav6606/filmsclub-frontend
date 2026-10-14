@@ -20,14 +20,14 @@ export default function Terms() {
         link={`https://${DOMAIN}/terms`}
       />
 
-      <div className="glass-card p-6 sm:p-10 space-y-6">
+      <div className="glass-card p-6 sm:p-10 space-y-6 border border-white/10 bg-[#080B11]/80 backdrop-blur-xl">
         {/* Title */}
-        <div className="border-b border-border pb-4 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-primaryBtn/10 flex items-center justify-center text-primaryBtn shrink-0">
+        <div className="border-b border-white/10 pb-4 flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-cyanNeon/10 border border-cyanNeon/20 flex items-center justify-center text-cyanNeon shrink-0">
             <MdGavel className="text-2xl" />
           </div>
           <div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-primaryTextColor">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-primaryTextColor font-outfit">
               Terms & Conditions
             </h1>
             <p className="text-xs text-mutedText mt-1">Last Updated: July 2026</p>
@@ -36,13 +36,13 @@ export default function Terms() {
 
         <div className="space-y-6 text-secondaryTextColor text-sm leading-relaxed">
           <p>
-            Welcome to <strong>{SITENAME}</strong>. These terms and conditions outline the rules and regulations for the use of {SITENAME}'s Website, located at <span className="text-primaryBtn font-medium">https://{DOMAIN}</span>.
+            Welcome to <strong>{SITENAME}</strong>. These terms and conditions outline the rules and regulations for the use of {SITENAME}'s Website, located at <span className="text-cyanNeon font-medium">https://{DOMAIN}</span>.
           </p>
           <p>
             By accessing this website we assume you accept these terms and conditions. Do not continue to use {SITENAME} if you do not agree to take all of the terms and conditions stated on this page.
           </p>
 
-          <h2 className="text-lg font-bold text-primaryTextColor mt-6">
+          <h2 className="text-lg font-bold text-primaryTextColor mt-6 font-outfit">
             1. License & Intellectual Property
           </h2>
           <p>
@@ -56,7 +56,7 @@ export default function Terms() {
             <li>Redistribute content from {SITENAME} without express authorization</li>
           </ul>
 
-          <h2 className="text-lg font-bold text-primaryTextColor mt-6">
+          <h2 className="text-lg font-bold text-primaryTextColor mt-6 font-outfit">
             2. Content Indexing & External Links Notice
           </h2>
           <p>
@@ -66,31 +66,31 @@ export default function Terms() {
             We have no control over the content, availability, or policies of third-party platforms. Using external media links is done entirely at your own risk.
           </p>
 
-          <h2 className="text-lg font-bold text-primaryTextColor mt-6">
+          <h2 className="text-lg font-bold text-primaryTextColor mt-6 font-outfit">
             3. User Conduct & Acceptable Use
           </h2>
           <p>
             You agree not to use our service for any unlawful purpose or in any way that interrupts, damages, or impairs the functionality of {SITENAME}. Prohibited activities include attempting to bypass security mechanisms, scraping system APIs systematically without authorization, or spamming communication channels.
           </p>
 
-          <h2 className="text-lg font-bold text-primaryTextColor mt-6">
+          <h2 className="text-lg font-bold text-primaryTextColor mt-6 font-outfit">
             4. Limitation of Liability
           </h2>
           <p>
             In no event shall {SITENAME}, nor any of its officers, directors, and employees, be held liable for anything arising out of or in any way connected with your use of this website. {SITENAME} shall not be held liable for any indirect, consequential, or special liability arising out of or in any way related to your use of this platform.
           </p>
 
-          <h2 className="text-lg font-bold text-primaryTextColor mt-6">
+          <h2 className="text-lg font-bold text-primaryTextColor mt-6 font-outfit">
             5. Revisions and Modifications
           </h2>
           <p>
             {SITENAME} reserves the right to revise these Terms and Conditions at any time without prior notice. By continuing to use this website after updates are published, you agree to be bound by the revised version of these terms.
           </p>
 
-          <div className="bg-bgColorSecondary border border-border p-5 rounded-xl mt-8">
-            <h3 className="text-sm font-bold text-primaryTextColor uppercase tracking-wider mb-1">Inquiries regarding terms</h3>
+          <div className="bg-[#0E131F] border border-white/10 p-5 rounded-xl mt-8">
+            <h3 className="text-sm font-bold text-primaryTextColor uppercase tracking-wider mb-1 font-outfit">Inquiries regarding terms</h3>
             <p className="text-xs text-secondaryTextColor">If you have any questions concerning our Terms and Conditions, please contact us:</p>
-            <span className="text-sm font-bold text-primaryBtn block mt-2">support@{DOMAIN}</span>
+            <span className="text-sm font-bold text-cyanNeon block mt-2">support@{DOMAIN}</span>
           </div>
         </div>
       </div>

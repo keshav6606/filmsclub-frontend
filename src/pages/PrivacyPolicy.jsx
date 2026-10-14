@@ -20,14 +20,14 @@ export default function PrivacyPolicy() {
         link={`https://${DOMAIN}/privacy-policy`}
       />
 
-      <div className="glass-card p-6 sm:p-10 space-y-6">
+      <div className="glass-card p-6 sm:p-10 space-y-6 border border-white/10 bg-[#080B11]/80 backdrop-blur-xl">
         {/* Title */}
-        <div className="border-b border-border pb-4 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-primaryBtn/10 flex items-center justify-center text-primaryBtn shrink-0">
+        <div className="border-b border-white/10 pb-4 flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-cyanNeon/10 border border-cyanNeon/20 flex items-center justify-center text-cyanNeon shrink-0">
             <MdOutlinePrivacyTip className="text-2xl" />
           </div>
           <div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-primaryTextColor">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-primaryTextColor font-outfit">
               Privacy Policy
             </h1>
             <p className="text-xs text-mutedText mt-1">Effective Date: July 2026</p>
@@ -37,14 +37,14 @@ export default function PrivacyPolicy() {
         {/* Content */}
         <div className="space-y-6 text-secondaryTextColor text-sm leading-relaxed">
           <p>
-            At <strong>{SITENAME}</strong> (accessible from <span className="text-primaryBtn font-medium">https://{DOMAIN}</span>), one of our main priorities is the privacy of our visitors. This Privacy Policy document contains types of information that is collected and recorded by {SITENAME} and how we use it.
+            At <strong>{SITENAME}</strong> (accessible from <span className="text-cyanNeon font-medium">https://{DOMAIN}</span>), one of our main priorities is the privacy of our visitors. This Privacy Policy document contains types of information that is collected and recorded by {SITENAME} and how we use it.
           </p>
           <p>
             If you have additional questions or require more information about our Privacy Policy, do not hesitate to contact us.
           </p>
 
           {/* Section 1 */}
-          <h2 className="text-lg font-bold text-primaryTextColor mt-6">
+          <h2 className="text-lg font-bold text-primaryTextColor mt-6 font-outfit">
             1. Consent & Scope
           </h2>
           <p>
@@ -52,7 +52,7 @@ export default function PrivacyPolicy() {
           </p>
 
           {/* Section 2 */}
-          <h2 className="text-lg font-bold text-primaryTextColor mt-6">
+          <h2 className="text-lg font-bold text-primaryTextColor mt-6 font-outfit">
             2. Log Files & Analytics
           </h2>
           <p>
@@ -71,7 +71,7 @@ export default function PrivacyPolicy() {
           </p>
 
           {/* Section 3 - Google AdSense & Cookies */}
-          <h2 className="text-lg font-bold text-primaryTextColor mt-6">
+          <h2 className="text-lg font-bold text-primaryTextColor mt-6 font-outfit">
             3. Cookies, DoubleClick DART Cookies & Google AdSense
           </h2>
           <p>
@@ -80,12 +80,12 @@ export default function PrivacyPolicy() {
           <p className="mt-2">
             Google is one of a third-party vendor on our site. It also uses cookies, known as DART cookies, to serve ads to our site visitors based upon their visit to www.website.com and other sites on the internet. However, visitors may choose to decline the use of DART cookies by visiting the Google ad and content network Privacy Policy at the following URL:
           </p>
-          <div className="bg-bgColorSecondary p-3 rounded-lg border border-border mt-2 font-mono text-xs text-primaryBtn overflow-x-auto">
+          <div className="bg-[#0E131F] p-3 rounded-lg border border-cyanNeon/30 mt-2 font-mono text-xs text-cyanNeon overflow-x-auto">
             https://policies.google.com/technologies/ads
           </div>
 
           {/* Section 4 - Third Party Advertisers */}
-          <h2 className="text-lg font-bold text-primaryTextColor mt-6">
+          <h2 className="text-lg font-bold text-primaryTextColor mt-6 font-outfit">
             4. Third-Party Advertising Partners
           </h2>
           <p>
@@ -96,7 +96,7 @@ export default function PrivacyPolicy() {
           </p>
 
           {/* Section 5 - CCPA & GDPR Rights */}
-          <h2 className="text-lg font-bold text-primaryTextColor mt-6">
+          <h2 className="text-lg font-bold text-primaryTextColor mt-6 font-outfit">
             5. CCPA & GDPR Data Protection Rights
           </h2>
           <p>
@@ -110,7 +110,7 @@ export default function PrivacyPolicy() {
           </ul>
 
           {/* Section 6 - Children's Privacy */}
-          <h2 className="text-lg font-bold text-primaryTextColor mt-6">
+          <h2 className="text-lg font-bold text-primaryTextColor mt-6 font-outfit">
             6. Children's Information
           </h2>
           <p>
@@ -121,10 +121,10 @@ export default function PrivacyPolicy() {
           </p>
 
           {/* Contact box */}
-          <div className="bg-bgColorSecondary border border-border p-5 rounded-xl mt-8">
-            <h3 className="text-sm font-bold text-primaryTextColor uppercase tracking-wider mb-1">Privacy Contact</h3>
+          <div className="bg-[#0E131F] border border-white/10 p-5 rounded-xl mt-8">
+            <h3 className="text-sm font-bold text-primaryTextColor uppercase tracking-wider mb-1 font-outfit">Privacy Contact</h3>
             <p className="text-xs text-secondaryTextColor">If you have any questions or concerns regarding our privacy practices, please contact us at:</p>
-            <span className="text-sm font-bold text-primaryBtn block mt-2">privacy@{DOMAIN}</span>
+            <span className="text-sm font-bold text-cyanNeon block mt-2">privacy@{DOMAIN}</span>
           </div>
         </div>
       </div>

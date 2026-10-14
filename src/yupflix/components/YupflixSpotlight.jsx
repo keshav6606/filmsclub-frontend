@@ -57,7 +57,7 @@ export function YupflixSpotlight({ items = [] }) {
           <div className="flex items-center gap-2.5">
             <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-600/20 text-red-400 border border-red-500/30 text-xs font-black uppercase tracking-wider shadow-[0_0_15px_rgba(229,9,20,0.3)]">
               <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-              {activeItem.latestLabel ? 'New Episode Available' : 'FilmsClub VIP Exclusive'}
+              {activeItem.latestLabel ? 'New Episode Available' : 'Featured OTT Premiere'}
             </span>
 
             {has4K && (

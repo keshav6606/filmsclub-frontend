@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import HeroSlider from "../components/HomeHero";
+import CinemaQuickDock from "../components/CinemaQuickDock";
+import InteractiveOTTHub from "../components/InteractiveOTTHub";
 import HomeSections from "../components/HomeSections";
 import PopularCategories from "../components/PopularCategories";
 import ContinueWatching from "../components/ContinueWatching";
@@ -11,16 +13,14 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { BASE_URL as BASE } from "../config/api";
 
-// Scraped Catalog (FilmsClub / Yupflix) components & data
+// Unified Catalog components & data
 import { RankedRail, YupflixRail } from "../yupflix/components/YupflixPlatformFilter";
 import { yupflixApi } from "../yupflix/services/yupflixApi";
 import homeFallback from "../yupflix/data/home.json";
 import browseMovieFallback from "../yupflix/data/browse_movie.json";
-import { PROVIDERS } from "../yupflix/utils/yupflixHelpers";
-import { RiMovie2Fill } from "react-icons/ri";
 
 export default function Home() {
-  const SITENAME = import.meta.env.VITE_SITENAME || "Filmy4uhd";
+  const SITENAME = import.meta.env.VITE_SITENAME || "FilmsClub";
 
   // Backend Database States
   const [heroPopularMovies, setHeroPopularMovies] = useState([]);
@@ -32,7 +32,7 @@ export default function Home() {
   const [isRecentlyAddedLoading, setIsRecentlyAddedLoading] = useState(true);
   const [isTrendingTvLoading, setIsTrendingTvLoading] = useState(true);
 
-  // Scraped Catalog States
+  // Scraped / OTT Catalog States
   const [yupflixHome, setYupflixHome] = useState(homeFallback);
   const [scrapedMovies, setScrapedMovies] = useState(browseMovieFallback.items || []);
 
@@ -66,6 +66,12 @@ export default function Home() {
         setIsHeroLoading(false);
       });
   }, [BASE]);
+
+  // Combined Hero Movies: Mix database blockbusters with top OTT trending drops
+  const combinedHeroMovies = [
+    ...heroPopularMovies,
+    ...(yupflixHome?.trending?.slice(0, 5) || [])
+  ];
 
   // 2. Trending Now (Database)
   useEffect(() => {
@@ -131,77 +137,37 @@ export default function Home() {
   }, [BASE]);
 
   return (
-    <div className="pb-16 md:pb-10">
-      <ToastContainer style={{ fontSize: "0.8rem" }} />
-      {/* SEO SECTION */}
+    <div className="pb-20 md:pb-16 bg-[#05070B] overflow-x-hidden min-h-screen">
+      <ToastContainer style={{ fontSize: "0.85rem" }} />
+
+      {/* Dynamic SEO */}
       <SEO
-        title={`${SITENAME} - Watch 4K UHD Movies & OTT Series Online`}
-        description={`Stream and download latest 4K Ultra HD movies, Netflix, Prime Video, Hotstar & TV shows online via NextPlayer with Dolby Sound on ${SITENAME}.`}
+        title={`${SITENAME} - NextGen 4K UHD Movies & OTT Streaming Universe`}
+        description={`Stream master-grade 4K Ultra HD movies, Netflix, Prime Video, Hotstar & TV shows online with Dolby Sound on ${SITENAME}.`}
         name={SITENAME}
         type="website"
-        keywords="watch movies online, watch hd movies, free 4k streaming, filmy4uhd, hindi dubbed movies, nextplayer, filmsclub"
+        keywords="watch movies online, watch hd movies, free 4k streaming, filmy4uhd, hindi dubbed movies, netflix movies, prime video online"
         link={`https://${SITENAME.toLowerCase()}.site`}
       />
 
-      {/* ── Screen 1: 1. Featured Blockbuster Hero ── */}
+      {/* ── 1. NextGen Billboard Hero Slider (Unified with Database & OTT Drops) ── */}
       <HeroSlider
-        movieData={heroPopularMovies}
-        isMovieDataLoading={isHeroLoading}
+        movieData={combinedHeroMovies.length > 0 ? combinedHeroMovies : heroPopularMovies}
+        isMovieDataLoading={isHeroLoading && combinedHeroMovies.length === 0}
       />
 
-      {/* ── OTT Platform Quick Channels (Scraped VIP Channels) ── */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6 mb-8">
-        <div className="flex items-center justify-between mb-3 px-1">
-          <div className="flex items-center gap-2">
-            <RiMovie2Fill className="text-amber-400 text-lg" />
-            <h2 className="font-outfit font-black text-sm sm:text-base text-white tracking-wide uppercase">
-              Streaming Hubs & OTT Channels
-            </h2>
-          </div>
-          <Link
-            to="/filmsclub"
-            className="text-xs font-bold text-amber-400 hover:text-amber-300 underline"
-          >
-            Explore VIP Library →
-          </Link>
-        </div>
+      {/* ── 2. Advanced Interactive Floating Platform Nebula Dock ── */}
+      <CinemaQuickDock />
 
-        <div className="flex items-center gap-2.5 overflow-x-auto no-sb py-1.5 px-0.5">
-          {PROVIDERS.map((p) => (
-            <Link
-              key={p.key}
-              to={`/filmsclub?prov=${p.key}`}
-              className="group flex items-center gap-2.5 px-4 py-2.5 rounded-2xl bg-[#12141c]/90 hover:bg-slate-900 border border-white/10 hover:border-amber-400/40 text-zinc-300 hover:text-white transition-all shrink-0 shadow-md"
-            >
-              {p.img ? (
-                <img
-                  src={`/providers/${p.img}.jpeg`}
-                  alt=""
-                  loading="lazy"
-                  className="w-5 h-5 rounded-md object-cover shadow"
-                />
-              ) : (
-                <span
-                  className="w-5 h-5 rounded-md flex items-center justify-center font-black text-[10px]"
-                  style={{ background: p.bg || '#222', color: p.fg || '#fff' }}
-                >
-                  {p.label?.slice(0, 2)}
-                </span>
-              )}
-              <span className="font-outfit font-bold text-xs whitespace-nowrap">
-                {p.name}
-              </span>
-            </Link>
-          ))}
-        </div>
-      </section>
+      {/* ── 3. Interactive OTT Streaming Hub & Live Channels (Immediate On-Page Filtering) ── */}
+      <InteractiveOTTHub />
 
-      {/* ── Continue Watching (Persisted Playback Row) ── */}
+      {/* ── 4. Continue Watching (Persisted Playback Session) ── */}
       <ContinueWatching />
 
-      {/* ── Mixed Scraped Section: Top 10 Today Ranked Rail ── */}
+      {/* ── 5. Top 10 Today Ranked Rail ── */}
       {yupflixHome?.trending?.length > 0 && (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-4">
+        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 mt-12 md:mt-16">
           <RankedRail
             title="Top 10 Trending Today"
             items={yupflixHome.trending}
@@ -209,52 +175,52 @@ export default function Home() {
         </div>
       )}
 
-      {/* ── Database Section: Trending Now ── */}
+      {/* ── 6. Trending Blockbusters (Database) ── */}
       <HomeSections
         movieData={trendingMovies}
         isMovieDataLoading={isTrendingMoviesLoading}
-        sectionTitle="Trending Now"
-        sectionSeeMoreButtonLink="/movies"
+        sectionTitle="Trending Blockbusters"
+        sectionSeeMoreButtonLink="/movies?sort_by=rating:desc"
       />
 
-      {/* ── Mixed Scraped Section: OTT Originals & Exclusives Rail ── */}
+      {/* ── 7. OTT Originals & Exclusive Premieres ── */}
       {yupflixHome?.trending?.length > 10 && (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-4">
+        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 mt-12 md:mt-16">
           <YupflixRail
-            title="OTT Originals & VIP Releases"
+            title="OTT Originals & Exclusive Premieres"
             to="/filmsclub"
             items={yupflixHome.trending.slice(10, 26)}
           />
         </div>
       )}
 
-      {/* ── Database Section: Popular Categories ── */}
+      {/* ── 8. Genre Circle Categories Row ── */}
       <PopularCategories />
 
-      {/* ── Database Section: Recently Added Drops ── */}
+      {/* ── 9. Fresh Cinema Drops (Database) ── */}
       <HomeSections
         movieData={recentlyAdded}
         isMovieDataLoading={isRecentlyAddedLoading}
-        sectionTitle="Recently Added"
-        sectionSeeMoreButtonLink="/movies"
+        sectionTitle="Recently Added Premieres"
+        sectionSeeMoreButtonLink="/movies?sort_by=updated_on:desc"
       />
 
-      {/* Ad Banner */}
+      {/* Ad Banner Container */}
       <AdBanner slot="5754054742" />
 
-      {/* ── Database Section: Popular Series ── */}
+      {/* ── 10. Binge-Worthy Series & Shows ── */}
       <HomeSections
         movieData={trendingTv}
         isMovieDataLoading={isTrendingTvLoading}
-        sectionTitle="Popular Series"
+        sectionTitle="Binge-Worthy Series & Shows"
         sectionSeeMoreButtonLink="/series"
       />
 
-      {/* ── Mixed Scraped Section: Latest Bollywood & Dual Audio Drops ── */}
+      {/* ── 11. Cinema & Hindi Dubbed Exclusives ── */}
       {scrapedMovies?.length > 0 && (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-6">
+        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 mt-12 md:mt-16">
           <YupflixRail
-            title="Cinema & Dual Audio Exclusives"
+            title="Cinema & Hindi Dubbed Exclusives"
             to="/filmsclub?type=movie"
             items={scrapedMovies.slice(0, 16)}
           />

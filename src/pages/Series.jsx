@@ -11,6 +11,7 @@ import { BASE_URL as BASE } from "../config/api";
 import { GENRE_LIST, LANGUAGE_LIST } from "../components/MoviesAndSeriesSections";
 import { BiFilterAlt } from "react-icons/bi";
 import { IoCloseCircleOutline } from "react-icons/io5";
+import browseSeriesFallback from "../yupflix/data/browse_series.json";
 
 export default function Series() {
   const SITENAME = import.meta.env.VITE_SITENAME || "Filmy4uhd";
@@ -90,9 +91,25 @@ export default function Series() {
       .get(`${BASE}/api/tvshows`, { params: apiParams })
       .then((response) => {
         const tvList = response.data.tv_shows || [];
-        setSeries(tvList);
-        if (tvList.length > 0) setFeaturedSeries(tvList[0]);
-        setSeriesDataForPageCount(response.data.total_count || tvList.length);
+        const isDefaultView = (!selectedGenre || selectedGenre.toLowerCase() === "all") && (!selectedLanguage || selectedLanguage.toLowerCase() === "all") && currentPage === 1;
+        const extra = isDefaultView
+          ? (browseSeriesFallback.items || []).map((s) => ({
+              tmdb_id: s.code,
+              code: s.code,
+              title: s.title,
+              poster: s.poster,
+              backdrop: s.backdrop || s.poster,
+              release_year: s.year || 2026,
+              genres: s.genres || ["Drama", "Web Series"],
+              rating: s.rating || 8.4,
+              media_type: "series",
+              rip: s.latestLabel || "4K UHD",
+            }))
+          : [];
+        const combined = [...tvList, ...extra];
+        setSeries(combined);
+        if (combined.length > 0) setFeaturedSeries(combined[0]);
+        setSeriesDataForPageCount((response.data.total_count || tvList.length) + extra.length);
         setIsSeriesDataLoading(false);
       })
       .catch((error) => {

@@ -36,10 +36,10 @@ const PaginationItem = ({ page, currentPage, onPageChange, isDisabled }) => {
   return (
     <button
       onClick={() => onPageChange(page)}
-      className={`min-w-[40px] h-10 px-3.5 rounded-full text-xs font-extrabold transition-all duration-200 flex items-center justify-center border ${
+      className={`min-w-[40px] h-10 px-3.5 rounded-full text-xs font-black transition-all duration-300 flex items-center justify-center border font-mono ${
         isSelected
-          ? "bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 border-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.5)] scale-105"
-          : "bg-slate-900/80 text-slate-300 border-white/10 hover:border-amber-400/50 hover:text-amber-400 backdrop-blur-md"
+          ? "bg-gradient-to-r from-cyan-400 to-blue-600 text-slate-950 border-cyan-400 shadow-[0_0_15px_rgba(0,242,254,0.6)] scale-105"
+          : "bg-[#0E131F] text-slate-300 border-white/10 hover:border-cyan-400/50 hover:text-cyan-300 backdrop-blur-md"
       }`}
     >
       {page}
@@ -58,19 +58,19 @@ const Pagination = ({ currentPage, total, limit, onPageChange, pagesNum }) => {
   if (pagesCount <= 1) return null;
 
   return (
-    <div className="flex items-center justify-center gap-2 flex-wrap mt-10 mb-6">
+    <div className="flex items-center justify-center gap-2 flex-wrap mt-12 mb-8">
       {!isFirstPage && (
         <>
           <button
             onClick={() => onPageChange(1)}
-            className="w-10 h-10 rounded-full bg-slate-900/80 border border-white/10 text-amber-400 hover:bg-amber-500/20 flex items-center justify-center transition-all shadow-md"
+            className="w-10 h-10 rounded-full bg-[#0E131F] border border-white/10 text-cyan-400 hover:bg-cyan-500/20 flex items-center justify-center transition-all shadow-md"
             aria-label="First page"
           >
             <AiOutlineFastBackward className="text-base" />
           </button>
           <button
             onClick={() => onPageChange(Number(currentPage) - 1)}
-            className="w-10 h-10 rounded-full bg-slate-900/80 border border-white/10 text-amber-400 hover:bg-amber-500/20 flex items-center justify-center transition-all shadow-md"
+            className="w-10 h-10 rounded-full bg-[#0E131F] border border-white/10 text-cyan-400 hover:bg-cyan-500/20 flex items-center justify-center transition-all shadow-md"
             aria-label="Previous page"
           >
             <AiOutlineArrowLeft className="text-base" />
@@ -91,14 +91,14 @@ const Pagination = ({ currentPage, total, limit, onPageChange, pagesNum }) => {
         <>
           <button
             onClick={() => onPageChange(Number(currentPage) + 1)}
-            className="w-10 h-10 rounded-full bg-slate-900/80 border border-white/10 text-amber-400 hover:bg-amber-500/20 flex items-center justify-center transition-all shadow-md"
+            className="w-10 h-10 rounded-full bg-[#0E131F] border border-white/10 text-cyan-400 hover:bg-cyan-500/20 flex items-center justify-center transition-all shadow-md"
             aria-label="Next page"
           >
             <AiOutlineArrowRight className="text-base" />
           </button>
           <button
             onClick={() => onPageChange(pagesNum || pagesCount)}
-            className="w-10 h-10 rounded-full bg-slate-900/80 border border-white/10 text-amber-400 hover:bg-amber-500/20 flex items-center justify-center transition-all shadow-md"
+            className="w-10 h-10 rounded-full bg-[#0E131F] border border-white/10 text-cyan-400 hover:bg-cyan-500/20 flex items-center justify-center transition-all shadow-md"
             aria-label="Last page"
           >
             <AiFillFastForward className="text-base" />

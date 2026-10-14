@@ -80,34 +80,34 @@ export default function Contact() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Left Column - Contact Info Cards */}
         <div className="space-y-6">
-          <div className="glass-card p-6 border border-border space-y-3">
-            <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-400 mb-3">
+          <div className="glass-card p-6 border border-white/10 space-y-3 bg-[#080B11]/80 backdrop-blur-xl">
+            <div className="w-10 h-10 rounded-xl bg-cyanNeon/10 border border-cyanNeon/20 flex items-center justify-center text-cyanNeon mb-3">
               <MdOutlineEmail className="text-2xl" />
             </div>
             <h3 className="text-base font-bold text-primaryTextColor">Email Support</h3>
             <p className="text-xs text-secondaryTextColor leading-relaxed">
               For general inquiries, partnership, or technical feedback:
             </p>
-            <a href={`mailto:support@${DOMAIN}`} className="text-sm font-semibold text-amber-400 block hover:underline">
+            <a href={`mailto:support@${DOMAIN}`} className="text-sm font-semibold text-cyanNeon block hover:underline">
               support@{DOMAIN}
             </a>
           </div>
 
-          <div className="glass-card p-6 border border-border space-y-3">
-            <div className="w-10 h-10 rounded-xl bg-red-500/10 flex items-center justify-center text-red-400 mb-3">
+          <div className="glass-card p-6 border border-white/10 space-y-3 bg-[#080B11]/80 backdrop-blur-xl">
+            <div className="w-10 h-10 rounded-xl bg-crimsonNeon/10 border border-crimsonNeon/20 flex items-center justify-center text-crimsonNeon mb-3">
               <MdOutlineHelpOutline className="text-2xl" />
             </div>
             <h3 className="text-base font-bold text-primaryTextColor">DMCA & Copyright Takedowns</h3>
             <p className="text-xs text-secondaryTextColor leading-relaxed">
               For copyright removal requests, please provide complete post URLs and ownership proof:
             </p>
-            <a href={`mailto:dmca@${DOMAIN}`} className="text-sm font-semibold text-red-400 block hover:underline">
+            <a href={`mailto:dmca@${DOMAIN}`} className="text-sm font-semibold text-crimsonNeon block hover:underline">
               dmca@{DOMAIN}
             </a>
           </div>
 
           {TG_URL && (
-            <div className="glass-card p-6 border border-[#0088cc]/30 space-y-3">
+            <div className="glass-card p-6 border border-[#0088cc]/30 space-y-3 bg-[#080B11]/80 backdrop-blur-xl">
               <div className="w-10 h-10 rounded-xl bg-[#0088cc]/10 flex items-center justify-center text-[#0088cc] mb-3">
                 <FaTelegram className="text-2xl" />
               </div>
@@ -128,9 +128,9 @@ export default function Contact() {
         </div>
 
         {/* Right Column - Contact Form */}
-        <div className="lg:col-span-2 glass-card p-6 sm:p-8 border border-border">
+        <div className="lg:col-span-2 glass-card p-6 sm:p-8 border border-white/10 bg-[#080B11]/80 backdrop-blur-xl">
           <h2 className="text-xl font-bold text-primaryTextColor mb-6 flex items-center gap-2">
-            <MdOutlineMessage className="text-amber-400" />
+            <MdOutlineMessage className="text-cyanNeon" />
             Send Us a Direct Message
           </h2>
 
@@ -138,7 +138,7 @@ export default function Contact() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <div>
                 <label className="block text-xs font-semibold text-secondaryTextColor uppercase tracking-wider mb-2">
-                  Your Name <span className="text-red-400">*</span>
+                  Your Name <span className="text-crimsonNeon">*</span>
                 </label>
                 <input
                   type="text"
@@ -147,13 +147,13 @@ export default function Contact() {
                   onChange={handleChange}
                   placeholder="Enter your name"
                   required
-                  className="w-full bg-slate-900 border border-border rounded-xl px-4 py-2.5 text-sm text-primaryTextColor placeholder-mutedText outline-none focus:border-amber-400 transition-colors"
+                  className="w-full bg-[#0E131F] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-primaryTextColor placeholder-mutedText outline-none focus:border-cyanNeon transition-colors"
                 />
               </div>
 
               <div>
                 <label className="block text-xs font-semibold text-secondaryTextColor uppercase tracking-wider mb-2">
-                  Email Address <span className="text-red-400">*</span>
+                  Email Address <span className="text-crimsonNeon">*</span>
                 </label>
                 <input
                   type="email"
@@ -162,7 +162,7 @@ export default function Contact() {
                   onChange={handleChange}
                   placeholder="name@example.com"
                   required
-                  className="w-full bg-slate-900 border border-border rounded-xl px-4 py-2.5 text-sm text-primaryTextColor placeholder-mutedText outline-none focus:border-amber-400 transition-colors"
+                  className="w-full bg-[#0E131F] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-primaryTextColor placeholder-mutedText outline-none focus:border-cyanNeon transition-colors"
                 />
               </div>
             </div>
@@ -176,7 +176,7 @@ export default function Contact() {
                   name="category"
                   value={formData.category}
                   onChange={handleChange}
-                  className="w-full bg-slate-900 border border-border rounded-xl px-4 py-2.5 text-sm text-primaryTextColor outline-none focus:border-amber-400 transition-colors"
+                  className="w-full bg-[#0E131F] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-primaryTextColor outline-none focus:border-cyanNeon transition-colors"
                 >
                   <option value="General Inquiry">General Inquiry</option>
                   <option value="DMCA & Copyright">DMCA & Copyright Takedown</option>
@@ -196,14 +196,14 @@ export default function Contact() {
                   value={formData.subject}
                   onChange={handleChange}
                   placeholder="Brief summary of your inquiry"
-                  className="w-full bg-slate-900 border border-border rounded-xl px-4 py-2.5 text-sm text-primaryTextColor placeholder-mutedText outline-none focus:border-amber-400 transition-colors"
+                  className="w-full bg-[#0E131F] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-primaryTextColor placeholder-mutedText outline-none focus:border-cyanNeon transition-colors"
                 />
               </div>
             </div>
 
             <div>
               <label className="block text-xs font-semibold text-secondaryTextColor uppercase tracking-wider mb-2">
-                Your Message <span className="text-red-400">*</span>
+                Your Message <span className="text-crimsonNeon">*</span>
               </label>
               <textarea
                 name="message"
@@ -212,14 +212,14 @@ export default function Contact() {
                 onChange={handleChange}
                 placeholder="Type your message here..."
                 required
-                className="w-full bg-slate-900 border border-border rounded-xl px-4 py-3 text-sm text-primaryTextColor placeholder-mutedText outline-none focus:border-amber-400 transition-colors resize-y"
+                className="w-full bg-[#0E131F] border border-white/10 rounded-xl px-4 py-3 text-sm text-primaryTextColor placeholder-mutedText outline-none focus:border-cyanNeon transition-colors resize-y"
               />
             </div>
 
             <button
               type="submit"
               disabled={isSubmitting}
-              className="btn-gold w-full sm:w-auto px-8 py-3 flex items-center justify-center gap-2 text-sm font-bold rounded-xl shadow-gold hover:scale-[1.02] transition-all"
+              className="btn-gold w-full sm:w-auto px-8 py-3 flex items-center justify-center gap-2 text-sm font-bold rounded-xl shadow-cyan hover:scale-[1.02] transition-all cursor-pointer"
             >
               {isSubmitting ? (
                 <span>Preparing Mail...</span>

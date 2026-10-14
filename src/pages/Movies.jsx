@@ -6,6 +6,7 @@ import MoviesAndSeriesSections from "../components/MoviesAndSeriesSections";
 import Pagination from "../components/Pagination";
 import SEO from "../components/SEO";
 import { BASE_URL as BASE } from "../config/api";
+import browseMovieFallback from "../yupflix/data/browse_movie.json";
 
 export default function Movies() {
   const SITENAME = import.meta.env.VITE_SITENAME || "Filmy4uhd";
@@ -86,8 +87,24 @@ export default function Movies() {
       .get(`${BASE}/api/movies`, { params: apiParams })
       .then((response) => {
         const list = response.data.movies || [];
-        setMovies(list);
-        setMoviesDataForPageCount(response.data.total_count || list.length);
+        const isDefaultView = (!activeGenre || activeGenre.toLowerCase() === "all") && (!activeLanguage || activeLanguage.toLowerCase() === "all") && currentPage === 1;
+        const extra = isDefaultView
+          ? (browseMovieFallback.items || []).map((m) => ({
+              tmdb_id: m.code,
+              code: m.code,
+              title: m.title,
+              poster: m.poster,
+              backdrop: m.backdrop || m.poster,
+              release_year: m.year || 2026,
+              genres: m.genres || ["Action", "Cinema"],
+              rating: m.rating || 8.0,
+              media_type: "movie",
+              rip: m.qualities?.[0] || "4K UHD",
+            }))
+          : [];
+        const combined = [...list, ...extra];
+        setMovies(combined);
+        setMoviesDataForPageCount((response.data.total_count || list.length) + extra.length);
         setIsMoviesDataLoading(false);
       })
       .catch((error) => {

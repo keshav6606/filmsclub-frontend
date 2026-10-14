@@ -21,14 +21,14 @@ export default function Disclaimer() {
         link={`https://${DOMAIN}/disclaimer`}
       />
 
-      <div className="glass-card p-6 sm:p-10 space-y-6 border border-border">
+      <div className="glass-card p-6 sm:p-10 space-y-6 border border-white/10 bg-[#080B11]/80 backdrop-blur-xl">
         {/* Header */}
-        <div className="border-b border-border pb-5 flex items-center gap-3">
-          <div className="w-12 h-12 rounded-xl bg-primaryBtn/10 flex items-center justify-center text-primaryBtn shrink-0">
+        <div className="border-b border-white/10 pb-5 flex items-center gap-3">
+          <div className="w-12 h-12 rounded-xl bg-cyanNeon/10 border border-cyanNeon/20 flex items-center justify-center text-cyanNeon shrink-0">
             <MdOutlineGavel className="text-3xl" />
           </div>
           <div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-primaryTextColor">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-primaryTextColor font-outfit">
               Disclaimer & DMCA Policy
             </h1>
             <p className="text-xs text-mutedText mt-1">Digital Millennium Copyright Act Compliance Statement</p>
@@ -38,13 +38,13 @@ export default function Disclaimer() {
         {/* Content */}
         <div className="space-y-6 text-secondaryTextColor text-sm leading-relaxed">
           <p>
-            Welcome to <strong>{SITENAME}</strong> (<span className="text-primaryBtn font-medium">https://{DOMAIN}</span>). We respect the intellectual property rights of creators, filmmakers, and rights owners. Please read this Disclaimer carefully before accessing our directory.
+            Welcome to <strong>{SITENAME}</strong> (<span className="text-cyanNeon font-medium">https://{DOMAIN}</span>). We respect the intellectual property rights of creators, filmmakers, and rights owners. Please read this Disclaimer carefully before accessing our directory.
           </p>
 
           {/* Section 1 */}
-          <div className="glass-card p-5 border border-border bg-bgColorSecondary/50">
-            <h2 className="text-base font-bold text-primaryTextColor mb-2 flex items-center gap-2">
-              <MdOutlineReportProblem className="text-goldLight" />
+          <div className="glass-card p-5 border border-white/10 bg-[#0E131F]/80">
+            <h2 className="text-base font-bold text-primaryTextColor mb-2 flex items-center gap-2 font-outfit">
+              <MdOutlineReportProblem className="text-goldRef" />
               1. Non-Hosting & Indexing Declaration
             </h2>
             <p className="text-xs sm:text-sm text-secondaryTextColor leading-relaxed">
@@ -53,7 +53,7 @@ export default function Disclaimer() {
           </div>
 
           {/* Section 2 */}
-          <h2 className="text-lg font-bold text-primaryTextColor mt-6">
+          <h2 className="text-lg font-bold text-primaryTextColor mt-6 font-outfit">
             2. Copyright Infringement & Takedown Protocol
           </h2>
           <p>
@@ -72,7 +72,7 @@ export default function Disclaimer() {
           </ul>
 
           {/* Section 3 */}
-          <h2 className="text-lg font-bold text-primaryTextColor mt-6">
+          <h2 className="text-lg font-bold text-primaryTextColor mt-6 font-outfit">
             3. Processing SLA & Removal Timeline
           </h2>
           <p>
@@ -81,28 +81,28 @@ export default function Disclaimer() {
 
           {/* Email Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
-            <div className="bg-bgColorSecondary border border-border p-5 rounded-xl">
+            <div className="bg-[#0E131F] border border-crimsonNeon/30 p-5 rounded-xl">
               <span className="text-xs text-mutedText font-semibold uppercase tracking-wider block mb-1">
                 DMCA Legal Email
               </span>
-              <span className="text-base text-red-400 font-bold block">
+              <span className="text-base text-crimsonNeon font-bold block">
                 dmca@{DOMAIN}
               </span>
             </div>
 
-            <div className="bg-bgColorSecondary border border-border p-5 rounded-xl">
+            <div className="bg-[#0E131F] border border-cyanNeon/30 p-5 rounded-xl">
               <span className="text-xs text-mutedText font-semibold uppercase tracking-wider block mb-1">
                 General Support
               </span>
-              <span className="text-base text-primaryBtn font-bold block">
+              <span className="text-base text-cyanNeon font-bold block">
                 support@{DOMAIN}
               </span>
             </div>
           </div>
 
-          <div className="pt-4 border-t border-border flex items-center justify-between text-xs text-mutedText">
+          <div className="pt-4 border-t border-white/10 flex items-center justify-between text-xs text-mutedText">
             <span>Need further assistance?</span>
-            <Link to="/contact" className="text-primaryBtn font-semibold hover:underline">
+            <Link to="/contact" className="text-cyanNeon font-semibold hover:underline">
               Contact Support Form &rarr;
             </Link>
           </div>

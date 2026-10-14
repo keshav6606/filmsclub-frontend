@@ -5,6 +5,7 @@ import { YupflixSpotlight } from '../components/YupflixSpotlight';
 import { YupflixPlatformFilter, RankedRail, YupflixRail } from '../components/YupflixPlatformFilter';
 import { YupflixFilterBar } from '../components/YupflixFilterBar';
 import { YupflixCard } from '../components/YupflixCard';
+import { PROVIDERS_MAP } from '../utils/yupflixHelpers';
 import { FaFilm, FaTv, FaBolt, FaSyncAlt } from 'react-icons/fa';
 
 const FILTER_KEYS = ['prov', 'genre', 'year', 'lang', 'industry'];
@@ -35,6 +36,9 @@ export function YupflixCatalogView({ type = '' }) {
   }, [type, searchParams]);
 
   const industry = searchParams.get('industry') || '';
+  const provKey = (searchParams.get('prov') || '').toLowerCase();
+  const activeProvider = PROVIDERS_MAP[provKey] || null;
+
   const isDefaultFilter =
     !['prov', 'genre', 'year', 'lang'].some((k) => searchParams.get(k)) &&
     (searchParams.get('sort') || 'new') === 'new';
@@ -53,6 +57,16 @@ export function YupflixCatalogView({ type = '' }) {
   const [trending, setTrending] = useState([]);
   const [newSeries, setNewSeries] = useState([]);
   const [latestMovies, setLatestMovies] = useState([]);
+
+  // Auto scroll to catalog when provider changes
+  useEffect(() => {
+    if (provKey) {
+      const el = document.getElementById('catalog-section');
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+  }, [provKey]);
 
   useEffect(() => {
     const ctrl = new AbortController();
@@ -160,14 +174,40 @@ export function YupflixCatalogView({ type = '' }) {
       )}
 
       {/* 5. Main Catalog Grid & Filters */}
-      <section className="mt-12" id="catalog-section">
-        <div className="flex items-baseline justify-between mb-4 px-1">
+      <section className="mt-8 sm:mt-12" id="catalog-section">
+        <div className="flex flex-wrap items-center justify-between gap-4 mb-6 px-1">
           <div className="flex items-center gap-3">
-            <h2 className="font-outfit font-black text-2xl sm:text-3xl text-white tracking-tight">
-              {BROWSE_ALL_TITLES[type] || 'Browse Full Library'}
-            </h2>
+            {activeProvider ? (
+              <div className="flex items-center gap-3">
+                {activeProvider.img ? (
+                  <img
+                    src={`/providers/${activeProvider.img}.jpeg`}
+                    alt=""
+                    className="w-10 h-10 rounded-xl object-cover border border-cyan-400/50 shadow-[0_0_15px_rgba(0,242,254,0.4)]"
+                  />
+                ) : (
+                  <span
+                    className="w-10 h-10 rounded-xl flex items-center justify-center font-black text-xs shadow-md"
+                    style={{ background: activeProvider.bg || '#222', color: activeProvider.fg || '#fff' }}
+                  >
+                    {activeProvider.label || activeProvider.name.slice(0, 2)}
+                  </span>
+                )}
+                <div>
+                  <h2 className="font-outfit font-black text-2xl sm:text-3xl text-white tracking-tight flex items-center gap-2">
+                    {activeProvider.name} <span className="text-cyan-400 text-lg sm:text-xl font-normal">Catalog</span>
+                  </h2>
+                  <p className="text-xs text-zinc-400">Streaming releases & originals from {activeProvider.name}</p>
+                </div>
+              </div>
+            ) : (
+              <h2 className="font-outfit font-black text-2xl sm:text-3xl text-white tracking-tight">
+                {BROWSE_ALL_TITLES[type] || 'Browse Full Library'}
+              </h2>
+            )}
+
             {!loading && totalCount > 0 && (
-              <span className="text-xs font-bold text-red-400 bg-red-600/15 px-2.5 py-0.5 rounded-full border border-red-500/30">
+              <span className="text-xs font-bold text-cyan-400 bg-cyan-400/10 px-3 py-1 rounded-full border border-cyan-400/30 ml-2">
                 {totalCount.toLocaleString()} Titles
               </span>
             )}

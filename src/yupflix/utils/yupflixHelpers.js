@@ -18,7 +18,16 @@ export const PROVIDERS = [
   { key: 'lionsgate', name: 'Lionsgate Play', img: 'lionsgate' }
 ];
 
-export const PROVIDERS_MAP = Object.fromEntries(PROVIDERS.map(p => [p.key, p]));
+const baseProvidersMap = Object.fromEntries(PROVIDERS.map(p => [p.key, p]));
+export const PROVIDERS_MAP = {
+  ...baseProvidersMap,
+  apple: baseProvidersMap['appletv'] || { key: 'apple', name: 'Apple TV+', img: 'appletv' },
+  nf: baseProvidersMap['netflix'],
+  amz: baseProvidersMap['prime'],
+  dnp: baseProvidersMap['hotstar'],
+  sliv: baseProvidersMap['sonyliv'],
+  zee: baseProvidersMap['zee5']
+};
 
 export const TYPE_LABELS = {
   movie: 'Movie',

@@ -1,14 +1,21 @@
 import React, { useRef } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams, useNavigate, useLocation } from 'react-router-dom';
 import { PROVIDERS, PROVIDERS_MAP, cleanTitle } from '../utils/yupflixHelpers';
 import { YupflixCard, PosterImage } from './YupflixCard';
-import { FaChevronLeft, FaChevronRight, FaFire, FaPlay } from 'react-icons/fa';
+import { FaChevronLeft, FaChevronRight, FaFire } from 'react-icons/fa';
 
 export function YupflixPlatformFilter() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const location = useLocation();
   const currentProv = (searchParams.get('prov') || '').split(',').filter(k => PROVIDERS_MAP[k])[0] || null;
 
   const toggleProvider = (key) => {
+    if (!location.pathname.startsWith('/filmsclub')) {
+      navigate(`/filmsclub?prov=${key}`);
+      return;
+    }
+
     const params = new URLSearchParams(searchParams);
     if (key === currentProv) {
       params.delete('prov');
@@ -31,10 +38,10 @@ export function YupflixPlatformFilter() {
             aria-label={p.name}
             aria-pressed={isSelected}
             onClick={() => toggleProvider(p.key)}
-            className={`group relative flex items-center gap-2.5 px-4 py-2.5 rounded-2xl border transition-all duration-300 shrink-0 ${
+            className={`group relative flex items-center gap-2.5 px-4 py-2.5 rounded-2xl border transition-all duration-300 shrink-0 select-none ${
               isSelected
-                ? 'bg-red-600 text-white border-red-500 shadow-[0_0_20px_rgba(229,9,20,0.5)] scale-105'
-                : 'bg-[#12141c]/80 hover:bg-[#1a1d28] text-zinc-300 border-white/10 hover:border-white/20'
+                ? 'bg-gradient-to-r from-cyan-400 to-blue-600 text-slate-950 font-black border-cyan-400 shadow-[0_0_20px_rgba(0,242,254,0.6)] scale-105'
+                : 'bg-[#0E131F] hover:bg-[#141A29] text-slate-300 hover:text-white border-white/[0.08] hover:border-cyan-400/40'
             }`}
           >
             {p.img ? (
@@ -73,12 +80,12 @@ export function SectionRail({ title, aside, children, icon }) {
   };
 
   return (
-    <section className="mb-12">
+    <section className="mb-14">
       {/* Rail Header */}
-      <div className="flex items-center justify-between mb-4 px-1">
-        <div className="flex items-center gap-2.5">
-          {icon && <span className="text-red-500 text-lg">{icon}</span>}
-          <h2 className="font-outfit font-black text-xl sm:text-2xl text-white tracking-tight">
+      <div className="flex items-center justify-between mb-5 pb-2.5 border-b border-white/[0.08] px-1">
+        <div className="flex items-center gap-3">
+          {icon && <span className="text-cyan-400 text-xl">{icon}</span>}
+          <h2 className="section-title text-xl md:text-2xl">
             {title}
           </h2>
         </div>
@@ -90,7 +97,7 @@ export function SectionRail({ title, aside, children, icon }) {
               type="button"
               aria-label="Scroll left"
               onClick={() => scrollByAmount(-1)}
-              className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/15 text-zinc-300 flex items-center justify-center border border-white/10 transition-colors"
+              className="w-8 h-8 rounded-full bg-[#0E131F] hover:bg-[#141A29] text-slate-300 hover:text-white flex items-center justify-center border border-white/10 hover:border-cyan-400/40 transition-colors shadow-sm"
             >
               <FaChevronLeft className="text-xs" />
             </button>
@@ -98,7 +105,7 @@ export function SectionRail({ title, aside, children, icon }) {
               type="button"
               aria-label="Scroll right"
               onClick={() => scrollByAmount(1)}
-              className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/15 text-zinc-300 flex items-center justify-center border border-white/10 transition-colors"
+              className="w-8 h-8 rounded-full bg-[#0E131F] hover:bg-[#141A29] text-slate-300 hover:text-white flex items-center justify-center border border-white/10 hover:border-cyan-400/40 transition-colors shadow-sm"
             >
               <FaChevronRight className="text-xs" />
             </button>
@@ -124,10 +131,10 @@ export function RankedRail({ title, items = [] }) {
   return (
     <SectionRail
       title={title}
-      icon={<FaFire className="text-red-500 animate-pulse" />}
+      icon={<FaFire className="text-rose-500 animate-pulse text-2xl" />}
       aside={
-        <span className="text-[11px] font-extrabold uppercase px-2.5 py-1 rounded-full bg-red-600/15 text-red-400 border border-red-500/30">
-          Top 10 Today
+        <span className="spec-badge spec-badge-vip">
+          🔥 TOP 10 TODAY
         </span>
       }
     >
@@ -141,17 +148,17 @@ export function RankedRail({ title, items = [] }) {
             className="group relative flex items-end shrink-0 select-none"
             title={titleText}
           >
-            {/* Massive Stylized Rank Number */}
-            <span className="font-outfit font-black text-6xl sm:text-7xl lg:text-8xl leading-none text-transparent bg-clip-text bg-gradient-to-t from-red-600/80 via-red-500/40 to-transparent -mr-5 z-0 select-none group-hover:from-red-500 group-hover:to-cyan-400 transition-all duration-300 drop-shadow-[0_10px_20px_rgba(0,0,0,0.8)]">
+            {/* Massive Stylized Holographic Rank Number */}
+            <span className="font-outfit font-black text-6xl sm:text-7xl lg:text-8xl leading-none text-transparent bg-clip-text bg-gradient-to-t from-cyan-400/80 via-blue-500/35 to-transparent -mr-5 z-0 select-none group-hover:from-cyan-300 group-hover:to-rose-400 transition-all duration-300 drop-shadow-[0_12px_25px_rgba(0,0,0,0.9)]">
               {idx + 1}
             </span>
 
             {/* Poster Card */}
-            <div className="relative aspect-[2/3] w-32 sm:w-36 lg:w-40 rounded-2xl overflow-hidden bg-[#12141c] border border-white/10 group-hover:border-red-500/60 group-hover:shadow-[0_0_25px_rgba(229,9,20,0.4)] transition-all duration-300 z-10">
+            <div className="relative aspect-[2/3] w-32 sm:w-36 lg:w-40 rounded-2xl overflow-hidden bg-[#0E131F] border border-white/[0.08] border-t-white/[0.18] group-hover:border-cyan-400/60 group-hover:shadow-[0_12px_35px_rgba(0,242,254,0.35)] transition-all duration-300 z-10 shadow-lg">
               <PosterImage src={item.poster} alt={titleText} title={titleText} />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-80 group-hover:opacity-100 transition-opacity" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#05070B] via-transparent to-transparent opacity-85 group-hover:opacity-100 transition-opacity" />
               <div className="absolute bottom-2.5 inset-x-2 text-center">
-                <span className="font-outfit font-bold text-white text-xs line-clamp-1">
+                <span className="font-outfit font-bold text-white text-xs line-clamp-1 group-hover:text-cyan-300 transition-colors">
                   {titleText}
                 </span>
               </div>
@@ -172,10 +179,10 @@ export function YupflixRail({ title, to, items = [] }) {
       aside={
         to ? (
           <Link
-            className="text-xs font-bold text-zinc-400 hover:text-white px-3 py-1 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 transition-colors"
+            className="text-xs font-bold text-cyan-400 hover:text-cyan-300 px-4 py-1.5 rounded-full bg-[#0E131F] hover:bg-[#141A29] border border-cyan-400/30 transition-colors font-outfit"
             to={to}
           >
-            See all
+            Explore All &rarr;
           </Link>
         ) : undefined
       }

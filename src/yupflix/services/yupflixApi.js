@@ -10,6 +10,23 @@ import browseAllFallback from '../data/browse_all.json';
 import browseMovieFallback from '../data/browse_movie.json';
 import browseSeriesFallback from '../data/browse_series.json';
 import browseAnimeFallback from '../data/browse_anime.json';
+import providersFallback from '../data/providers_cache.json';
+
+const PROV_ALIASES = {
+  nf: 'netflix',
+  amz: 'prime',
+  primevideo: 'prime',
+  dnp: 'hotstar',
+  disney: 'hotstar',
+  jiohotstar: 'hotstar',
+  jio: 'hotstar',
+  sliv: 'sonyliv',
+  sony: 'sonyliv',
+  zee: 'zee5',
+  apple: 'apple',
+  appletv: 'apple',
+  mx: 'mxplayer'
+};
 
 const CACHE_TTL_MS = 5 * 60 * 1000;
 const cache = new Map();
@@ -88,9 +105,23 @@ export const yupflixApi = {
   genres: (type = '', signal) => cachedFetch(`/api/genres?type=${type}`, genresFallback, signal),
   browse: (queryString = '', signal) => {
     let fb = browseAllFallback;
-    if (queryString.includes('type=movie')) fb = browseMovieFallback;
-    else if (queryString.includes('type=series')) fb = browseSeriesFallback;
-    else if (queryString.includes('type=anime')) fb = browseAnimeFallback;
+
+    // Check if filtered by provider
+    const provMatch = queryString.match(/prov=([a-z0-9_-]+)/i);
+    if (provMatch) {
+      const rawProv = provMatch[1].toLowerCase();
+      const provKey = PROV_ALIASES[rawProv] || rawProv;
+      if (providersFallback && providersFallback[provKey]) {
+        fb = providersFallback[provKey];
+      }
+    } else if (queryString.includes('type=movie')) {
+      fb = browseMovieFallback;
+    } else if (queryString.includes('type=series')) {
+      fb = browseSeriesFallback;
+    } else if (queryString.includes('type=anime')) {
+      fb = browseAnimeFallback;
+    }
+
     return cachedFetch(`/api/browse?${queryString}`, fb, signal);
   },
   title: async (code, signal) => {

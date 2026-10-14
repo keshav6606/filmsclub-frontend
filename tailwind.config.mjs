@@ -25,49 +25,73 @@ export default {
       fontFamily: {
         Anton: ["Anton", ...defaultTheme.fontFamily.sans],
         jakarta: ["'Plus Jakarta Sans'", ...defaultTheme.fontFamily.sans],
+        outfit: ["Outfit", ...defaultTheme.fontFamily.sans],
+        mono: ["'JetBrains Mono'", ...defaultTheme.fontFamily.mono],
       },
       colors: {
-        // ── Dark Gold/Amber Cinema Theme ──────────────────────────────────────
+        // ── Cinema Obsidian & Photonic Neon Theme ────────────────────────────
         
-        // Backgrounds — ultra deep black
-        bgColor: "#07080B",              // Main background — near pitch black
-        bgColorSecondary: "#0F1117",     // Cards, panels — dark charcoal
-        bgColorTertiary: "#13151D",      // Nav, footer, modals
-        bgGlass: "rgba(15,17,23,0.85)", // Glass overlay
+        // Canvas & Surface Hierarchy
+        void: "#05070B",                 // Pure OLED void black
+        obsidian: "#080B11",             // Foundational cinema backdrop
+        surface: "#0E131F",              // Elevated panels, headers, bottom bars
+        surfaceElevated: "#141A29",      // Cards, menus, modals
+        surfaceHighlight: "#1C2438",     // Active states, hover cards
         
-        // Gold / Amber Accent
-        primaryBtn: "#D4A017",           // Rich gold CTA button
-        primaryBtnHover: "#B8860B",      // Darker gold on hover
-        primaryBtnGlow: "rgba(212,160,23,0.5)", // Gold glow
-        otherColor: "#D4A017",           // General gold accent
-        accent: "#F0B429",               // Bright amber accent
-        accentSoft: "#E6A817",           // Soft amber
-        goldLight: "#FFD166",            // Light gold for highlights
-        goldDark: "#B8860B",             // Dark gold for shadows
+        // Photonic Neon & VIP Accents
+        cyanNeon: "#00F2FE",             // Laser Electric Cyan
+        cyanGlow: "#00D2FF",             // Luminous Cyan
+        crimsonNeon: "#FF2A55",          // Cinema Scarlet VIP
+        crimsonDark: "#E50914",          // Flagship Cinema Red
+        violetNeon: "#8B5CF6",           // Royal Amethyst
+        violetDeep: "#7928CA",           // Deep Electric Violet
+        goldRef: "#FFD166",              // Dolby / IMDb Reference Gold
+        amberRef: "#F59E0B",             // Precision Amber
+        emeraldStudio: "#00F5A0",        // Lossless Studio Emerald
+        emeraldDark: "#10B981",          // Active Node Emerald
         
-        // Text
-        primaryTextColor: "#F5F5F5",     // Warm white
-        secondaryTextColor: "#8899AA",   // Muted blue-grey
-        mutedText: "#5A6A7A",            // Very muted text
+        // Legacy Backwards Compatibility Mappings
+        bgColor: "#05070B",
+        bgColorSecondary: "#0E131F",
+        bgColorTertiary: "#141A29",
+        bgGlass: "rgba(14, 19, 31, 0.78)",
         
-        // UI Elements
-        btnColor: "#0F1117",             // Button bg (dark)
-        border: "rgba(212,160,23,0.25)", // Gold tinted border
-        borderStrong: "rgba(212,160,23,0.5)", // Strong gold border
-        glass: "rgba(255,255,255,0.04)", // Glass card bg
+        primaryBtn: "#00F2FE",
+        primaryBtnHover: "#00D2FF",
+        primaryBtnGlow: "rgba(0, 242, 254, 0.5)",
+        otherColor: "#FF2A55",
+        accent: "#00F2FE",
+        accentSoft: "#38BDF8",
+        goldLight: "#FFD166",
+        goldDark: "#D97706",
         
-        // Semantic
-        ripBadge: "#1A2033",             // Badge backgrounds
-        skeleton: "#141820",             // Skeleton loading
+        // Typography Contrast
+        primaryTextColor: "#F8FAFC",
+        secondaryTextColor: "#94A3B8",
+        mutedText: "#64748B",
+        
+        // Glass & Borders
+        btnColor: "#0E131F",
+        border: "rgba(255, 255, 255, 0.08)",
+        borderStrong: "rgba(0, 242, 254, 0.35)",
+        glass: "rgba(255, 255, 255, 0.04)",
+        
+        // Badges & Telemetry
+        ripBadge: "#101626",
+        skeleton: "#0E131F",
       },
       boxShadow: {
-        gold: "0 0 20px rgba(212,160,23,0.35)",
-        goldStrong: "0 0 40px rgba(212,160,23,0.55)",
-        card: "0 8px 40px rgba(0,0,0,0.6)",
-        cardHover: "0 12px 60px rgba(0,0,0,0.8), 0 0 24px rgba(212,160,23,0.25)",
-        glass: "0 8px 32px 0 rgba(0,0,0,0.5)",
-        insetGold: "inset 0 1px 0 rgba(212,160,23,0.2)",
-        nav: "0 4px 30px rgba(0,0,0,0.6)",
+        cyan: "0 0 25px rgba(0, 242, 254, 0.4)",
+        cyanStrong: "0 0 45px rgba(0, 242, 254, 0.65)",
+        crimson: "0 0 25px rgba(255, 42, 85, 0.45)",
+        crimsonStrong: "0 0 45px rgba(255, 42, 85, 0.7)",
+        violet: "0 0 25px rgba(139, 92, 246, 0.4)",
+        gold: "0 0 25px rgba(255, 209, 102, 0.4)",
+        card: "0 10px 35px rgba(0, 0, 0, 0.8)",
+        cardHover: "0 16px 50px rgba(0, 0, 0, 0.9), 0 0 30px rgba(0, 242, 254, 0.3)",
+        glass: "0 8px 32px 0 rgba(0, 0, 0, 0.6)",
+        specular: "inset 0 1px 0 rgba(255, 255, 255, 0.15)",
+        nav: "0 8px 32px rgba(0, 0, 0, 0.8)",
       },
       aspectRatio: {
         "9/13": "9/13",
@@ -89,45 +113,51 @@ export default {
         "7xl": "6.3rem",
       },
       backgroundImage: {
-        "gradient-gold": "linear-gradient(135deg, #D4A017 0%, #F0B429 50%, #B8860B 100%)",
-        "gradient-gold-radial": "radial-gradient(ellipse at top, rgba(212,160,23,0.15) 0%, transparent 60%)",
-        "gradient-dark": "linear-gradient(180deg, transparent 0%, #07080B 100%)",
-        "gradient-card": "linear-gradient(180deg, transparent 40%, rgba(7,8,11,0.95) 100%)",
-        "gradient-hero": "linear-gradient(to right, rgba(7,8,11,0.9) 0%, rgba(7,8,11,0.6) 50%, transparent 100%)",
-        "gradient-glass": "linear-gradient(135deg, rgba(255,255,255,0.06), rgba(0,0,0,0.2))",
-        "gradient-animated": "linear-gradient(270deg, #D4A017, #F0B429, #B8860B, #07080B)",
+        "gradient-cyan": "linear-gradient(135deg, #00F2FE 0%, #00C6FF 100%)",
+        "gradient-crimson": "linear-gradient(135deg, #FF2A55 0%, #E50914 100%)",
+        "gradient-vip": "linear-gradient(135deg, #FF2A55 0%, #7928CA 100%)",
+        "gradient-cinema": "linear-gradient(135deg, #00F2FE 0%, #7928CA 100%)",
+        "gradient-dark": "linear-gradient(180deg, transparent 0%, #05070B 100%)",
+        "gradient-card": "linear-gradient(180deg, transparent 35%, rgba(5, 7, 11, 0.96) 100%)",
+        "gradient-hero": "linear-gradient(to right, rgba(5, 7, 11, 0.95) 0%, rgba(5, 7, 11, 0.65) 50%, transparent 100%)",
+        "gradient-glass": "linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(0, 0, 0, 0.3))",
       },
       animation: {
-        "gradient-shift": "gradientShift 8s ease infinite",
-        "fade-in": "fadeIn 0.5s ease-out",
-        "slide-up": "slideUp 0.4s ease-out",
-        "pulse-gold": "pulseGold 2s infinite ease-in-out",
-        "shimmer": "shimmer 2s infinite",
-        "scale-in": "scaleIn 0.3s ease-out",
+        "aurora": "auroraDrift 18s ease infinite",
+        "fade-in": "fadeIn 0.4s ease-out",
+        "slide-up": "slideUp 0.35s ease-out",
+        "pulse-cyan": "pulseCyan 2.5s infinite ease-in-out",
+        "pulse-beacon": "pulseBeacon 2s infinite ease-in-out",
+        "shimmer": "shimmer 2.2s infinite",
+        "scale-in": "scaleIn 0.25s ease-out",
       },
       keyframes: {
-        gradientShift: {
-          "0%, 100%": { "background-position": "0% 50%" },
-          "50%": { "background-position": "100% 50%" },
+        auroraDrift: {
+          "0%, 100%": { "transform": "scale(1) translate(0px, 0px)" },
+          "50%": { "transform": "scale(1.08) translate(20px, -15px)" },
         },
         fadeIn: {
           "0%": { opacity: "0" },
           "100%": { opacity: "1" },
         },
         slideUp: {
-          "0%": { opacity: "0", transform: "translateY(20px)" },
+          "0%": { opacity: "0", transform: "translateY(16px)" },
           "100%": { opacity: "1", transform: "translateY(0)" },
         },
-        pulseGold: {
-          "0%, 100%": { opacity: "0.7", transform: "scale(0.97)" },
-          "50%": { opacity: "1", transform: "scale(1.03)" },
+        pulseCyan: {
+          "0%, 100%": { opacity: "0.7", transform: "scale(0.98)" },
+          "50%": { opacity: "1", transform: "scale(1.02)" },
+        },
+        pulseBeacon: {
+          "0%, 100%": { opacity: "1", transform: "scale(1)" },
+          "50%": { opacity: "0.4", transform: "scale(0.85)" },
         },
         shimmer: {
           "0%": { transform: "translateX(-100%)" },
           "100%": { transform: "translateX(100%)" },
         },
         scaleIn: {
-          "0%": { opacity: "0", transform: "scale(0.92)" },
+          "0%": { opacity: "0", transform: "scale(0.95)" },
           "100%": { opacity: "1", transform: "scale(1)" },
         },
       },

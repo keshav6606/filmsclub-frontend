@@ -107,18 +107,18 @@ export default function MoviesAndSeriesSections({
     (activeLanguage && activeLanguage.toLowerCase() !== "all");
 
   return (
-    <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 mt-20 mb-8 space-y-5">
+    <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 mt-20 mb-8 space-y-6">
       {/* ── Category & Genre Pills Bar ── */}
-      <div className="space-y-2.5">
+      <div className="space-y-3 bg-[#0B0F19]/80 p-4 rounded-3xl border border-white/[0.08] backdrop-blur-xl">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2 text-xs font-bold text-slate-300 uppercase tracking-wider">
-            <BiFilterAlt className="text-amber-400 text-sm" />
+          <div className="flex items-center gap-2 text-xs font-bold text-slate-300 uppercase tracking-wider font-outfit">
+            <BiFilterAlt className="text-cyan-400 text-sm" />
             <span>Select Category / Genre</span>
           </div>
           {hasActiveFilters && (
             <button
               onClick={onResetFilters}
-              className="text-xs font-bold text-amber-400 hover:text-amber-300 transition-colors flex items-center gap-1"
+              className="text-xs font-bold text-cyan-400 hover:text-cyan-300 transition-colors flex items-center gap-1 font-outfit"
             >
               <IoCloseCircleOutline className="text-sm" />
               <span>Reset All</span>
@@ -135,10 +135,10 @@ export default function MoviesAndSeriesSections({
               <button
                 key={genre}
                 onClick={() => setActiveGenre?.(genre)}
-                className={`px-4 py-2 rounded-full text-xs font-black tracking-wide shrink-0 transition-all duration-200 border ${
+                className={`px-4 py-2 rounded-2xl text-xs font-bold tracking-wide shrink-0 transition-all duration-300 border font-outfit ${
                   isSelected
-                    ? "bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 border-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.5)] scale-105"
-                    : "bg-slate-900/80 text-slate-300 border-white/10 hover:border-amber-400/40 hover:text-white"
+                    ? "bg-gradient-to-r from-cyan-400 to-blue-600 text-slate-950 border-cyan-400 shadow-[0_0_15px_rgba(0,242,254,0.5)] font-black scale-105"
+                    : "bg-[#141A29]/80 text-slate-300 border-white/10 hover:border-cyan-400/40 hover:text-white"
                 }`}
               >
                 {genre}
@@ -156,10 +156,10 @@ export default function MoviesAndSeriesSections({
               <button
                 key={lang.value}
                 onClick={() => setActiveLanguage?.(lang.value)}
-                className={`px-3.5 py-1 rounded-full text-[0.72rem] font-bold shrink-0 transition-all duration-200 border ${
+                className={`px-3.5 py-1 rounded-xl text-[0.72rem] font-bold shrink-0 transition-all duration-300 border font-mono ${
                   isSelected
-                    ? "bg-cyan-500/20 text-cyan-300 border-cyan-400/60 shadow-[0_0_10px_rgba(6,182,212,0.4)]"
-                    : "bg-slate-950/60 text-slate-400 border-white/5 hover:border-white/20 hover:text-slate-200"
+                    ? "bg-cyan-500/25 text-cyan-300 border-cyan-400/80 shadow-[0_0_10px_rgba(0,242,254,0.3)]"
+                    : "bg-[#070A12] text-slate-400 border-white/5 hover:border-white/20 hover:text-slate-200"
                 }`}
               >
                 {lang.name}
@@ -170,22 +170,22 @@ export default function MoviesAndSeriesSections({
       </div>
 
       {/* ── Sort & Filter Header Controls Bar ── */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-white/10">
-        <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 shadow-md">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-white/[0.08]">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-xl bg-cyan-500/15 border border-cyan-400/30 flex items-center justify-center text-cyan-400 shadow-[0_0_15px_rgba(0,242,254,0.2)]">
             <HiSparkles className="text-lg" />
           </div>
           <div>
             <h1 className="section-title text-xl md:text-2xl font-black">
               {sectionTitle}
               {activeGenre && activeGenre.toLowerCase() !== "all" && (
-                <span className="text-amber-400 font-bold ml-2">
+                <span className="text-cyan-400 font-bold ml-2">
                   • {activeGenre}
                 </span>
               )}
             </h1>
             <p className="text-xs text-slate-400 font-medium">
-              Showing {displayData.length} titles available
+              Showing {displayData.length} cinema titles available
             </p>
           </div>
         </div>
@@ -199,10 +199,10 @@ export default function MoviesAndSeriesSections({
                 setMovieFilterVal?.(item.value);
                 setMovieFilter?.(item.value);
               }}
-              className={`flex items-center gap-1.5 py-1.5 px-3.5 rounded-full text-xs font-extrabold border transition-all duration-200 ${
+              className={`flex items-center gap-1.5 py-1.5 px-4 rounded-full text-xs font-bold border transition-all duration-300 font-outfit ${
                 item.value === movieFilterVal
-                  ? "bg-amber-400 text-slate-950 border-amber-400 shadow-md"
-                  : "bg-slate-900 text-slate-300 border-white/10 hover:border-amber-400/40 hover:text-white"
+                  ? "bg-gradient-to-r from-cyan-400 to-blue-600 text-slate-950 border-cyan-400 shadow-[0_0_15px_rgba(0,242,254,0.4)] font-black"
+                  : "bg-[#0E131F] text-slate-300 border-white/10 hover:border-cyan-400/40 hover:text-white"
               }`}
             >
               <BiSortAlt2 className="text-sm" />
@@ -222,23 +222,23 @@ export default function MoviesAndSeriesSections({
               ))}
             </div>
           ) : (
-            <div className="flex flex-col items-center justify-center py-20 px-4 text-center rounded-3xl bg-slate-900/30 border border-white/5 space-y-4">
-              <div className="w-16 h-16 rounded-full bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 text-3xl shadow-[0_0_20px_rgba(245,158,11,0.2)]">
+            <div className="flex flex-col items-center justify-center py-20 px-4 text-center rounded-3xl bg-[#0E131F]/50 border border-white/5 space-y-4">
+              <div className="w-16 h-16 rounded-full bg-cyan-500/10 border border-cyan-400/30 flex items-center justify-center text-cyan-400 text-3xl shadow-[0_0_20px_rgba(0,242,254,0.2)]">
                 🎬
               </div>
-              <h3 className="text-lg sm:text-xl font-black text-white">
+              <h3 className="text-lg sm:text-xl font-black text-white font-outfit">
                 No titles found in this category
               </h3>
               <p className="text-xs sm:text-sm text-slate-400 max-w-md">
                 We couldn't find any {dataType === "series" ? "TV shows" : "movies"} matching{" "}
-                <span className="text-amber-400 font-bold">
+                <span className="text-cyan-400 font-bold">
                   {activeGenre !== "All" ? activeGenre : ""} {activeLanguage !== "all" ? `(${activeLanguage})` : ""}
                 </span>
                 . Try selecting another category or reset filters.
               </p>
               <button
                 onClick={onResetFilters}
-                className="btn-gold px-6 py-2.5 rounded-full text-xs font-black shadow-lg"
+                className="btn-cinema-primary px-7 py-3 rounded-full text-xs shadow-lg"
               >
                 Show All {dataType === "series" ? "Series" : "Movies"}
               </button>

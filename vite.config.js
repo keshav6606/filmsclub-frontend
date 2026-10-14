@@ -159,6 +159,41 @@ function filmsclubApiPlugin() {
 
         // 6. Browse
         if (normalizedPath === '/api/browse') {
+          const queryString = reqUrl.search || '';
+          const prov = searchParams.get('prov');
+
+          // Try upstream with authentication session
+          try {
+            const cookie = await getUpstreamCookie();
+            const upstreamRes = await fetch(`https://yupflix.org/api/browse${queryString}`, {
+              headers: {
+                'User-Agent': 'Mozilla/5.0',
+                'Accept': 'application/json',
+                ...(cookie ? { 'Cookie': cookie } : {})
+              },
+              signal: AbortSignal.timeout(5000)
+            });
+
+            if (upstreamRes.ok) {
+              const json = await upstreamRes.json();
+              res.statusCode = 200;
+              res.setHeader('Content-Type', 'application/json');
+              return res.end(JSON.stringify(json));
+            }
+          } catch (err) {
+            console.warn('[Vite API] Upstream browse error, falling back to cache:', err.message);
+          }
+
+          // Fallback to providers_cache.json if filtered by provider
+          if (prov) {
+            const provData = readJsonSafe(path.join(DATA_DIR, 'providers_cache.json'));
+            if (provData && provData[prov]) {
+              res.statusCode = 200;
+              res.setHeader('Content-Type', 'application/json');
+              return res.end(JSON.stringify(provData[prov]));
+            }
+          }
+
           const type = searchParams.get('type');
           let file = 'browse_all.json';
           if (type === 'movie') file = 'browse_movie.json';

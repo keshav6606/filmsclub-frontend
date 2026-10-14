@@ -1,4 +1,3 @@
-// src/components/ContinueWatching.jsx
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { BsPlayFill, BsX } from "react-icons/bs";
@@ -30,11 +29,11 @@ export default function ContinueWatching() {
   };
 
   return (
-    <section className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 mt-10 md:mt-12" aria-label="Continue Watching">
-      <div className="flex items-center justify-between mb-4 pb-2 border-b border-white/5">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400">
-            <MdHistory className="text-lg" />
+    <section className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 mt-10 md:mt-14" aria-label="Continue Watching">
+      <div className="flex items-center justify-between mb-5 pb-2.5 border-b border-white/[0.08]">
+        <div className="flex items-center gap-2.5">
+          <div className="w-9 h-9 rounded-xl bg-cyan-500/15 border border-cyan-400/30 flex items-center justify-center text-cyan-400 shadow-[0_0_15px_rgba(0,242,254,0.2)]">
+            <MdHistory className="text-xl" />
           </div>
           <h2 className="section-title text-xl md:text-2xl font-black">
             Continue Watching
@@ -49,10 +48,10 @@ export default function ContinueWatching() {
           return (
             <div
               key={item.tmdb_id}
-              className="group relative rounded-2xl overflow-hidden bg-[#17181b] border border-white/[0.08] hover:border-amber-400/50 transition-all duration-300 shadow-md"
+              className="group relative rounded-2xl overflow-hidden bg-[#0E131F] border border-white/[0.08] hover:border-cyan-400/50 transition-all duration-300 shadow-[0_8px_25px_rgba(0,0,0,0.7)]"
             >
               {/* Thumbnail Container */}
-              <Link to={watchUrl} className="block relative aspect-video w-full overflow-hidden bg-slate-950">
+              <Link to={watchUrl} className="block relative aspect-video w-full overflow-hidden bg-[#070A12]">
                 <img
                   src={item.poster || posterPlaceholder}
                   alt={item.title}
@@ -63,8 +62,8 @@ export default function ContinueWatching() {
 
                 {/* Center Play Icon */}
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="w-9 h-9 rounded-full bg-amber-400 text-slate-950 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-                    <BsPlayFill className="text-xl ml-0.5" />
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-400 to-blue-600 text-slate-950 flex items-center justify-center shadow-[0_0_20px_rgba(0,242,254,0.8)] group-hover:scale-110 transition-transform">
+                    <BsPlayFill className="text-2xl ml-0.5" />
                   </div>
                 </div>
 
@@ -72,30 +71,30 @@ export default function ContinueWatching() {
                 <button
                   onClick={(e) => handleDismiss(e, item.tmdb_id)}
                   title="Remove from history"
-                  className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-slate-950/80 hover:bg-red-500 text-slate-300 hover:text-white flex items-center justify-center text-sm transition-colors z-10"
+                  className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-[#05070B]/85 hover:bg-rose-600 text-slate-300 hover:text-white flex items-center justify-center text-sm transition-colors z-10"
                 >
                   <BsX />
                 </button>
 
                 {/* Progress Bar at Bottom of Thumbnail */}
-                <div className="absolute bottom-0 inset-x-0 h-1.5 bg-slate-800">
+                <div className="absolute bottom-0 inset-x-0 h-1.5 bg-slate-900">
                   <div
-                    className="h-full bg-gradient-to-r from-amber-400 to-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.8)]"
+                    className="h-full bg-gradient-to-r from-cyan-400 to-blue-500 shadow-[0_0_8px_rgba(0,242,254,0.9)]"
                     style={{ width: `${item.progressPercent || 0}%` }}
                   />
                 </div>
               </Link>
 
               {/* Title & Info */}
-              <div className="p-2.5 space-y-1">
+              <div className="p-3 space-y-1 bg-[#0B0F19]">
                 <Link to={watchUrl} className="block">
-                  <h3 className="text-xs font-bold text-white line-clamp-1 group-hover:text-amber-400 transition-colors">
+                  <h3 className="text-xs font-bold text-white line-clamp-1 group-hover:text-cyan-300 transition-colors font-outfit">
                     {item.title}
                   </h3>
                 </Link>
-                <div className="flex items-center justify-between text-[0.68rem] text-slate-400">
+                <div className="flex items-center justify-between text-[0.68rem] text-slate-400 font-mono">
                   <span>{item.progressPercent || 0}% watched</span>
-                  <span className="text-amber-400 font-bold uppercase">{item.quality || "HD"}</span>
+                  <span className="spec-badge spec-badge-4k">{item.quality || "HD"}</span>
                 </div>
               </div>
             </div>
