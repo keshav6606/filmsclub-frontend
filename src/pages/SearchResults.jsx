@@ -57,25 +57,28 @@ export default function SearchResults() {
   }, [searchResult, BASE]);
 
   // 3. Unified and Deduplicated Results List
+  // 3. Unified and Deduplicated Results List (Interleaved)
   const unifiedResults = useMemo(() => {
     const list = [];
     const seenTitles = new Set();
+    const maxLen = Math.max(dbMovies.length, scrapedResults.length);
 
-    // Add Database items first
-    for (const item of dbMovies) {
-      const cleanTitle = (item.title || "").toLowerCase().trim();
-      if (!seenTitles.has(cleanTitle)) {
-        seenTitles.add(cleanTitle);
-        list.push({ ...item, isDatabase: true });
+    for (let i = 0; i < maxLen; i++) {
+      if (dbMovies[i]) {
+        const item = dbMovies[i];
+        const cleanTitle = (item.title || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+        if (!seenTitles.has(cleanTitle)) {
+          seenTitles.add(cleanTitle);
+          list.push({ ...item, isDatabase: true });
+        }
       }
-    }
-
-    // Add Scraped items
-    for (const item of scrapedResults) {
-      const cleanTitle = (item.title || "").toLowerCase().trim();
-      if (!seenTitles.has(cleanTitle)) {
-        seenTitles.add(cleanTitle);
-        list.push({ ...item, isScraped: true });
+      if (scrapedResults[i]) {
+        const item = scrapedResults[i];
+        const cleanTitle = (item.title || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+        if (!seenTitles.has(cleanTitle)) {
+          seenTitles.add(cleanTitle);
+          list.push({ ...item, isScraped: true });
+        }
       }
     }
 
@@ -92,7 +95,7 @@ export default function SearchResults() {
     }
     if (activeFilter === "series") {
       return unifiedResults.filter(
-        (i) => i.media_type === "series" || i.type === "series" || !!i.latestLabel
+        (i) => i.media_type === "tv" || i.media_type === "series" || i.type === "series" || !!i.latestLabel
       );
     }
     if (activeFilter === "4k") {
@@ -111,7 +114,7 @@ export default function SearchResults() {
     (i) => i.media_type === "movie" || i.type === "movie"
   ).length;
   const seriesCount = unifiedResults.filter(
-    (i) => i.media_type === "series" || i.type === "series" || !!i.latestLabel
+    (i) => i.media_type === "tv" || i.media_type === "series" || i.type === "series" || !!i.latestLabel
   ).length;
 
   return (

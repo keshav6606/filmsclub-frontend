@@ -71,13 +71,68 @@ export function YupflixHeader({ searchInputRef, isSearching, onSearchingChange }
     return () => document.removeEventListener('mousedown', handleOutside);
   }, []);
 
+  const searchTimerRef = useRef(null);
+
   const handleChange = (val) => {
     setQuery(val);
-    loadSearchIndex().then(() => {
-      setResults(searchTitles(val, 8));
-    }).catch(() => {});
-    setResults(searchTitles(val, 8));
     setActive(true);
+    if (!val.trim()) {
+      setResults([]);
+      return;
+    }
+
+    // 1. Instant client-side scraped search
+    let localMatches = [];
+    try {
+      localMatches = searchTitles(val, 6).map(m => ({ ...m, isScraped: true }));
+      setResults(localMatches);
+    } catch {}
+
+    // 2. Debounced Koyeb Database API search
+    if (searchTimerRef.current) clearTimeout(searchTimerRef.current);
+    searchTimerRef.current = setTimeout(() => {
+      fetch(`https://screeching-cherye-filmy4uhd-b60bef55.koyeb.app/api/search/?query=${encodeURIComponent(val.trim())}&page=1&page_size=6`)
+        .then(r => r.json())
+        .then(d => {
+          if (d?.results?.length) {
+            const dbMatches = d.results.map(m => ({
+              ...m,
+              code: null,
+              tmdb_id: m.tmdb_id,
+              title: m.title,
+              poster: m.poster,
+              year: m.release_year,
+              type: m.media_type === 'tv' ? 'series' : 'movie',
+              media_type: m.media_type || 'movie',
+              latestLabel: m.rip || (m.media_type === 'tv' ? 'Series' : '4K UHD'),
+              isDatabase: true,
+            }));
+
+            // Merge & Deduplicate
+            const merged = [];
+            const seen = new Set();
+            const maxLen = Math.max(dbMatches.length, localMatches.length);
+            for (let i = 0; i < maxLen; i++) {
+              if (dbMatches[i]) {
+                const norm = dbMatches[i].title.toLowerCase().replace(/[^a-z0-9]/g, '');
+                if (!seen.has(norm)) {
+                  seen.add(norm);
+                  merged.push(dbMatches[i]);
+                }
+              }
+              if (localMatches[i]) {
+                const norm = localMatches[i].title.toLowerCase().replace(/[^a-z0-9]/g, '');
+                if (!seen.has(norm)) {
+                  seen.add(norm);
+                  merged.push(localMatches[i]);
+                }
+              }
+            }
+            setResults(merged);
+          }
+        })
+        .catch(() => {});
+    }, 200);
   };
 
   const closeDropdown = () => {
@@ -88,7 +143,13 @@ export function YupflixHeader({ searchInputRef, isSearching, onSearchingChange }
   const selectItem = (item) => {
     closeDropdown();
     setQuery('');
-    navigate(`/filmsclub/t/${item.code}`, { state: { card: item } });
+    if (item.code) {
+      navigate(`/filmsclub/t/${item.code}`, { state: { card: item } });
+    } else if (item.media_type === 'tv' || item.type === 'series') {
+      navigate(`/ser/${item.tmdb_id}`, { state: { card: item } });
+    } else {
+      navigate(`/mov/${item.tmdb_id}`, { state: { card: item } });
+    }
   };
 
   const hasQuery = !!query.trim();
@@ -183,9 +244,9 @@ export function YupflixHeader({ searchInputRef, isSearching, onSearchingChange }
                 </div>
               ) : (
                 <div className="divide-y divide-white/5">
-                  {displayedItems.map((item) => (
+                  {displayedItems.map((item, idx) => (
                     <button
-                      key={item.code}
+                      key={item.code || item.tmdb_id || idx}
                       type="button"
                       onClick={() => selectItem(item)}
                       className="w-full flex items-center gap-3 p-2.5 rounded-xl hover:bg-white/10 text-left transition-colors group"
@@ -196,11 +257,22 @@ export function YupflixHeader({ searchInputRef, isSearching, onSearchingChange }
                         )}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h5 className="font-outfit font-bold text-white text-xs sm:text-sm truncate group-hover:text-red-400 transition-colors">
-                          {cleanTitle(item.title)}
-                        </h5>
+                        <div className="flex items-center gap-2">
+                          <h5 className="font-outfit font-bold text-white text-xs sm:text-sm truncate group-hover:text-red-400 transition-colors">
+                            {cleanTitle(item.title)}
+                          </h5>
+                          {item.isDatabase ? (
+                            <span className="shrink-0 px-1.5 py-0.2 rounded bg-cyan-500/20 text-cyan-300 font-mono text-[9px] font-bold border border-cyan-400/30">
+                              4K DB
+                            </span>
+                          ) : (
+                            <span className="shrink-0 px-1.5 py-0.2 rounded bg-red-600/20 text-red-400 font-mono text-[9px] font-bold border border-red-500/30">
+                              OTT
+                            </span>
+                          )}
+                        </div>
                         <p className="text-[11px] text-zinc-400 mt-0.5 truncate">
-                          {TYPE_LABELS[item.type] || 'Series'} · {item.latestLabel ? cleanEpisodeLabel(item.latestLabel) : (item.year || 'HD')}
+                          {TYPE_LABELS[item.type] || (item.media_type === 'tv' ? 'Series' : 'Movie')} · {item.latestLabel ? cleanEpisodeLabel(item.latestLabel) : (item.year || 'HD')}
                         </p>
                       </div>
                     </button>

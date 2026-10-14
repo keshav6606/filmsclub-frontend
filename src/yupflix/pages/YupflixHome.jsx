@@ -146,39 +146,134 @@ export function YupflixCatalogView({ type = '' }) {
     return () => ctrl.abort();
   }, [showFeaturedRails]);
 
+  const KOYEB_BASE = 'https://screeching-cherye-filmy4uhd-b60bef55.koyeb.app';
+
+  // Helper to fetch Koyeb database items by type and page
+  const fetchKoyebItems = async (browseType, pageNum, signal) => {
+    try {
+      if (browseType === 'series') {
+        const res = await fetch(`${KOYEB_BASE}/api/tvshows?page=${pageNum}&page_size=18&sort_by=updated_on:desc`, { signal });
+        const data = await res.json();
+        return (data?.tv_shows || []).map(s => ({
+          ...s,
+          code: null,
+          tmdb_id: s.tmdb_id,
+          poster: s.poster,
+          backdrop: s.backdrop || s.poster,
+          title: s.title,
+          year: s.release_year,
+          type: 'series',
+          media_type: 'tv',
+          qualities: [s.rip || '1080p Web-DL'],
+          genres: s.genres || ['Web Series'],
+          rating: s.rating || 8.5,
+          isDatabase: true,
+          latestLabel: `${s.total_seasons || 1} Season`,
+        }));
+      } else {
+        const sort = browseType === 'movie' ? 'updated_on:desc' : 'rating:desc';
+        const res = await fetch(`${KOYEB_BASE}/api/movies?page=${pageNum}&page_size=18&sort_by=${sort}`, { signal });
+        const data = await res.json();
+        return (data?.movies || []).map(m => ({
+          ...m,
+          code: null,
+          tmdb_id: m.tmdb_id,
+          poster: m.poster,
+          backdrop: m.backdrop || m.poster,
+          title: m.title,
+          year: m.release_year,
+          type: 'movie',
+          media_type: 'movie',
+          qualities: [m.rip || '4K UHD', '1080p'],
+          genres: m.genres || ['4K Cinema'],
+          rating: m.rating || 8.2,
+          isDatabase: true,
+        }));
+      }
+    } catch {
+      return [];
+    }
+  };
+
   useEffect(() => {
     const ctrl = new AbortController();
     setLoading(true);
     setPage(1);
     const p = new URLSearchParams(queryString);
     p.set('page', '1');
-    p.set('limit', '42');
+    p.set('limit', '28');
 
-    yupflixApi
-      .browse(p.toString(), ctrl.signal)
-      .then((d) => {
-        setItems(d.items || []);
-        setTotalCount(d.total || (d.items?.length || 0));
-        setHasMore(!!d.hasMore);
+    Promise.all([
+      yupflixApi.browse(p.toString(), ctrl.signal).catch(() => ({ items: [] })),
+      fetchKoyebItems(type, 1, ctrl.signal),
+    ])
+      .then(([yupData, koyebItems]) => {
+        const yupItems = yupData?.items || [];
+        // Interleave Database 4K files and Scraped releases into one cohesive grid
+        const combined = [];
+        const seen = new Set();
+        const maxLen = Math.max(koyebItems.length, yupItems.length);
+        for (let i = 0; i < maxLen; i++) {
+          if (koyebItems[i]) {
+            const norm = koyebItems[i].title.toLowerCase().replace(/[^a-z0-9]/g, '');
+            if (!seen.has(norm)) {
+              seen.add(norm);
+              combined.push(koyebItems[i]);
+            }
+          }
+          if (yupItems[i]) {
+            const norm = yupItems[i].title.toLowerCase().replace(/[^a-z0-9]/g, '');
+            if (!seen.has(norm)) {
+              seen.add(norm);
+              combined.push(yupItems[i]);
+            }
+          }
+        }
+        setItems(combined);
+        setTotalCount((yupData?.total || yupItems.length) + koyebItems.length);
+        setHasMore(!!yupData?.hasMore || koyebItems.length >= 18);
         setLoading(false);
       })
       .catch(() => setLoading(false));
 
     return () => ctrl.abort();
-  }, [queryString]);
+  }, [queryString, type]);
 
   const handleLoadMore = async () => {
     setLoadingMore(true);
     const nextPage = page + 1;
     const p = new URLSearchParams(queryString);
     p.set('page', String(nextPage));
-    p.set('limit', '42');
+    p.set('limit', '28');
 
     try {
-      const res = await yupflixApi.browse(p.toString());
-      setItems((prev) => [...prev, ...(res.items || [])]);
+      const [yupData, koyebItems] = await Promise.all([
+        yupflixApi.browse(p.toString()).catch(() => ({ items: [] })),
+        fetchKoyebItems(type, nextPage),
+      ]);
+      const yupItems = yupData?.items || [];
+      const combined = [];
+      const seen = new Set(items.map((it) => it.title.toLowerCase().replace(/[^a-z0-9]/g, '')));
+      const maxLen = Math.max(koyebItems.length, yupItems.length);
+      for (let i = 0; i < maxLen; i++) {
+        if (koyebItems[i]) {
+          const norm = koyebItems[i].title.toLowerCase().replace(/[^a-z0-9]/g, '');
+          if (!seen.has(norm)) {
+            seen.add(norm);
+            combined.push(koyebItems[i]);
+          }
+        }
+        if (yupItems[i]) {
+          const norm = yupItems[i].title.toLowerCase().replace(/[^a-z0-9]/g, '');
+          if (!seen.has(norm)) {
+            seen.add(norm);
+            combined.push(yupItems[i]);
+          }
+        }
+      }
+      setItems((prev) => [...prev, ...combined]);
       setPage(nextPage);
-      setHasMore(!!res.hasMore);
+      setHasMore(!!yupData?.hasMore || koyebItems.length >= 18);
     } finally {
       setLoadingMore(false);
     }
