@@ -98,48 +98,66 @@ export function YupflixSpotlight({ items = [] }) {
           </p>
 
           {/* Action CTAs */}
-          <div className="flex flex-wrap items-center gap-3.5 pt-2">
-            <Link
-              to={`/filmsclub/t/${activeItem.code}`}
-              state={{ card: activeItem }}
-              className="inline-flex items-center gap-2.5 px-6 sm:px-8 py-3.5 rounded-2xl bg-gradient-to-r from-red-600 via-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white font-outfit font-black text-sm sm:text-base tracking-wide shadow-[0_0_25px_rgba(229,9,20,0.5)] hover:shadow-[0_0_35px_rgba(229,9,20,0.8)] hover:scale-105 transition-all duration-300"
-            >
-              <FaPlay className="text-xs" />
-              Stream in HD
-            </Link>
+          {(() => {
+            const itemLink = activeItem.code
+              ? `/filmsclub/t/${activeItem.code}`
+              : activeItem.media_type === 'movie'
+              ? `/mov/${activeItem.tmdb_id}`
+              : `/ser/${activeItem.tmdb_id}`;
+            return (
+              <div className="flex flex-wrap items-center gap-3.5 pt-2">
+                <Link
+                  to={itemLink}
+                  state={{ card: activeItem }}
+                  className="inline-flex items-center gap-2.5 px-6 sm:px-8 py-3.5 rounded-2xl bg-gradient-to-r from-red-600 via-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white font-outfit font-black text-sm sm:text-base tracking-wide shadow-[0_0_25px_rgba(229,9,20,0.5)] hover:shadow-[0_0_35px_rgba(229,9,20,0.8)] hover:scale-105 transition-all duration-300"
+                >
+                  <FaPlay className="text-xs" />
+                  Stream 4K Cinema
+                </Link>
 
-            <Link
-              to={`/filmsclub/t/${activeItem.code}`}
-              state={{ card: activeItem }}
-              className="inline-flex items-center gap-2 px-5 py-3.5 rounded-2xl bg-white/10 hover:bg-white/15 text-white font-bold text-sm border border-white/10 hover:border-white/20 backdrop-blur-md transition-all duration-300"
-            >
-              <FaInfoCircle className="text-base text-zinc-400" />
-              Episodes & Links
-            </Link>
-          </div>
+                <Link
+                  to={itemLink}
+                  state={{ card: activeItem }}
+                  className="inline-flex items-center gap-2 px-5 py-3.5 rounded-2xl bg-white/10 hover:bg-white/15 text-white font-bold text-sm border border-white/10 hover:border-white/20 backdrop-blur-md transition-all duration-300"
+                >
+                  <FaInfoCircle className="text-base text-zinc-400" />
+                  Details & Links
+                </Link>
+              </div>
+            );
+          })()}
         </div>
 
         {/* Right Col: Poster Key Art */}
         <div className="hidden md:flex md:col-span-4 justify-end items-center">
-          <Link
-            to={`/filmsclub/t/${activeItem.code}`}
-            state={{ card: activeItem }}
-            className="group relative block aspect-[2/3] w-56 lg:w-64 rounded-2xl overflow-hidden bg-black/60 border border-white/15 shadow-[0_20px_45px_rgba(0,0,0,0.9)] hover:scale-105 hover:border-red-500/50 transition-all duration-500"
-          >
-            {activeItem.poster && (
-              <img
-                src={activeItem.poster}
-                alt={title}
-                className="w-full h-full object-cover"
-              />
-            )}
-            <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors" />
-            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-              <div className="w-14 h-14 rounded-full bg-red-600 text-white flex items-center justify-center shadow-[0_0_25px_rgba(229,9,20,0.8)]">
-                <FaPlay className="ml-1 text-base" />
-              </div>
-            </div>
-          </Link>
+          {(() => {
+            const itemLink = activeItem.code
+              ? `/filmsclub/t/${activeItem.code}`
+              : activeItem.media_type === 'movie'
+              ? `/mov/${activeItem.tmdb_id}`
+              : `/ser/${activeItem.tmdb_id}`;
+            return (
+              <Link
+                to={itemLink}
+                state={{ card: activeItem }}
+                className="group relative block aspect-[2/3] w-56 lg:w-64 rounded-2xl overflow-hidden bg-black/60 border border-white/15 shadow-[0_20px_45px_rgba(0,0,0,0.9)] hover:scale-105 hover:border-red-500/50 transition-all duration-500"
+              >
+                {activeItem.poster && (
+                  <img
+                    src={activeItem.poster}
+                    alt={title}
+                    className="w-full h-full object-cover"
+                  />
+                )}
+                <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors" />
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="w-14 h-14 rounded-full bg-red-600 text-white flex items-center justify-center shadow-[0_0_25px_rgba(229,9,20,0.8)]">
+                    <FaPlay className="ml-1 text-base" />
+                  </div>
+                </div>
+              </Link>
+            );
+          })()}
         </div>
       </div>
 

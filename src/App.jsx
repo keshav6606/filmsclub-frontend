@@ -5,7 +5,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 // Components
-import Nav from "./components/Nav";
+import { YupflixHeader } from "./yupflix/components/YupflixHeader";
 import Footer from "./components/Footer";
 import PageLoader from "./components/PageLoader";
 import TelegramBanner from "./components/TelegramBanner";
@@ -14,8 +14,6 @@ import TelegramBanner from "./components/TelegramBanner";
 const Home = lazy(() => import("./pages/Home"));
 const MovieDetails = lazy(() => import("./pages/MovieDetails"));
 const TvDetails = lazy(() => import("./pages/TvDetails"));
-const Movies = lazy(() => import("./pages/Movies"));
-const Series = lazy(() => import("./pages/Series"));
 const SimilarMov = lazy(() => import("./pages/SimilarMov"));
 const SimilarSeries = lazy(() => import("./pages/SimilarSeries"));
 const SearResults = lazy(() => import("./pages/SearchResults"));
@@ -29,6 +27,26 @@ const WatchPage = lazy(() => import("./pages/WatchPage"));
 const Watchlist = lazy(() => import("./pages/Watchlist"));
 const YupflixModule = lazy(() => import("./yupflix"));
 
+function MoviesBrowseWrapper() {
+  const { YupflixCatalogView } = lazy(() => import("./yupflix/pages/YupflixHome"));
+  return <YupflixCatalogView type="movie" />;
+}
+
+function SeriesBrowseWrapper() {
+  const { YupflixCatalogView } = lazy(() => import("./yupflix/pages/YupflixHome"));
+  return <YupflixCatalogView type="series" />;
+}
+
+const YupflixBrowseMovie = lazy(() =>
+  import("./yupflix/pages/YupflixHome").then((m) => ({ default: () => <m.YupflixCatalogView type="movie" /> }))
+);
+const YupflixBrowseSeries = lazy(() =>
+  import("./yupflix/pages/YupflixHome").then((m) => ({ default: () => <m.YupflixCatalogView type="series" /> }))
+);
+const YupflixBrowseAnime = lazy(() =>
+  import("./yupflix/pages/YupflixHome").then((m) => ({ default: () => <m.YupflixCatalogView type="anime" /> }))
+);
+
 function ApiCatchHandler() {
   const location = useLocation();
   useEffect(() => {
@@ -38,7 +56,7 @@ function ApiCatchHandler() {
     <div className="flex items-center justify-center min-h-[50vh] text-center p-6 text-white">
       <div className="flex flex-col items-center gap-3">
         <div className="w-8 h-8 border-3 border-red-500 border-t-transparent rounded-full animate-spin" />
-        <p className="text-gray-300 text-sm">Connecting to FilmsClub Stream Link...</p>
+        <p className="text-gray-300 text-sm">Connecting to Stream Link...</p>
       </div>
     </div>
   );
@@ -52,19 +70,25 @@ function AppContent() {
     ReactGa.pageview(location.pathname + location.search);
   }, [location]);
 
-  const isStreamingHub =
-    location.pathname.toLowerCase().startsWith("/filmsclub") ||
-    location.pathname.toLowerCase().startsWith("/yupflix");
-
   return (
-    <>
-      <Nav />
-      <div className="w-full min-h-screen overflow-x-hidden">
+    <div className="min-h-screen bg-[#07080c] text-white flex flex-col font-sans selection:bg-red-600 selection:text-white">
+      <ToastContainer style={{ fontSize: "0.85rem" }} />
+      {/* Yupflix Universal Header */}
+      <YupflixHeader />
+
+      <main className="w-full flex-1">
         <Suspense fallback={<PageLoader />}>
           <Routes>
             <Route path="/" element={<Home />} />
 
-            {/* FilmsClub VIP Streaming Hub & Aliases */}
+            {/* Yupflix Full Architecture for Movies, Series & Anime */}
+            <Route path="/movies" element={<YupflixBrowseMovie />} />
+            <Route path="/Movies" element={<YupflixBrowseMovie />} />
+            <Route path="/series" element={<YupflixBrowseSeries />} />
+            <Route path="/Series" element={<YupflixBrowseSeries />} />
+            <Route path="/anime" element={<YupflixBrowseAnime />} />
+
+            {/* FilmsClub Streaming Hub & Aliases */}
             <Route path="/filmsclub/*" element={<YupflixModule />} />
             <Route path="/filmsclub" element={<YupflixModule />} />
             <Route path="/FilmsClub/*" element={<YupflixModule />} />
@@ -72,15 +96,11 @@ function AppContent() {
             <Route path="/yupflix/*" element={<YupflixModule />} />
             <Route path="/yupflix" element={<YupflixModule />} />
 
-            {/* Filmy4UHD Core Routes */}
+            {/* Core Cinema Routes */}
             <Route path="/mov/:movieID" element={<MovieDetails />} />
             <Route path="/ser/:seriesID" element={<TvDetails />} />
             <Route path="/watch" element={<WatchPage />} />
             <Route path="/watchlist" element={<Watchlist />} />
-            <Route path="/movies" element={<Movies />} />
-            <Route path="/Movies" element={<Movies />} />
-            <Route path="/series" element={<Series />} />
-            <Route path="/Series" element={<Series />} />
             <Route path="/similarMov/:movieID" element={<SimilarMov />} />
             <Route path="/similarSeries/:seriesID" element={<SimilarSeries />} />
             <Route path="/search/:searchResult" element={<SearResults />} />
@@ -93,10 +113,11 @@ function AppContent() {
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </Suspense>
-      </div>
-      {!isStreamingHub && <TelegramBanner />}
-      {!isStreamingHub && <Footer />}
-    </>
+      </main>
+
+      <TelegramBanner />
+      <Footer />
+    </div>
   );
 }
 

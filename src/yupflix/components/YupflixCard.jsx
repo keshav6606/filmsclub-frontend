@@ -47,9 +47,15 @@ export function YupflixCard({ item }) {
     ['Netflix', 'Amazon Prime Video', 'JioHotstar', 'SonyLIV', 'Bollywood', 'Hollywood', 'Action', 'Sci-Fi', 'Anime'].includes(g)
   ) || item.genres?.[0] || typeStr;
 
+  const targetLink = item.code
+    ? `/filmsclub/t/${item.code}`
+    : item.media_type === 'movie'
+    ? `/mov/${item.tmdb_id}`
+    : `/ser/${item.tmdb_id}`;
+
   return (
     <Link
-      to={`/filmsclub/t/${item.code}`}
+      to={targetLink}
       state={{ card: item }}
       className="group relative flex flex-col w-full text-left transition-all duration-300 select-none"
     >

@@ -180,13 +180,13 @@ export default function SearchResults() {
 
       {/* Results Grid */}
       {filteredResults.length > 0 ? (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3.5 sm:gap-4">
-          {filteredResults.map((item) => {
-            if (item.isScraped) {
-              return <YupflixCard key={`scraped-${item.code}`} item={item} />;
-            }
-            return <MovieCard key={`db-${item.tmdb_id}`} movie={item} />;
-          })}
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-7 gap-4 sm:gap-6">
+          {filteredResults.map((item) => (
+            <YupflixCard
+              key={item.code ? `scraped-${item.code}` : `db-${item.tmdb_id}`}
+              item={item}
+            />
+          ))}
         </div>
       ) : isLoading ? (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">

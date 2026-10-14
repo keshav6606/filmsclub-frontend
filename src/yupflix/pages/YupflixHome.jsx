@@ -57,6 +57,55 @@ export function YupflixCatalogView({ type = '' }) {
   const [trending, setTrending] = useState([]);
   const [newSeries, setNewSeries] = useState([]);
   const [latestMovies, setLatestMovies] = useState([]);
+  const [dbFeaturedMovies, setDbFeaturedMovies] = useState([]);
+  const [dbCinemaDrops, setDbCinemaDrops] = useState([]);
+
+  // Fetch Database movies to mix into Hero and Rails
+  useEffect(() => {
+    fetch('https://screeching-cherye-filmy4uhd-b60bef55.koyeb.app/api/movies?sort_by=rating:desc&page=1&page_size=6')
+      .then((r) => r.json())
+      .then((d) => {
+        if (d?.movies?.length) {
+          const mapped = d.movies.map((m) => ({
+            ...m,
+            code: null,
+            tmdb_id: m.tmdb_id,
+            poster: m.poster,
+            backdrop: m.backdrop || m.poster,
+            title: m.title,
+            year: m.release_year,
+            type: m.media_type || 'movie',
+            genres: m.genres || ['4K Cinema'],
+            qualities: [m.rip || '4K UHD', '1080p'],
+            rating: m.rating || 8.5,
+          }));
+          setDbFeaturedMovies(mapped);
+        }
+      })
+      .catch(() => {});
+
+    fetch('https://screeching-cherye-filmy4uhd-b60bef55.koyeb.app/api/movies?sort_by=updated_on:desc&page=1&page_size=14')
+      .then((r) => r.json())
+      .then((d) => {
+        if (d?.movies?.length) {
+          const mapped = d.movies.map((m) => ({
+            ...m,
+            code: null,
+            tmdb_id: m.tmdb_id,
+            poster: m.poster,
+            backdrop: m.backdrop || m.poster,
+            title: m.title,
+            year: m.release_year,
+            type: m.media_type || 'movie',
+            genres: m.genres || ['4K Cinema'],
+            qualities: [m.rip || '4K UHD', '1080p'],
+            rating: m.rating || 8.0,
+          }));
+          setDbCinemaDrops(mapped);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   // Auto scroll to catalog when provider changes
   useEffect(() => {
@@ -134,7 +183,9 @@ export function YupflixCatalogView({ type = '' }) {
     }
   };
 
-  const spotlightItems = isDefaultFilter ? trending.slice(0, 5) : [];
+  const spotlightItems = isDefaultFilter
+    ? [...trending.slice(0, 4), ...dbFeaturedMovies.slice(0, 4)]
+    : [];
 
   return (
     <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
@@ -170,6 +221,13 @@ export function YupflixCatalogView({ type = '' }) {
             to="/filmsclub/browse/movie"
             items={latestMovies}
           />
+          {dbCinemaDrops.length > 0 && (
+            <YupflixRail
+              title="4K Cinema Premieres & Hindi Dubbed"
+              to="/movies"
+              items={dbCinemaDrops}
+            />
+          )}
         </>
       )}
 

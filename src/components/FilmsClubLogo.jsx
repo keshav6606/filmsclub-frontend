@@ -3,8 +3,8 @@ import { Link } from 'react-router-dom';
 
 export default function FilmsClubLogo({ className = '', to = '/' }) {
   return (
-    <Link to={to} className={`flex items-center gap-2.5 group shrink-0 select-none ${className}`} aria-label="FilmsClub VIP Cinema">
-      {/* Holographic VIP Cinema Emblem */}
+    <Link to={to} className={`flex items-center gap-2.5 group shrink-0 select-none ${className}`} aria-label="FilmsClub 4K Cinema">
+      {/* Holographic Cinema Emblem */}
       <div className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-gradient-to-b from-[#181F33] via-[#0D1220] to-[#05070B] p-1.5 border border-cyan-400/40 border-t-white/30 flex items-center justify-center shadow-[0_0_20px_rgba(0,242,254,0.35)] group-hover:scale-105 group-hover:border-cyan-300 group-hover:shadow-[0_0_25px_rgba(0,242,254,0.6)] transition-all duration-300">
         <svg viewBox="0 0 36 36" fill="none" className="w-full h-full drop-shadow-[0_0_10px_rgba(0,242,254,0.7)]">
           <defs>

@@ -8,10 +8,11 @@ import { BiSearch, BiX } from 'react-icons/bi';
 import { FaArrowLeft, FaFire, FaTv, FaFilm } from 'react-icons/fa';
 
 const NAV_ITEMS = [
-  ['/filmsclub', 'Home'],
-  ['/filmsclub/browse/movie', 'Movies'],
-  ['/filmsclub/browse/series', 'Web Series'],
-  ['/filmsclub/browse/anime', 'Anime']
+  ['/', 'Home'],
+  ['/movies', 'Movies'],
+  ['/series', 'Web Series'],
+  ['/filmsclub/browse/anime', 'Anime'],
+  ['/watchlist', 'Watchlist']
 ];
 
 export function YupflixHeader({ searchInputRef, isSearching, onSearchingChange }) {
@@ -97,31 +98,21 @@ export function YupflixHeader({ searchInputRef, isSearching, onSearchingChange }
     e.preventDefault();
     if (hasQuery) {
       closeDropdown();
-      navigate(`/filmsclub/search?q=${encodeURIComponent(query.trim())}`);
+      navigate(`/search/${encodeURIComponent(query.trim())}`);
     }
   };
 
-  const isNavActive = (path) =>
-    path === '/filmsclub'
-      ? location.pathname === '/filmsclub' || location.pathname === '/filmsclub/'
-      : location.pathname.startsWith(path);
+  const isNavActive = (path) => {
+    if (path === '/') return location.pathname === '/' || location.pathname === '/filmsclub';
+    return location.pathname.startsWith(path);
+  };
 
   return (
     <header className="sticky top-0 z-50 transition-all duration-300 bg-[#0a0c12]/95 backdrop-blur-2xl border-b border-white/10 shadow-[0_10px_35px_rgba(0,0,0,0.85)]">
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between gap-4">
-        {/* Left: Return to Main Site + FilmsClub VIP Brand */}
+        {/* Left: Brand Identity */}
         <div className="flex items-center gap-3 shrink-0">
-          <Link
-            to="/"
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/5 hover:bg-amber-400/15 border border-white/10 hover:border-amber-400/40 text-zinc-300 hover:text-amber-400 text-xs font-bold transition-all"
-            title="Return to Filmy4UHD Main Catalog"
-          >
-            <FaArrowLeft className="text-[10px]" />
-            <span className="hidden sm:inline">Filmy4UHD</span>
-            <span className="sm:hidden">Main</span>
-          </Link>
-
-          <FilmsClubLogo to="/filmsclub" />
+          <FilmsClubLogo to="/" />
         </div>
 
         {/* Center: Desktop Navigation Tabs */}
@@ -132,7 +123,6 @@ export function YupflixHeader({ searchInputRef, isSearching, onSearchingChange }
               <NavLink
                 key={path}
                 to={path}
-                end={path === '/filmsclub'}
                 className={`px-4 py-1.5 rounded-xl text-xs lg:text-sm font-outfit font-bold transition-all duration-200 ${
                   activeLink
                     ? 'bg-red-600 text-white shadow-[0_0_15px_rgba(229,9,20,0.6)]'

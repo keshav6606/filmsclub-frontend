@@ -12,12 +12,6 @@ export function YupflixModule() {
 
   return (
     <div className="filmsclub-module min-h-screen text-white bg-[#07080c] pb-24 selection:bg-red-600 selection:text-white font-sans">
-      <YupflixHeader
-        searchInputRef={searchInputRef}
-        isSearching={isSearching}
-        onSearchingChange={setIsSearching}
-      />
-
       <main className="w-full">
         <Routes>
           <Route index element={<YupflixHome />} />

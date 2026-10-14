@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import MovieCard from "../components/MovieCard";
+import { YupflixCard } from "../yupflix/components/YupflixCard";
 import SEO from "../components/SEO";
 import { getWatchlist, clearWatchlist } from "../utils/storage";
 import { HiBookmark, HiTrash } from "react-icons/hi2";
@@ -75,9 +76,9 @@ export default function Watchlist() {
 
         {/* Watchlist Grid or Empty State */}
         {watchlist.length > 0 ? (
-          <div className="grid grid-cols-2 xs:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 blgxl:grid-cols-6 xl:grid-cols-7 gap-3.5 sm:gap-4 md:gap-5">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-7 gap-4 sm:gap-6">
             {watchlist.map((movie) => (
-              <MovieCard key={movie.tmdb_id} movie={movie} />
+              <YupflixCard key={movie.code || movie.tmdb_id} item={movie} />
             ))}
           </div>
         ) : (
